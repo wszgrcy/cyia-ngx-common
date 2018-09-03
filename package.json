@@ -1,5 +1,5 @@
 {
-  "name": "cyia-ngx-core",
+  "name": "cyia-ngx-common",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",

@@ -1,0 +1,25 @@
+{
+  "name": "cyia-ngx-common",
+  "version": "1.1.6",
+  "description": "cyia公共模块",
+  "main": "module/lib/index.js",
+  "types": "module/lib/index.d.ts",
+  "scripts": {
+    "prepublishOnly": "tsc"
+  },
+  "author": {
+    "name": "cyia",
+    "email": "wszgrcy@gmail.com"
+  },
+  "files": [
+    "module/lib/**/*.js",
+    "module/lib/**/*.d.ts",
+    "README.md"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/core": ">=6.0.0",
+    "@angular/common": ">=6.0.0",
+    "rxjs": "6.2.2"
+  }
+}

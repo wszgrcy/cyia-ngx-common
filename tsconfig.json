@@ -16,6 +16,12 @@
     "lib": [
       "es2017",
       "dom"
-    ]
+    ],
+    "paths": {
+      "cyia-common": [
+        "lib/src"
+      ]
+    }
   }
+
 }
