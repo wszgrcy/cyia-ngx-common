@@ -18,7 +18,7 @@ export class CyiaHttpService {
     /**
      *传入请求
      *
-     * @param  httpRequestConfig 
+     * @param {HttpRequestItem} httpRequestConfig 
      * @returns
      * @memberof CyiaHttp
      */

@@ -42,7 +42,7 @@ var CyiaHttpService = /** @class */ (function () {
         if (!requestItem || !httpRequestItem) {
             return;
         }
-        var obj = deepassign_1._deepAssign({}, httpRequestConfig, httpRequestItem);
+        var obj = deepassign_1._deepAssign({}, httpRequestItem, httpRequestConfig);
         obj.url = requestItem.prefixurl + obj.url + (obj.suffix || '');
         return this.http.request(obj.method, obj.url, obj.options);
         //doc未找到返回 

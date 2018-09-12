@@ -18,10 +18,12 @@
       "dom"
     ],
     "paths": {
-      "cyia-common": [
-        "lib/src"
+      "lib": [
+        "dist/lib"
+      ],
+      "lib/*": [
+        "dist/lib/*"
       ]
     }
   }
-
 }
