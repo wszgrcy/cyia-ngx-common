@@ -6,7 +6,7 @@ export const requestList: RequestItem[] = [
             {
                 token: 'test',
                 method: 'get',
-                url: '/package/cyia-ngx-log'
+                url: 'package/cyia-ngx-log/'
             }
         ]
 

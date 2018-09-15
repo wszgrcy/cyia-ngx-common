@@ -17,7 +17,7 @@ export class CyiaHttpModule {
                 { provide: REQUEST_LIST, useValue: requestList },
                 CyiaHttpService
             ],
-            
+
         }
     }
 }

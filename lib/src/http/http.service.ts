@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { REQUEST_LIST } from './http.token';
-import { RequestItem, HttpRequestItem } from './http.define';
+import { RequestItem, HttpRequestItem, HttpUrl } from './http.define';
 import { _deepAssign } from '../object/deepassign';
 import { Observable } from 'rxjs';
 
@@ -37,8 +37,44 @@ export class CyiaHttpService {
             return;
         }
         let obj = _deepAssign<HttpRequestItem>({}, httpRequestItem, httpRequestConfig);
-        obj.url = requestItem.prefixurl + obj.url + (obj.suffix || '')
+        // obj.url = requestItem.prefixurl + obj.url + (obj.suffix || '')
+        obj.url = this.mergeUrl(requestItem.prefixurl, obj.url, obj.suffix)
         return this.http.request(obj.method, obj.url, obj.options)
         //doc未找到返回 
+    }
+
+    /**
+     * @description 合并请求url
+     * @author cyia
+     * @date 2018-09-15
+     * @param prefix
+     * @param middle
+     * @param [suffix='']
+     * @memberof CyiaHttpService
+     */
+    private mergeUrl(prefix: HttpUrl, middle: HttpUrl, suffix: HttpUrl = '') {
+        let prefixEnd = /\/$/.test(prefix);
+        let middleStart = /^\//.test(middle)
+        let middleEnd = /\/$/.test(middle)
+        let suffixStart = /^\//.test(suffix)
+        if (prefixEnd && middleStart) {
+            let tmp = middle.split('')
+            tmp.shift()
+            middle = tmp.join('')
+        } else if (!prefixEnd && !middleStart) {
+            let tmp = middle.split('')
+            tmp.unshift('/')
+            middle = tmp.join('')
+        }
+        if (middleEnd && suffixStart) {
+            let tmp = suffix.split('')
+            tmp.shift()
+            suffix = tmp.join('')
+        } else if (!middleEnd && !suffixStart) {
+            let tmp = suffix.split('')
+            tmp.unshift('/')
+            suffix = tmp.join('')
+        }
+        return [prefix, middle, suffix].join('')
     }
 }

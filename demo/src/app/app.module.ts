@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { CyiaHttpModule } from 'lib/src';
+import { CyiaHttpModule } from 'cyia-common';
 // import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({

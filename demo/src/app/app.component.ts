@@ -1,4 +1,4 @@
-import { CyiaHttpService } from './../../../lib/src/http/http.service';
+import { CyiaHttpService } from 'cyia-common';
 import { Component } from '@angular/core';
 
 @Component({
@@ -9,7 +9,7 @@ import { Component } from '@angular/core';
 export class AppComponent {
   constructor(private http: CyiaHttpService) { }
   ngOnInit(): void {
-    this.http.request({ token: 'test', method: 'delete',suffix:'/t123' }).subscribe({
+    this.http.request({ token: 'test', method: 'delete', suffix: '/t123' }).subscribe({
       next: (res) => {
         console.log(res)
       }
