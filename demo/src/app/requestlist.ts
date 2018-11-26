@@ -1,4 +1,4 @@
-import { RequestItem } from 'cyia-common';
+import { RequestItem } from 'cyia-ngx-common';
 export const requestList: RequestItem[] = [
     {
         prefixurl: 'https://www.npmjs.com',

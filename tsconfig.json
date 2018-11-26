@@ -18,7 +18,7 @@
       "dom"
     ],
     "paths": {
-      "cyia-common": [
+      "cyia-ngx-common": [
         "dist/lib"
       ],
       "lib/*": [

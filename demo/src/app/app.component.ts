@@ -1,4 +1,4 @@
-import { CyiaHttpService } from 'cyia-common';
+import { CyiaHttpService } from 'cyia-ngx-common';
 import { Component } from '@angular/core';
 
 @Component({
