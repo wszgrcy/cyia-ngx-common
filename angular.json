@@ -29,12 +29,10 @@
           },
           "configurations": {
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "demo/src/environments/environment.ts",
-                  "with": "demo/src/environments/environment.prod.ts"
-                }
-              ],
+              "fileReplacements": [{
+                "replace": "demo/src/environments/environment.ts",
+                "with": "demo/src/environments/environment.prod.ts"
+              }],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -54,7 +52,8 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "cyia-ngx-common:build:production"
+              "browserTarget": "cyia-ngx-common:build:production",
+              "disableHostCheck": true
             }
           }
         },

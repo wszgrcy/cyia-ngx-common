@@ -30,12 +30,17 @@ export interface HttpRequestConfig {
     url?: HttpUrl;
     options?: HttpRequestOptions
 }
-export interface HttpRequestItem extends HttpRequestConfig {
-    token: HttpTokenName;
+export interface HttpRequestItem<T=string> extends HttpRequestConfig {
+    token: T;
+    /**后缀 */
     suffix?: HttpUrl;
 }
 /**请求列表的每个item */
-export interface RequestItem {
+export interface RequestItem<T = string> {
+    /**一组的通用前缀 */
     prefixurl: HttpUrl;
-    apiList: HttpRequestItem[];
+    apiList: HttpRequestItem<T>[];
+}
+export class HttpHeaders{
+    [header: string]: string | string[]
 }

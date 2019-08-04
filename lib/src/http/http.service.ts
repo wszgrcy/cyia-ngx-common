@@ -1,12 +1,13 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, Inject, Type } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { REQUEST_LIST } from './http.token';
 import { RequestItem, HttpRequestItem, HttpUrl } from './http.define';
 import { _deepAssign } from '../object/deepassign';
 import { Observable } from 'rxjs';
+import { HttpClientItemConfig, HttpClientItemConfigBase } from './http.class';
+// import { CloneParam } from '../decorator/cloneParam.decorator';
 
 
-// console.error('请求token出错,请核实后再操作');
 
 @Injectable()
 export class CyiaHttpService {
@@ -22,6 +23,7 @@ export class CyiaHttpService {
      * @returns
      * @memberof CyiaHttp
      */
+    // @CloneParam<CyiaHttpService>()
     request(httpRequestConfig: HttpRequestItem): Observable<any> {
         /**请求接口 */
         let httpRequestItem: HttpRequestItem = null;
@@ -37,7 +39,6 @@ export class CyiaHttpService {
             return;
         }
         let obj = _deepAssign<HttpRequestItem>({}, httpRequestItem, httpRequestConfig);
-        // obj.url = requestItem.prefixurl + obj.url + (obj.suffix || '')
         obj.url = this.mergeUrl(requestItem.prefixurl, obj.url, obj.suffix)
         return this.http.request(obj.method, obj.url, obj.options)
         //doc未找到返回 
@@ -77,4 +78,28 @@ export class CyiaHttpService {
         }
         return [prefix, middle, suffix].join('')
     }
+    injectUse<D, T extends HttpClientItemConfig<D>>(ItemConfig: Type<HttpClientItemConfig<D>>)
+    // :({
+    //     default:HttpClientItemConfigBase<D>,
+    //     [name:string]:any
+    // }) 
+    {
+        let instance = new ItemConfig()
+        // return instance
+        let obj = {}
+
+        return {
+            default: () => this.requestEnity(instance.defalut),
+            post:() => this.requestEnity(instance.sub.post)
+        }
+    }
+    requestEnity<T>(config: HttpClientItemConfigBase<T>, defaultConfig?: HttpClientItemConfigBase<T>): Observable<T> {
+        return this.http.request(config.requestConfig.method, config.requestConfig.url, config.requestConfig.options) as any
+    }
+
 }
+interface aaa {
+
+}
+// type base<T> = Extract<T, HttpClientItemConfig>
+// type

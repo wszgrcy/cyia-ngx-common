@@ -5,3 +5,4 @@ export { CyiaHttpModule } from './http/http.module';
 export * from './object'
 // export * from './http/http.token'
 export * from './http'
+export * from './decorator/click-control.decorator'

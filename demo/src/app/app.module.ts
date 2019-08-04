@@ -5,7 +5,8 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { CyiaHttpModule } from 'cyia-ngx-common';
 // import { HttpClientModule } from '@angular/common/http';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSnackBarModule } from "@angular/material";
 @NgModule({
   declarations: [
     AppComponent
@@ -13,7 +14,9 @@ import { CyiaHttpModule } from 'cyia-ngx-common';
   imports: [
     BrowserModule,
     // HttpClientModule,
-    CyiaHttpModule.forRoot(requestList)
+    CyiaHttpModule.forRoot(requestList),
+    BrowserAnimationsModule,
+    MatSnackBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]

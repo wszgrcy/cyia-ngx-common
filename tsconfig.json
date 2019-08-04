@@ -19,7 +19,8 @@
     ],
     "paths": {
       "cyia-ngx-common": [
-        "dist/lib"
+        // "dist/lib",
+        "./lib/src"
       ],
       "lib/*": [
         "dist/lib/*"
