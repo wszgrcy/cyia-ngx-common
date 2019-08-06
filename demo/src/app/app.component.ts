@@ -19,10 +19,16 @@ export class AppComponent {
       }
     })
     let a = this.http.injectUse(TestItem)
+    
     a.default().subscribe((val) => {
-      console.log('测试',val)
+      console.log('测试', val)
     })
-    a.post()
+    a.post().subscribe((val) => {
+      // val.
+      console.log('post返回');
+    }, (err) => {
+      console.log('报错', err);
+    })
     this.click()
     this.click()
   }

@@ -1,5 +1,4 @@
 import { RequestItem, HttpClientItemConfig, HttpClientItemConfigBase } from 'cyia-ngx-common';
-import { HttpMethod } from 'lib/http/http.define';
 import { config } from 'rxjs';
 export const requestList: RequestItem[] = [
     {
@@ -15,10 +14,10 @@ export const requestList: RequestItem[] = [
     }
 ]
 
-export class TestItem extends HttpClientItemConfig<Ent> {
+export class TestItem extends HttpClientItemConfig<Ent, SubHelper> {
     sub = {
         post: new HttpClientItemConfigBase(
-            { url: 'index.html', method: 'get', options: { responseType: 'text' } }, Ent
+            { url: 'post', method: 'get', options: { responseType: 'text' } }, Post
         )
     }
     defalut = new HttpClientItemConfigBase(
@@ -30,9 +29,12 @@ class Ent {
     b
     c
 }
-class Sub extends HttpClientItemConfigBase<Ent>{
-    requestConfig  
-     = { url: 'index.html', method: 'get', options: { responseType: 'text' } } as any
-  
-    
+class Post {
+    t
+    a
+    c
 }
+class SubHelper {
+    post
+}
+

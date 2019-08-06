@@ -1,10 +1,11 @@
 import { Injectable, Inject, Type } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { REQUEST_LIST } from './http.token';
-import { RequestItem, HttpRequestItem, HttpUrl } from './http.define';
-import { _deepAssign } from '../object/deepassign';
+import { RequestItem, HttpRequestItem, HttpUrl, HttpMethod } from './http.define';
+import { _deepCloneObject } from '../object/deepassign';
 import { Observable } from 'rxjs';
 import { HttpClientItemConfig, HttpClientItemConfigBase } from './http.class';
+import { take } from "rxjs/operators";
 // import { CloneParam } from '../decorator/cloneParam.decorator';
 
 
@@ -38,7 +39,7 @@ export class CyiaHttpService {
         if (!requestItem || !httpRequestItem) {
             return;
         }
-        let obj = _deepAssign<HttpRequestItem>({}, httpRequestItem, httpRequestConfig);
+        let obj = _deepCloneObject<HttpRequestItem>({}, httpRequestItem, httpRequestConfig);
         obj.url = this.mergeUrl(requestItem.prefixurl, obj.url, obj.suffix)
         return this.http.request(obj.method, obj.url, obj.options)
         //doc未找到返回 
@@ -78,28 +79,53 @@ export class CyiaHttpService {
         }
         return [prefix, middle, suffix].join('')
     }
-    injectUse<D, T extends HttpClientItemConfig<D>>(ItemConfig: Type<HttpClientItemConfig<D>>)
-    // :({
-    //     default:HttpClientItemConfigBase<D>,
-    //     [name:string]:any
-    // }) 
-    {
+    injectUse<D, K>(ItemConfig: Type<HttpClientItemConfig<D, K>>) {
         let instance = new ItemConfig()
         // return instance
         let obj = {}
 
         return {
             default: () => this.requestEnity(instance.defalut),
-            post:() => this.requestEnity(instance.sub.post)
+            ...this.transformSub(instance.sub, instance.defalut),
         }
     }
-    requestEnity<T>(config: HttpClientItemConfigBase<T>, defaultConfig?: HttpClientItemConfigBase<T>): Observable<T> {
-        return this.http.request(config.requestConfig.method, config.requestConfig.url, config.requestConfig.options) as any
+    /**
+     * ?是否需要?url前缀,对不同的url有不同的反应,
+     *
+     * @private
+     * @template T
+     * @param {HttpClientItemConfigBase<T>} config
+     * @param {HttpClientItemConfigBase<T>} [defaultConfig]
+     * @returns {Observable<T>}
+     * @memberof CyiaHttpService
+     */
+    private requestEnity<T>(config: HttpClientItemConfigBase<T>, defaultConfig?: HttpClientItemConfigBase<T>): Observable<T> {
+        let method: HttpMethod = config.requestConfig.method ||( defaultConfig ? defaultConfig.requestConfig.method : 'get');
+        let url = this.mergeUrlList(defaultConfig ? defaultConfig.requestConfig.url : '', config.requestConfig.url)
+        let options = config.requestConfig.options
+        return this.http.request(method, url, options).pipe(take(1)) as any
+
     }
-
+    transformSub<T, D>(obj: T, defalut: D) {
+        let temp: { [P in keyof T]: () => Observable<T[P] extends HttpClientItemConfigBase<any> ? InstanceType<T[P]['responseConfig']> : Object> } = {} as any
+        for (const name in obj) {
+            if (!obj.hasOwnProperty(name)) continue
+            const config: any = obj[name]
+            let a: any = () => this.requestEnity(config, defalut as any)
+            temp[name] = a
+        }
+        return temp
+    }
+    mergeUrlList(...list: string[]) {
+        return list.filter((url) => url)
+            .reduce((pre, cur) => {
+                if (pre.endsWith('/') && cur.startsWith('/')) {
+                    return `${pre}${cur.substr(1)}`
+                } else if (!pre.endsWith('/') && !cur.startsWith('/')) {
+                    return `${pre}/${cur}`
+                } else {
+                    return `${pre}${cur}`
+                }
+            }, '')
+    }
 }
-interface aaa {
-
-}
-// type base<T> = Extract<T, HttpClientItemConfig>
-// type
