@@ -1,7 +1,7 @@
 import { CyiaHttpService, CallControl } from 'cyia-ngx-common';
 import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { TestItem } from './requestlist';
+import { TestItem, NewEntity } from './requestlist';
 
 @Component({
   selector: 'app-root',
@@ -18,16 +18,24 @@ export class AppComponent {
         console.log(res)
       }
     })
-    let a = this.http.injectUse(TestItem)
-    
-    a.default().subscribe((val) => {
-      console.log('测试', val)
-    })
-    a.post().subscribe((val) => {
-      // val.
-      console.log('post返回');
-    }, (err) => {
-      console.log('报错', err);
+    // let a = this.http.injectUse(TestItem)
+
+    // a.default().subscribe((val) => {
+    //   console.log('测试', val)
+    // })
+    // a.post().subscribe((val) => {
+    //   // val.
+    //   console.log('post返回');
+    // }, (err) => {
+    //   console.log('报错', err);
+    // })
+    /**
+     * doc 请求new 返回之后,因为一对一的关系还会请求ext
+     */
+    let b = this.http.getEntity(NewEntity)
+    b({}).subscribe((val) => {
+      console.log(val);
+      val.ret1
     })
     this.click()
     this.click()

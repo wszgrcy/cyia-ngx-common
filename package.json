@@ -27,7 +27,8 @@
     "@angular/router": "8.2.0",
     "core-js": "3.1.4",
     "rxjs": "6.5.2",
-    "zone.js": "0.10.1"
+    "zone.js": "0.10.1",
+    "reflect-metadata": "0.1.13"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.802.0",
