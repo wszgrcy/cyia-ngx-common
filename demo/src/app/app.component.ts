@@ -32,7 +32,7 @@ export class AppComponent {
     /**
      * doc 请求new 返回之后,因为一对一的关系还会请求ext
      */
-    let b = this.http.getEntity(NewEntity)
+    let b = this.http.getEntity2(NewEntity)
     b({}).subscribe((val) => {
       console.log(val);
       val.ret1

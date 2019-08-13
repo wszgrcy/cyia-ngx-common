@@ -3,24 +3,33 @@ import { HttpClient } from '@angular/common/http';
 import { REQUEST_LIST } from './http.token';
 import { RequestItem, HttpRequestItem, HttpUrl, HttpMethod, HttpRequestConfig } from './http.define';
 import { _deepCloneObject } from '../object/deepassign';
-import { Observable } from 'rxjs';
+import { Observable, Subject, of } from 'rxjs';
 import { HttpClientItemConfig, HttpClientItemConfigBase } from './http.class';
-import { take, map } from "rxjs/operators";
+import { take, map, tap, switchMap } from "rxjs/operators";
 // import { CloneParam } from '../decorator/cloneParam.decorator';
 import { RegisterEntityOption } from "../type/options/register-entity.options";
 import { throwIf } from '../util/throw-if';
 import { stronglyTyped } from '../util/response-realize';
 import { RelationType } from '../type/relation.type';
 import { RelationOption } from '../type/options/relations.options';
+import { EntityConfig } from '../type/entity.config';
+import { ENTITY_SYMBOL, RELATION_SYMBOL, PRIMARY_COLUMN_SYMBOL, REPOSITORY_SYMBOL } from '../symbol/entity.symbol';
+import { Source } from '../type/options/entity.options';
+import { transform2Array } from '../util/transform2array';
+import { from } from 'rxjs';
 
 /**
- * todo 1.被动调用时参数传递
- * todo 2.使用主键还是增加参数指定匹配相等
+ *  todo  1.被动调用时参数传递(一般都属于字典表,剩下部分?)
+ *  2.使用主键
+ *  todo 请求时保存纯数据,在构造后进行类型化
+ *  todo 正常请求数据时,不会请求仓库,关联请求时优先仓库,没有再请求
  */
+
 @Injectable()
 export class CyiaHttpService {
   static relations: RelationOption[] = []
   static entityList: RegisterEntityOption[] = []
+  static columns = []
   static registerEntity(options: RegisterEntityOption) {
     CyiaHttpService.entityList.push(options)
   }
@@ -246,4 +255,141 @@ export class CyiaHttpService {
       })
   }
 
+  getEntity2<T>(entity: Type<T>): (param: HttpRequestConfig) => Observable<T> {
+    let entityConfig = this.getEntityConfig(entity)
+    throwIf(!entityConfig.entity, '未查找到实体')
+    //  let a=
+    return (param?) => {
+      return this.getData(entityConfig.entity)(param)
+        .pipe(
+          switchMap((res) => from(this.relationsImplementation(res, entityConfig.relations, entityConfig.primaryKey))),
+          map((res) => stronglyTyped(res, entityConfig.entity.entity))
+        )
+    }
+  }
+  getData(entity: EntityConfig['entity']) {
+    switch (entity.options.method) {
+      case Source.request:
+        return (param) => this.sourceByrequest2(param, entity)
+      case Source.normal:
+        //todo
+        return (param) => new Subject().asObservable()
+    }
+  }
+  /**
+   * 关联实现
+   *
+   * @param {*} result
+   * @param {EntityConfig['relations']} relations
+   * @param {EntityConfig['primaryKey']} primaryKey
+   * @memberof CyiaHttpService
+   */
+  async relationsImplementation(result, relations: EntityConfig['relations'], primaryKey: EntityConfig['primaryKey']) {
+    for (let i = 0; i < relations.length; i++) {
+      const relation = relations[i];
+      switch (relation.name) {
+        case RelationType.OneToOne:
+          //doc 获得纯数据,先从缓存列表中找,再从请求中找
+          let inverse = relation.inverseFn()
+          console.log('第一次');
+          let implementationResult = this.oneToOneAchieved(result, relation.propertyName, primaryKey, inverse)
+          if (implementationResult) {
+            let inverseData = await this.getData(this.getEntityConfig(inverse).entity)({}).toPromise()
+            // console.log(inverseData);
+          } else return result;
+          console.log('第二次');
+          implementationResult = this.oneToOneAchieved(implementationResult, relation.propertyName, primaryKey, inverse)
+          console.log('结果', implementationResult);
+          break;
+        default:
+          break;
+      }
+    }
+    console.log(result);
+    return result
+  }
+  /**
+   * 一对一不是加在主键上,而是加在一对一关系上
+   *
+   * @param {*} data 本身
+   * @param {*} entity
+   * @memberof CyiaHttpService
+   */
+  oneToOneAchieved(data: any, key: string, primaryKey: string, inverseEntity);
+  oneToOneAchieved<I>(data: any[], key: string, primaryKey: string, inverseEntity: Type<I>) {
+    let result = []
+    data = transform2Array(data)
+    // console.log('传入数据', data);
+    data.forEach((item) => {
+      /**主键的值 */
+      let primaryValue = item[primaryKey];
+      let inverseEntityData = this.getEntityRepository(inverseEntity)
+      console.log('查看储存数据', inverseEntityData);
+      if (inverseEntityData[primaryValue]) {
+        item[key] = stronglyTyped(inverseEntityData[primaryValue], inverseEntity)
+      } else {
+        result.push(item)
+      }
+    })
+    return result.length ? result : null
+  }
+  /**
+   * !实验
+   *
+   * @param {HttpRequestConfig} params
+   * @param {RegisterEntityOption} defalutEntityArgs
+   * @param {boolean} [active=false]
+   * @returns
+   * @memberof CyiaHttpService
+   */
+  sourceByrequest2(params: HttpRequestConfig, defalutEntityArgs: RegisterEntityOption) {
+    let method: HttpMethod = params.method || defalutEntityArgs.options.request.method
+    let url = this.mergeUrlList(defalutEntityArgs.options.request.url, params.url)
+    let options = Object.assign({}, params.options, defalutEntityArgs.options.request.options)
+    for (const key in options) options[key] = Object.assign({}, defalutEntityArgs.options.request.options[key], options[key])
+    return this.http.request(method, url, options).pipe(
+      take(1),
+      tap((res) => this.savePlainData(res, defalutEntityArgs.entity))
+    )
+  }
+  /**
+   * 获得实体的一些配置
+   *
+   * @private
+   * @template T
+   * @param {Type<T>} entity
+   * @returns {EntityConfig}
+   * @memberof CyiaHttpService
+   */
+  private getEntityConfig<T>(entity: Type<T>): EntityConfig {
+    return {
+      entity: Reflect.getMetadata(ENTITY_SYMBOL, entity),
+      relations: Reflect.getMetadata(RELATION_SYMBOL, entity),
+      primaryKey: Reflect.getMetadata(PRIMARY_COLUMN_SYMBOL, entity),
+
+    }
+  }
+  private getEntityRepository<T>(entity: Type<T>): { [name: string]: T } {
+    return Reflect.getMetadata(REPOSITORY_SYMBOL, entity) || {}
+  }
+  /**
+   * 保存纯数据
+   *
+   * @private
+   * @template T
+   * @param {*} data
+   * @param {Type<T>} entity
+   * @memberof CyiaHttpService
+   */
+  private savePlainData<T>(data, entity: Type<T>) {
+    data = transform2Array(data)
+    let obj = Reflect.getMetadata(REPOSITORY_SYMBOL, entity) || {};
+    let entityConfig = this.getEntityConfig(entity);
+    (<any[]>data)
+      .filter((item) => item[entityConfig.primaryKey] != undefined)
+      .forEach((item) => {
+        obj[item[entityConfig.primaryKey]] = item
+      })
+    Reflect.defineMetadata(REPOSITORY_SYMBOL, obj, entity)
+  }
 }

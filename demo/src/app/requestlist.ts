@@ -1,4 +1,4 @@
-import { RequestItem, HttpClientItemConfig, HttpClientItemConfigBase, Entity, OneToOne } from 'cyia-ngx-common';
+import { RequestItem, HttpClientItemConfig, HttpClientItemConfigBase, Entity, OneToOne, PrimaryColumn } from 'cyia-ngx-common';
 import { config } from 'rxjs';
 export const requestList: RequestItem[] = [
   {
@@ -45,9 +45,11 @@ class SubHelper {
   }
 })
 export class NewEntity {
-  @OneToOne(() => ExtEntity, (type) => type.ret1)
+  @PrimaryColumn()
   ret1
   ret2
+  @OneToOne(() => ExtEntity, (type) => type.ret1)
+  ext
 }
 @Entity({
   request: {
