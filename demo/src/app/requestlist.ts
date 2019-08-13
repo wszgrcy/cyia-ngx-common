@@ -1,5 +1,4 @@
-import { RequestItem, HttpClientItemConfig, HttpClientItemConfigBase, Entity, OneToOne, PrimaryColumn } from 'cyia-ngx-common';
-import { config } from 'rxjs';
+import { RequestItem, HttpClientItemConfig, HttpClientItemConfigBase, Entity, OneToOne, PrimaryColumn, Source } from 'cyia-ngx-common';
 export const requestList: RequestItem[] = [
   {
     prefixurl: 'https://www.npmjs.com',
@@ -44,11 +43,11 @@ class SubHelper {
     method: 'get'
   }
 })
-export class NewEntity {
+export class MainEntity {
   @PrimaryColumn()
   ret1
   ret2
-  @OneToOne(() => ExtEntity, (type) => type.ret1)
+  @OneToOne(() => NormalEntity)
   ext
 }
 @Entity({
@@ -56,9 +55,23 @@ export class NewEntity {
     url: 'http://127.0.0.1:3000/b',
     method: 'get'
   }
-})
-export class ExtEntity extends NewEntity {
-  @OneToOne(() => NewEntity, (type) => type.ret1)
+}, {
+    params: (params) => ({ length: params.length })
+  }
+)
+export class O2O1Entity extends MainEntity {
+  // @OneToOne(() => MainEntity)
+  @PrimaryColumn()
   ret1
   ret2
+}
+@Entity({ method: Source.normal })
+export class NormalEntity {
+  @PrimaryColumn()
+  id
+  test
+  constructor(id, test) {
+    this.id = id;
+    this.test = test
+  }
 }

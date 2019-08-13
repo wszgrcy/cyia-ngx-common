@@ -11,18 +11,25 @@ export interface OneToOneMetaOption {
  * 基类继承,多装饰器
  */
 export class EntityOptions {
-    method?: Source = Source.request;
-    request?: HttpRequestConfig
-    requestFlag?: RequestFlag = RequestFlag.new;
-    isArray?: boolean = false
+  method?: Source = Source.request;
+  request?: HttpRequestConfig
+  requestFlag?: RequestFlag = RequestFlag.new;
+  isArray?: boolean = false
+}
+export class RelationEntityOptions {
+  params?: (params) => any
+  body?: (params) => any
+  header?: (params) => any
 }
 
+// export interface Chain {
 
+// }
 export enum Source {
-    request, normal
+  request, normal
 }
 /**
- * 
+ *
  *
  * @export
  * @enum {number}
@@ -31,7 +38,7 @@ export enum RequestFlag {
     /**所有请求参数不继承 */new, /**原有数据上追加,
     url上表现为路径合并
     header,body,param上表现为对象合并
-    
-    
+
+
      */append
 }
