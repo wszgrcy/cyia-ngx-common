@@ -1,3 +1,6 @@
 export enum RelationType {
-  OneToOne
+  OneToOne,
+  OneToMany,
+  ManyToOne,
+  ManyToMany,
 }

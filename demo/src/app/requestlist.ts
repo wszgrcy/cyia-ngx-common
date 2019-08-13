@@ -1,4 +1,5 @@
 import { RequestItem, HttpClientItemConfig, HttpClientItemConfigBase, Entity, OneToOne, PrimaryColumn, Source } from 'cyia-ngx-common';
+import { OneToMany } from 'cyia-ngx-common'
 export const requestList: RequestItem[] = [
   {
     prefixurl: 'https://www.npmjs.com',
@@ -40,15 +41,21 @@ class SubHelper {
 @Entity({
   request: {
     url: 'http://127.0.0.1:3000/a',
-    method: 'get'
+    method: 'get',
+    options: {
+      params: { default1: '默认' }
+    }
   }
 })
 export class MainEntity {
   @PrimaryColumn()
   ret1
   ret2
+
   @OneToOne(() => NormalEntity)
   ext
+  @OneToMany(() => OneToManyEntity, (type) => type.p)
+  many: OneToManyEntity[]
 }
 @Entity({
   request: {
@@ -74,4 +81,14 @@ export class NormalEntity {
     this.id = id;
     this.test = test
   }
+}
+@Entity({
+  request: {
+    url: 'http://127.0.0.1:3000/onetomany',
+    method: 'get',
+  }
+})
+export class OneToManyEntity {
+  p
+  data
 }

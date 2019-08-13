@@ -33,7 +33,7 @@ export class AppComponent {
      * doc 请求new 返回之后,因为一对一的关系还会请求ext
      */
     let b = this.http.getEntity2(MainEntity)
-    b({}).subscribe((val) => {
+    b({ options: { params: { dynamic2: '动态',default1:'覆盖' } } }).subscribe((val) => {
       console.log(val);
       val.ret1
     })

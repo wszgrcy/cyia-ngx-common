@@ -10,9 +10,9 @@ import { Type } from "@angular/core";
  * @returns {T}
  */
 // export function stronglyTyped<T>(data: any, entity: Type<T>): T;
-export function stronglyTyped<T, D>(data: D, entity: Type<T>): T[] | T {
+export function stronglyTyped<T, D>(data: D, entity: Type<T>): D extends Array<any> ? T[] : T {
   if (data instanceof Array) {
-    return data.map((item) => _stronglyTypedSingle(item, entity))
+    return data.map((item) => _stronglyTypedSingle(item, entity)) as any
   }
   return _stronglyTypedSingle(data, entity) as any
 }
