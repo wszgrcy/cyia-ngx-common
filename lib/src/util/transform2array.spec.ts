@@ -1,6 +1,6 @@
 import { transform2Array } from "./transform2array";
 
-describe('AppComponent', () => {
+describe('转换为数组', () => {
   function testIt(msg, data) {
     it(msg, () => {
       let list = transform2Array(data)

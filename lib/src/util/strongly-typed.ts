@@ -1,7 +1,7 @@
 import { Type } from "@angular/core";
 
 /**
- * 强类型化
+ * 强类型化,不会查找原型链上的属性
  *
  * @export
  * @template T

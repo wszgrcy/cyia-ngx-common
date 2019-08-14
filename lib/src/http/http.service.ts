@@ -9,7 +9,7 @@ import { take, map, tap, switchMap } from "rxjs/operators";
 // import { CloneParam } from '../decorator/cloneParam.decorator';
 import { RegisterEntityOption } from "../type/options/register-entity.options";
 import { throwIf } from '../util/throw-if';
-import { stronglyTyped } from '../util/response-realize';
+import { stronglyTyped } from '../util/strongly-typed';
 import { RelationType } from '../type/relation.type';
 import { RelationOption, RelationMatchingMode } from '../type/options/relations.options';
 import { EntityConfig } from '../type/entity.config';
