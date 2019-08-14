@@ -1,7 +1,7 @@
 import { CyiaHttpService, CallControl } from 'cyia-ngx-common';
 import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { TestItem, MainEntity, NormalEntity } from './requestlist';
+import { TestItem, MainEntity, NormalEntity, OneToManyEntity } from './requestlist';
 
 @Component({
   selector: 'app-root',
@@ -32,10 +32,10 @@ export class AppComponent {
     /**
      * doc 请求new 返回之后,因为一对一的关系还会请求ext
      */
-    let b = this.http.getEntity2(MainEntity)
-    b({ options: { params: { dynamic2: '动态',default1:'覆盖' } } }).subscribe((val) => {
+    let b = this.http.getEntity(OneToManyEntity)
+    b({}).subscribe((val) => {
       console.log(val);
-      val.ret1
+      // val.id
     })
     this.click()
     this.click()

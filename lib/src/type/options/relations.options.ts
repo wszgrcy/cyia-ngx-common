@@ -10,3 +10,6 @@ export interface RelationOption {
   /**附加位置 */
   propertyName: string
 }
+export enum RelationMatchingMode {
+  repositoryOnly, requestOnly, auto
+}

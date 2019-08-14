@@ -1,4 +1,4 @@
-import { RequestItem, HttpClientItemConfig, HttpClientItemConfigBase, Entity, OneToOne, PrimaryColumn, Source } from 'cyia-ngx-common';
+import { RequestItem, HttpClientItemConfig, HttpClientItemConfigBase, Entity, OneToOne, PrimaryColumn, Source, ManyToOne } from 'cyia-ngx-common';
 import { OneToMany } from 'cyia-ngx-common'
 export const requestList: RequestItem[] = [
   {
@@ -89,6 +89,10 @@ export class NormalEntity {
   }
 })
 export class OneToManyEntity {
+  @ManyToOne(() => MainEntity, (type) => type.ret1)
   p
   data
+  @PrimaryColumn()
+  id
 }
+

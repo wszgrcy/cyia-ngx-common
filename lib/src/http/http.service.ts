@@ -11,7 +11,7 @@ import { RegisterEntityOption } from "../type/options/register-entity.options";
 import { throwIf } from '../util/throw-if';
 import { stronglyTyped } from '../util/response-realize';
 import { RelationType } from '../type/relation.type';
-import { RelationOption } from '../type/options/relations.options';
+import { RelationOption, RelationMatchingMode } from '../type/options/relations.options';
 import { EntityConfig } from '../type/entity.config';
 import { ENTITY_SYMBOL, RELATION_SYMBOL, PRIMARY_COLUMN_SYMBOL, REPOSITORY_SYMBOL } from '../symbol/entity.symbol';
 import { Source } from '../type/options/entity.options';
@@ -104,61 +104,8 @@ export class CyiaHttpService {
     }
     return [prefix, middle, suffix].join('')
   }
-  /**
-   *
-   * @deprecated 可能无用
-   * @template D
-   * @template K
-   * @param {Type<HttpClientItemConfig<D, K>>} ItemConfig
-   * @returns
-   * @memberof CyiaHttpService
-   */
-  injectUse<D, K>(ItemConfig: Type<HttpClientItemConfig<D, K>>) {
-    let instance = new ItemConfig()
-    // return instance
-    let obj = {}
-    return {
-      default: () => this.requestEnity(instance.defalut),
-      ...this.transformSub(instance.sub, instance.defalut),
-    }
-  }
-  /**
-   * ?是否需要?url前缀,对不同的url有不同的反应,
-   * @deprecated 可能无用
-   * @private
-   * @template T
-   * @param {HttpClientItemConfigBase<T>} config
-   * @param {HttpClientItemConfigBase<T>} [defaultConfig]
-   * @returns {Observable<T>}
-   * @memberof CyiaHttpService
-   */
-  private requestEnity<T>(config: HttpClientItemConfigBase<T>, defaultConfig?: HttpClientItemConfigBase<T>): Observable<T> {
-    let method: HttpMethod = config.requestConfig.method || (defaultConfig ? defaultConfig.requestConfig.method : 'get');
-    let url = this.mergeUrlList(defaultConfig ? defaultConfig.requestConfig.url : '', config.requestConfig.url)
-    let options = config.requestConfig.options
-    return this.http.request(method, url, options).pipe(take(1)) as any
 
-  }
-  /**
-   *
-   * @deprecated 可能无用
-   * @template T
-   * @template D
-   * @param {T} obj
-   * @param {D} defalut
-   * @returns
-   * @memberof CyiaHttpService
-   */
-  transformSub<T, D>(obj: T, defalut: D) {
-    let temp: { [P in keyof T]: () => Observable<T[P] extends HttpClientItemConfigBase<any> ? InstanceType<T[P]['responseConfig']> : Object> } = {} as any
-    for (const name in obj) {
-      if (!obj.hasOwnProperty(name)) continue
-      const config: any = obj[name]
-      let a: any = () => this.requestEnity(config, defalut as any)
-      temp[name] = a
-    }
-    return temp
-  }
+
   /**
    * url路径合并
    *
@@ -179,89 +126,10 @@ export class CyiaHttpService {
       }, '')
   }
 
-  /**
-   * !实验
-   *
-   * @param {HttpRequestConfig} params
-   * @param {RegisterEntityOption} defalutEntityArgs
-   * @param {boolean} [active=false]
-   * @returns
-   * @memberof CyiaHttpService
-   */
-  sourceByrequest(params: HttpRequestConfig, defalutEntityArgs: RegisterEntityOption, active = false) {
-    let method: HttpMethod = params.method || defalutEntityArgs.options.request.method
 
-    let url = this.mergeUrlList(defalutEntityArgs.options.request.url, params.url)
-    let options = Object.assign({}, params.options, defalutEntityArgs.options.request.options)
-    for (const key in options) options[key] = Object.assign({}, defalutEntityArgs.options.request.options[key], options[key])
-    console.log(url);
-    return this.http.request(method, url, options).pipe(take(1), map((res) => {
-      if (res instanceof Array) {
-        return res.map((item) => stronglyTyped(item, defalutEntityArgs.entity))
-      } else {
-        let instance = stronglyTyped(res, defalutEntityArgs.entity)
-        if (active)
-          this.setRelatins(instance, defalutEntityArgs.entity)
-        return instance
-      }
-    }))
-    // let options = params.options
-  }
-  /**
-   * !实验
-   *
-   * @template T
-   * @param {Type<T>} entity
-   * @returns {(param: HttpRequestConfig) => Observable<T>}
-   * @memberof CyiaHttpService
-   */
   getEntity<T>(entity: Type<T>): (param: HttpRequestConfig) => Observable<T> {
-    console.log('请求匹配', CyiaHttpService.entityList);
-    let item = CyiaHttpService.entityList.find((item) => item.entity == entity)
-    throwIf(!item, '未查找到实体')
-    return (param) => {
-      return this.sourceByrequest(param, item, true) as any
-      // .pipe(map((val) => {
-      //   console.log(val);
-
-      // }))
-      //  as any
-    }
-  }
-
-  /**
-   * ! 实验
-   *
-   * @template T
-   * @param {T} instance
-   * @param {Type<T>} entity
-   * @memberof CyiaHttpService
-   */
-  setRelatins<T>(instance: T, entity: Type<T>) {
-    CyiaHttpService.relations
-      .filter(({ target }) => target == entity)
-      .find(async (relation) => {
-        switch (relation.name) {
-          case RelationType.OneToOne:
-            let inverse = relation.inverseFn()
-            let item = CyiaHttpService.entityList.find((item) => item.entity == inverse)
-            let res = await this.sourceByrequest({}, item).toPromise()
-            instance[relation.propertyName] = res
-            // console.log('被动查询返回', res);
-            break;
-
-          default:
-            break;
-        }
-        // console.log('关系', relation.target, instance, entity);
-
-      })
-  }
-
-  getEntity2<T>(entity: Type<T>): (param: HttpRequestConfig) => Observable<T> {
     let entityConfig = CyiaHttpService.getEntityConfig(entity)
     throwIf(!entityConfig.entity, '未查找到实体')
-    //  let a=
     return (param?) => {
       return this.getData(entityConfig.entity)(param)
         .pipe(
@@ -273,7 +141,7 @@ export class CyiaHttpService {
   getData(entity: EntityConfig['entity']) {
     switch (entity.options.method) {
       case Source.request:
-        return (param: HttpRequestConfig) => this.sourceByrequest2(param, entity)
+        return (param: HttpRequestConfig) => this.sourceByrequest(param, entity)
       case Source.normal:
         return () => of(this.getEntityRepository(entity.entity)).pipe(take(1))
     }
@@ -292,27 +160,15 @@ export class CyiaHttpService {
       let inverse = relation.inverseFn()
       // let inverseValue = relation.inverseValueFn ? relation.inverseValueFn() : null
       let inverseEntityConfig = CyiaHttpService.getEntityConfig(inverse)
-      console.log(relation, i);
       switch (relation.name) {
         case RelationType.OneToOne:
-          //doc 获得纯数据,先从缓存列表中找,再从请求中找
-          let implementationResult = this.oneToOneImplementation(result, relation.propertyName, primaryKey, inverse)
-          //doc 如果没有值就说明已经处理了不需要下一步
-          if (!implementationResult) continue
-          //doc 如果没有匹配完全但是是普通的,也不会处理
-          if (inverseEntityConfig.entity.options.method == Source.normal) continue
-          let inverseData = await this.getData(inverseEntityConfig.entity)({
-            options: {
-              //todo 目前针对这三个参数,也可以更多,全部动态?
-              params: inverseEntityConfig.entity.relationOptions.params(implementationResult),
-              headers: inverseEntityConfig.entity.relationOptions.header(implementationResult),
-              body: inverseEntityConfig.entity.relationOptions.body(implementationResult)
-            }
-          } as HttpRequestConfig).toPromise()
-          implementationResult = this.oneToOneImplementation(implementationResult, relation.propertyName, primaryKey, inverse)
+          await this.oneToOneImplementation(result, primaryKey, relation, inverseEntityConfig)
           break;
         case RelationType.OneToMany:
           await this.oneToManyImplementation(result, primaryKey, relation, inverseEntityConfig)
+          break
+        case RelationType.ManyToOne:
+          await this.ManyToOneImplementation(result, primaryKey, relation, inverseEntityConfig)
           break
         default:
           break;
@@ -320,7 +176,17 @@ export class CyiaHttpService {
     }
     return result
   }
-
+  /**
+   * 需要找对应关系,但是不能直接传参使用这个方法
+   *
+   * @param {EntityConfig} entityConfig
+   * @param {*} implementationResult
+   * @returns
+   * @memberof CyiaHttpService
+   */
+  private async  getDataByRelation(entityConfig: EntityConfig, implementationResult) {
+    return this.getData(entityConfig.entity)(entityConfig.entity.relationOptions ? await entityConfig.entity.relationOptions(implementationResult) : {}).toPromise()
+  }
   /**
    * 一对一不是加在主键上,而是加在一对一关系上
    * 一对一关系实现
@@ -331,53 +197,91 @@ export class CyiaHttpService {
    * @param {*} inverseEntity 一对一实体
    * @memberof CyiaHttpService
    */
-  oneToOneImplementation(data: any, key: string, primaryKey: string, inverseEntity);
-  oneToOneImplementation<I>(data: any[], key: string, primaryKey: string, inverseEntity: Type<I>) {
-    let result = []
-    data = transform2Array(data)
-    data.forEach((item) => {
-      /**主键的值 */
-      let primaryValue = item[primaryKey];
-      let inverseEntityData = this.getEntityRepository(inverseEntity)
-      if (inverseEntityData[primaryValue]) {
-        item[key] = stronglyTyped(inverseEntityData[primaryValue], inverseEntity)
-      } else {
-        result.push(item)
-      }
-    })
-    return result.length ? result : null
+  async  oneToOneImplementation<I>(data: any[], primaryKey: string, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig) {
+    return this.generalRelationImplementation(data, primaryKey, targetRelation, inverseEntityConfig, (inverseMap) => (item, primaryValue) => {
+      if (inverseMap[primaryValue]) {
+        item[targetRelation.propertyName] = stronglyTyped(inverseMap[primaryValue], inverseEntityConfig.entity.entity)
+      } else
+        return true
+      return false
+    }, { relationMatchingMode: RelationMatchingMode.auto })
   }
-  // oneToManyImplementation();
+  /**
+   * 多对一, item的某个键值,等于另一个的主键
+   *
+   *
+   * @param {*} data 主数据
+   * @param {string} key 附加数据键
+   * @param {string} primaryKey 主键
+   * @param {*} inverseEntity 一对一实体
+   * @memberof CyiaHttpService
+   */
+  async  ManyToOneImplementation<I>(data: any[], primaryKey: string, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig) {
+    return this.generalRelationImplementation(data, primaryKey, targetRelation, inverseEntityConfig, (inverseMap) => (item, primaryValue) => {
+      if (inverseMap[item[targetRelation.propertyName]]) {
+        item[targetRelation.propertyName] = stronglyTyped(inverseMap[item[targetRelation.propertyName]], inverseEntityConfig.entity.entity)
+      } else
+        return true
+      return false
+    }, { relationMatchingMode: RelationMatchingMode.auto })
+  }
+  /**
+   * 查找匹配->如果没找到请求(相同)->继续匹配->不管找没找到都结束
+   *        -> 找到结束
+   * todo 一对多下,先从已请求的数据中查找可能不一定完全对应上
+   * todo 1.是否在查找不到继续请求,2.是否直接从请求中查找,3.先查找,查找不到再请求(一对多可能丢失)
+   * @template I
+   * @param {*} result
+   * @param {string} primaryKey
+   * @param {EntityConfig['relations'][0]} targetRelation
+   * @param {EntityConfig} inverseEntityConfig
+   * @memberof CyiaHttpService
+   */
   async oneToManyImplementation<I>(result, primaryKey: string, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig) {
-    let unFindList = []
-    // console.log(inverseEntityConfig);
-    let inverseInstanceList = stronglyTyped(Object.values(this.getEntityRepository(inverseEntityConfig.entity.entity)), inverseEntityConfig.entity.entity)
-    // console.log('实例列表', inverseInstanceList);
-    transform2Array(result)
-      .forEach((item) => {
-        let primaryValue = item[primaryKey]
-        let inverseInstance = inverseInstanceList.find((inverseInstance) => primaryValue == targetRelation.inverseValueFn(inverseInstance))
-        // console.log(inverseInstance);
-        if (inverseInstance) {
-          item[targetRelation.propertyName] = inverseInstance
-        } else {
-          unFindList.push(item)
-        }
-      })
-    if (!unFindList.length) return
-    // console.log('实例列表', inverseInstanceList, this.getEntityRepository(inverseEntityConfig.entity.entity), inverseEntityConfig.entity.entity);
-    await this.getData(inverseEntityConfig.entity)({}).toPromise()
-    inverseInstanceList = stronglyTyped(Object.values(this.getEntityRepository(inverseEntityConfig.entity.entity)), inverseEntityConfig.entity.entity)
-    unFindList
-      .forEach((item) => {
-        let primaryValue = item[primaryKey]
+    return this.generalRelationImplementation(result, primaryKey, targetRelation, inverseEntityConfig, (inverseMap) => {
+      let inverseInstanceList = stronglyTyped(Object.values(inverseMap), inverseEntityConfig.entity.entity)
+      return (item, primaryValue) => {
+        /**查找到的反向的实例 */
         let inverseInstance = inverseInstanceList.filter((inverseInstance) => primaryValue == targetRelation.inverseValueFn(inverseInstance))
         if (inverseInstance.length) {
-          item[targetRelation.propertyName] = inverseInstance
-        } else {
-          unFindList.push(item)
-        }
-      })
+          (item[targetRelation.propertyName] = inverseInstance)
+        } else return true
+        return false
+      }
+    }, { relationMatchingMode: RelationMatchingMode.auto })
+  }
+  async generalRelationImplementation(data, primaryKey, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig, relationFn: (...args) => (...args) => boolean, options: { relationMatchingMode?: RelationMatchingMode }) {
+    let unFindList = []
+    let inverseMap
+    let matchRelation = (mainList, fn: (...args) => boolean) => mainList.filter((item) => fn(item, item[primaryKey]))
+    if (options.relationMatchingMode == RelationMatchingMode.auto || options.relationMatchingMode == RelationMatchingMode.repositoryOnly) {
+      inverseMap = this.getEntityRepository(inverseEntityConfig.entity.entity)
+      /**反向实例列表 */
+      //doc 首次匹配
+      unFindList = matchRelation(transform2Array(data), relationFn(inverseMap))
+    }
+    if (!unFindList.length || options.relationMatchingMode == RelationMatchingMode.repositoryOnly) return
+    if (options.relationMatchingMode == RelationMatchingMode.requestOnly) unFindList = transform2Array(data)
+    if (options.relationMatchingMode == RelationMatchingMode.auto || options.relationMatchingMode == RelationMatchingMode.requestOnly) {
+      //doc 请求数据
+      await this.getDataByRelation(inverseEntityConfig, unFindList)
+      //doc 返回类型强类型化
+      inverseMap = this.getEntityRepository(inverseEntityConfig.entity.entity)
+      //doc 获得数据后二次匹配
+      matchRelation(transform2Array(unFindList), relationFn(inverseMap))
+    }
+  }
+  /**
+   * 对查找到的关系添加,未找到的作为返回值
+   *
+   * @param {any[]} mainList
+   * @param {*} primaryKey
+   * @param {Function} fn
+   * @returns
+   * @memberof CyiaHttpService
+   */
+  matchRelation(mainList: any[], primaryKey, fn: Function) {
+    return mainList.filter((item) => fn(item, item[primaryKey]))
   }
   /**
    * !实验
@@ -388,13 +292,14 @@ export class CyiaHttpService {
    * @returns
    * @memberof CyiaHttpService
    */
-  sourceByrequest2(params: HttpRequestConfig, defalutEntityArgs: RegisterEntityOption) {
+  sourceByrequest(params: HttpRequestConfig, defalutEntityArgs: RegisterEntityOption) {
+    console.log(params);
     /**类中设置的默认参数HttpRequestConfig */
     const defalutParams = defalutEntityArgs.options.request
     let method: HttpMethod = params.method || defalutParams.method
     let url = this.mergeUrlList(defalutParams.url, params.url)
     let options = Object.assign({}, params.options, defalutParams.options)
-    for (const key in options) options[key] = Object.assign({}, defalutParams.options ? defalutParams.options[key] : undefined, options ? params.options[key] : undefined)
+    for (const key in options) options[key] = Object.assign({}, defalutParams.options ? defalutParams.options[key] : undefined, params.options ? params.options[key] : undefined)
     return this.http.request(method, url, options).pipe(
       take(1),
       tap((res) => CyiaHttpService.savePlainData(res, defalutEntityArgs.entity))
@@ -440,7 +345,7 @@ export class CyiaHttpService {
         obj[item[entityConfig.primaryKey] || `${Math.random()}`] =
           Object.assign({}, item)
       })
-    console.log('保存实体', obj, entity);
+    // console.log('保存实体', obj, entity);
     Reflect.defineMetadata(REPOSITORY_SYMBOL, obj, entity)
   }
   /**
@@ -453,7 +358,6 @@ export class CyiaHttpService {
   static addToRepository(data) {
     data = transform2Array(data)
     let entity = Object.getPrototypeOf(data[0])
-    console.log(entity.constructor);
     CyiaHttpService.savePlainData(data, entity.constructor)
   }
 }
