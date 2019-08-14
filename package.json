@@ -6,6 +6,7 @@
     "start": "ng serve --port 4202",
     "build": "ng build",
     "test": "ng test",
+    "lib:test": "ng test lib",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "build:lib": "ng build lib --prod",
