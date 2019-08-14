@@ -1,4 +1,6 @@
 import { HttpRequestConfig } from "../../http/http.define";
+import { RelationMatchingMode } from "./relations.options";
+import { Type } from "@angular/core";
 
 export interface OneToOneMetaOption {
 
@@ -14,12 +16,18 @@ export class EntityOptions {
   method?: Source = Source.request;
   request?: HttpRequestConfig
   requestFlag?: RequestFlag = RequestFlag.new;
-  isArray?: boolean = false
+  dataPosition?: string[]
+  // isArray?: boolean = false
 }
+// export class EntityListOptions extends EntityOptions {
+//   isArray?: boolean = true
+// }
 export class RelationEntityOptions {
-  params?: (params) => any
-  body?: (params) => any
-  header?: (params) => any
+  // params?: (params) => any
+  // body?: (params) => any
+  // header?: (params) => any
+  request?: (result) => Promise<HttpRequestConfig> = async () => ({})
+  mode?: RelationMatchingMode = RelationMatchingMode.auto
 }
 
 // export interface Chain {
@@ -41,4 +49,9 @@ export enum RequestFlag {
 
 
      */append
+}
+
+export interface EntityColumnOption {
+  targetEntityFn: () => Type<any>
+  propertyName: string
 }

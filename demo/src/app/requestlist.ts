@@ -1,4 +1,4 @@
-import { RequestItem, HttpClientItemConfig, HttpClientItemConfigBase, Entity, OneToOne, PrimaryColumn, Source, ManyToOne } from 'cyia-ngx-common';
+import { RequestItem, HttpClientItemConfig, HttpClientItemConfigBase, Entity, OneToOne, PrimaryColumn, Source, ManyToOne, EntityColumn } from 'cyia-ngx-common';
 import { OneToMany } from 'cyia-ngx-common'
 export const requestList: RequestItem[] = [
   {
@@ -63,7 +63,13 @@ export class MainEntity {
     method: 'get'
   }
 }, {
-    params: (params) => ({ length: params.length })
+    request: async () => {
+      return {
+        options: {
+          params: { a: `1` }
+        }
+      }
+    }
   }
 )
 export class O2O1Entity extends MainEntity {
@@ -86,7 +92,8 @@ export class NormalEntity {
   request: {
     url: 'http://127.0.0.1:3000/onetomany',
     method: 'get',
-  }
+
+  },
 })
 export class OneToManyEntity {
   @ManyToOne(() => MainEntity, (type) => type.ret1)
@@ -95,4 +102,29 @@ export class OneToManyEntity {
   @PrimaryColumn()
   id
 }
+@Entity({
+  request: {
+    url: 'http://127.0.0.1:3000/multi',
+    method: 'get',
 
+  },
+})
+export class MultiEntity {
+  @EntityColumn(() => T1Entity)
+  t1
+  @EntityColumn(() => T2Entity)
+  t2
+
+}
+@Entity({ method: Source.normal })
+export class T1Entity {
+  t1p1
+  t1p2
+  @EntityColumn(() => T2Entity)
+  t2
+}
+@Entity({ method: Source.normal })
+export class T2Entity {
+  t2p1
+  t2p2
+}

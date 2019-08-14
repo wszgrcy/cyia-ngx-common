@@ -4,6 +4,6 @@ import { HttpRequestConfig } from "../../http/http.define";
 export interface RegisterEntityOption {
   entity?: Type<any>
   options?: EntityOptions
-  relationOptions?: (result) => Promise<HttpRequestConfig>
+  relationOptions?:RelationEntityOptions
 
 }
