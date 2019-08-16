@@ -44,8 +44,8 @@ export class CyiaHttpService {
   ) { }
 
   /**
-   *传入请求
-   *
+   * 传入请求
+   * @deprecated 不推荐使用
    * @param  httpRequestConfig
    * @returns
    * @memberof CyiaHttp
@@ -218,7 +218,7 @@ export class CyiaHttpService {
   private async  getDataByRelation(entityConfig: EntityConfig, implementationResult) {
     return this.getData(entityConfig.entity)(await entityConfig.entity.relationOptions.request(implementationResult))
       .pipe(
-        tap((val) => { console.log('关系数据', val); }),
+        // tap((val) => { console.log('关系数据', val); }),
         switchMap((res) => from(this.entityColumnImplementation(res, entityConfig)))
       )
       .toPromise()
