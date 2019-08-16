@@ -7,9 +7,9 @@ import { CyiaHttpService } from './http.service';
 // import { ManyToOne } from '../decorator/entity/property/many-to-one.decorator';
 // import { OneToMany } from '../decorator/entity/property/one-to-many.decorator';
 // import { OneToOne } from '../decorator/entity/property/one-to-one.decorator';
-import "../test/test-one-to-one";
-import "../test/test-many-to-one";
-import '../test/test-one-to-many'
+import "../test/mock-one-to-one";
+import "../test/mock-many-to-one";
+import '../test/mock-one-to-many'
 import { take, timeout } from 'rxjs/operators';
 import { NgModule } from '@angular/core';
 // import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
