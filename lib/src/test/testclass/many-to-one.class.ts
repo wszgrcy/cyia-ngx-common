@@ -15,3 +15,16 @@ export class Many2OneOnlyEntity {
   p2: Many2OneP2Entity
 
 }
+@Entity({
+  request: {
+    url: 'http://127.0.0.1:3000/mainwithmanytoonemulti',
+    method: 'get',
+  }
+})
+export class Many2OneMultiEntity {
+  @PrimaryColumn()
+  id
+  @ManyToOne(() => Many2OneP2Entity, (type) => type.id)
+  p2: Many2OneP2Entity
+
+}

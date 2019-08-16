@@ -10,4 +10,11 @@ export class OneToManyOnly {
   @OneToMany(() => OneToManyP2, (type) => type.mainid)
   p2: OneToManyP2[]
 }
+@Entity({ request: { url: 'http://127.0.0.1:3000/mainwithonetomanymulti' } })
+export class OneToManyMultiEntity {
+  @PrimaryColumn()
+  id
+  @OneToMany(() => OneToManyP2, (type) => type.mainid)
+  p2: OneToManyP2[]
+}
 
