@@ -1,4 +1,4 @@
-import { Injectable, Inject, Type } from '@angular/core';
+import { Injectable, Inject, Type, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { REQUEST_LIST } from './http.token';
 import { RequestItem, HttpRequestItem, HttpUrl, HttpMethod, HttpRequestConfig } from './http.define';
@@ -39,8 +39,8 @@ export class CyiaHttpService {
     CyiaHttpService.entityList.push(options)
   }
   constructor(
-    @Inject(REQUEST_LIST) private requestList: RequestItem[],
-    private http: HttpClient
+    @Optional() @Inject(REQUEST_LIST) private requestList: RequestItem[],
+    public http: HttpClient
   ) { }
 
   /**
@@ -268,12 +268,11 @@ export class CyiaHttpService {
    * @memberof CyiaHttpService
    */
   async oneToManyImplementation<I>(result, primaryKey: string, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig) {
-
     return this.generalRelationImplementation(result, primaryKey, targetRelation, inverseEntityConfig, (inverseMap) => {
       let inverseInstanceList = stronglyTyped(Object.values(inverseMap), inverseEntityConfig.entity.entity)
       return (item, primaryValue) => {
         /**查找到的反向的实例 */
-        let inverseInstance = inverseInstanceList.filter((inverseInstance) => primaryValue == targetRelation.inverseValueFn(inverseInstance))
+        let inverseInstance = inverseInstanceList.filter((inverseInstance) => item[targetRelation.propertyName] == targetRelation.inverseValueFn(inverseInstance))
         if (inverseInstance.length) {
           (item[targetRelation.propertyName] = inverseInstance)
         } else return true

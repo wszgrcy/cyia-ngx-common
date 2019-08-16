@@ -14,7 +14,7 @@ export interface OneToOneMetaOption {
  */
 export class EntityOptions {
   method?: Source = Source.request;
-  request?: HttpRequestConfig
+  request?: HttpRequestConfig = new HttpRequestConfig()
   requestFlag?: RequestFlag = RequestFlag.new;
   dataPosition?: string[]
   // isArray?: boolean = false
