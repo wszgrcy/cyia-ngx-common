@@ -10,7 +10,7 @@ export class NoRelationStructEntity {
   @PrimaryColumn()
   id
   @EntityColumn(() => ColumnP2Entity)
-  data:ColumnP2Entity
+  data: ColumnP2Entity
   code
 }
 @Entity({
@@ -71,4 +71,27 @@ export class OntoOne2Entity {
   @PrimaryColumn()
   id
   data
+}
+
+@Entity({ request: { url: 'http://127.0.0.1:3000/struct1' } })
+export class SWithSEntity {
+  @PrimaryColumn()
+  id
+  data
+  code
+  @OneToOne(() => Struct2Entity)
+  struct2: Struct2Entity
+}
+@Entity({ request: { url: 'http://127.0.0.1:3000/struct2' } })
+export class Struct2Entity {
+  @PrimaryColumn()
+  id
+  @EntityColumn(() => Struct2DataEntity)
+  data: Struct2DataEntity
+  code
+}
+@Entity({ method: Source.normal })
+export class Struct2DataEntity {
+  p1
+  email
 }

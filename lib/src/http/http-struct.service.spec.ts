@@ -9,7 +9,7 @@ import { Many2OneOnlyEntity as Many2OneSingleEntity, Many2OneMultiEntity } from 
 import { One2OneOnlyEntity, One2OneMultiEntity } from '../test/testclass/one-to-one.class';
 import { One21P2Entity, One21P3Entity, Many2OneP2Entity } from '../test/testclass/base.class';
 import { OneTOneChainEntity, OneTOneChainP2Entity, OneTOneChainP3Entity } from '../test/testclass/chain.class';
-import { NoRelationStructEntity, RelationStructEntity, RColumnP2Entity, OntoOne1Entity, ColumnP2Entity } from '../test/testclass/struct.class';
+import { NoRelationStructEntity, RelationStructEntity, RColumnP2Entity, OntoOne1Entity, ColumnP2Entity, SWithSEntity, Struct2Entity, Struct2DataEntity } from '../test/testclass/struct.class';
 import '../test/mock-struct'
 @NgModule({
   declarations: [],
@@ -41,8 +41,18 @@ describe('结构测试', () => {
   })
   it('有关系多层次', async (done) => {
     let res = await struct(RelationStructEntity)
-    console.log('有关系', res);
+    // console.log('有关系', res);
     expect(res.onetoone instanceof OntoOne1Entity).toBe(true)
+    return done()
+  })
+  //todo 多层次下关联多层次
+  it('关联多层次的多层次结构', async (done) => {
+    let res = await struct(SWithSEntity)
+    console.log('有关系(多层次)', res);
+    expect(res.struct2 instanceof Struct2Entity).toBe(true)
+    expect(res.struct2.data instanceof Struct2DataEntity).toBe(true)
+
+    // expect(res.onetoone instanceof OntoOne1Entity).toBe(true)
     return done()
   })
 

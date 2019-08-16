@@ -216,7 +216,12 @@ export class CyiaHttpService {
    * @memberof CyiaHttpService
    */
   private async  getDataByRelation(entityConfig: EntityConfig, implementationResult) {
-    return this.getData(entityConfig.entity)(await entityConfig.entity.relationOptions.request(implementationResult)).toPromise()
+    return this.getData(entityConfig.entity)(await entityConfig.entity.relationOptions.request(implementationResult))
+      .pipe(
+        tap((val) => { console.log('关系数据', val); }),
+        switchMap((res) => from(this.entityColumnImplementation(res, entityConfig)))
+      )
+      .toPromise()
   }
   /**
    * 一对一不是加在主键上,而是加在一对一关系上
@@ -235,7 +240,7 @@ export class CyiaHttpService {
       } else
         return true
       return false
-    }, { relationMatchingMode: inverseEntityConfig.entity.relationOptions.mode })
+    }, { mod: inverseEntityConfig.entity.relationOptions.mode })
   }
   /**
    * 多对一, item的某个键值,等于另一个的主键
@@ -254,12 +259,14 @@ export class CyiaHttpService {
       } else
         return true
       return false
-    }, { relationMatchingMode: inverseEntityConfig.entity.relationOptions.mode })
+    }, { mod: inverseEntityConfig.entity.relationOptions.mode })
   }
   /**
    *
    *
-   * todo 1.是否在查找不到继续请求,2.是否直接从请求中查找,3.先查找,查找不到再请求(一对多可能丢失)
+   * 1. 是否在查找不到继续请求,
+   * 2. 是否直接从请求中查找,
+   * 3. 先查找,查找不到再请求(一对多可能丢失)
    * @template I
    * @param {*} result
    * @param {string} primaryKey
@@ -278,41 +285,45 @@ export class CyiaHttpService {
         } else return true
         return false
       }
-    }, { relationMatchingMode: inverseEntityConfig.entity.relationOptions.mode })
+    }, { mod: inverseEntityConfig.entity.relationOptions.mode })
   }
-  async generalRelationImplementation(data, primaryKey, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig, relationFn: (...args) => (...args) => boolean, options: { relationMatchingMode?: RelationMatchingMode }) {
+  /**
+   * 通用关系实现,先查找仓库->匹配函数->如果没有,请求->匹配函数
+   *
+   * @param {*} data 需要关联的数据
+   * @param {*} primaryKey 主键
+   * @param {EntityConfig['relations'][0]} targetRelation 关联配置
+   * @param {EntityConfig} inverseEntityConfig 被查找一方的所有实体配置
+   * @param {(...args) => (...args) => boolean} relationFn 不同关联策略(一对一,一对多,多对一)的匹配函数
+   * @param {{ relationMatchingMode?: RelationMatchingMode }} options  目前保存请求模式(只请求仓库,只请求url,自动)
+   * @memberof CyiaHttpService
+   */
+  async generalRelationImplementation(data, primaryKey, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig, relationFn: (...args) => (...args) => boolean, options: { mod?: RelationMatchingMode }) {
     let unFindList = []
-    let inverseMap
+    /**反向实例对象 */
+    let inverseMap: { [name: string]: any }
     let matchRelation = (mainList, fn: (...args) => boolean) => mainList.filter((item) => fn(item, item[primaryKey]))
-    if (options.relationMatchingMode == RelationMatchingMode.auto || options.relationMatchingMode == RelationMatchingMode.repositoryOnly) {
+    if (options.mod == RelationMatchingMode.auto || options.mod == RelationMatchingMode.repositoryOnly) {
       inverseMap = this.getEntityRepository(inverseEntityConfig.entity.entity)
-      /**反向实例列表 */
       //doc 首次匹配
       unFindList = matchRelation(transform2Array(data), relationFn(inverseMap))
     }
-    if (!unFindList.length || options.relationMatchingMode == RelationMatchingMode.repositoryOnly) return
-    if (options.relationMatchingMode == RelationMatchingMode.requestOnly) unFindList = transform2Array(data)
-    if (options.relationMatchingMode == RelationMatchingMode.auto || options.relationMatchingMode == RelationMatchingMode.requestOnly) {
+    if (!unFindList.length || options.mod == RelationMatchingMode.repositoryOnly) return
+    if (options.mod == RelationMatchingMode.requestOnly) unFindList = transform2Array(data)
+    if (options.mod == RelationMatchingMode.auto || options.mod == RelationMatchingMode.requestOnly) {
       //doc 请求数据
-      await this.getDataByRelation(inverseEntityConfig, unFindList)
+      inverseMap = {}
+      transform2Array(await this.getDataByRelation(inverseEntityConfig, unFindList)).forEach((item) => {
+        inverseMap[item[inverseEntityConfig.primaryKey || `${Math.random()}`]] = item
+      })
+
       //doc 返回类型强类型化
-      inverseMap = this.getEntityRepository(inverseEntityConfig.entity.entity)
+      // inverseMap = this.getEntityRepository(inverseEntityConfig.entity.entity)
       //doc 获得数据后二次匹配
       matchRelation(transform2Array(unFindList), relationFn(inverseMap))
     }
   }
-  /**
-   * 对查找到的关系添加,未找到的作为返回值
-   *
-   * @param {any[]} mainList
-   * @param {*} primaryKey
-   * @param {Function} fn
-   * @returns
-   * @memberof CyiaHttpService
-   */
-  matchRelation(mainList: any[], primaryKey, fn: Function) {
-    return mainList.filter((item) => fn(item, item[primaryKey]))
-  }
+
   /**
    * 通过请求获得数据
    *
