@@ -27,7 +27,12 @@ export class ColumnP2Entity {
 export class ColumnP3Entity {
   p3
 }
-/**机构式返回的情况下,进行不同层级下的关联 */
+/**
+ * 结构化返回的情况下,进行不同层级下的关联
+ * 子实体中关联的关系需要正确返回
+ * @export
+ * @class RelationStructEntity
+ */
 @Entity({ request: { url: 'http://127.0.0.1:3000/struct1' } })
 export class RelationStructEntity {
   @PrimaryColumn()
@@ -73,8 +78,14 @@ export class OntoOne2Entity {
   data
 }
 
+/**
+ * 关联结构化一对一
+ *
+ * @export
+ * @class Structure121WithStructureEntity
+ */
 @Entity({ request: { url: 'http://127.0.0.1:3000/struct1' } })
-export class SWithSEntity {
+export class Relate121WithStructureEntity {
   @PrimaryColumn()
   id
   data
@@ -90,7 +101,7 @@ export class Struct2Entity {
   data: Struct2DataEntity
   code
 }
-@Entity({ method: Source.normal })
+@Entity({ method: Source.structure })
 export class Struct2DataEntity {
   p1
   email

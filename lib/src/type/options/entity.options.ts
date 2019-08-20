@@ -34,7 +34,7 @@ export class RelationEntityOptions {
 
 // }
 export enum Source {
-  request, normal
+  request, normal, /**结构化 */structure
 }
 /**
  *

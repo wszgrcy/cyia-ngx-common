@@ -26,8 +26,9 @@ import { from } from 'rxjs';
  * 5. 其他装饰器可以继承,主键会被二次覆盖(不写的话就是继承的)
  * 6. 请求头/查询字符串参数是对象类型,body一般是对象类型,但是也有特异型
  * 7. 多层级结构化,传入的数据不一定只是一个实体,可能实体中嵌套实体,需要对每个进行判断(实体属性装饰器)
- * todo 对数组操作后返回是否仍然是一个顺序
+ *  对数组操作后返回是否仍然是一个顺序
  * 从仓库中获取,转换为数组
+ *
  */
 
 @Injectable()
@@ -374,7 +375,7 @@ export class CyiaHttpService {
   }
   /**
    * 保存纯数据
-   *
+   * 只有实体是手动添加(normal)或请求(request)才会保存
    * @private
    * @template T
    * @param {*} data 数据
@@ -382,16 +383,18 @@ export class CyiaHttpService {
    * @memberof CyiaHttpService
    */
   static savePlainData<T>(data, entity: Type<T>) {
-    data = transform2Array(data)
-    let obj = Reflect.getOwnMetadata(REPOSITORY_SYMBOL, entity) || {};
     let entityConfig = CyiaHttpService.getEntityConfig(entity);
-    (<any[]>data)
-      // .filter((item) => item[entityConfig.primaryKey] != undefined)
-      .forEach((item) => {
-        obj[item[entityConfig.primaryKey] || `${Math.random()}`] =
-          Object.assign({}, item)
-      })
-    Reflect.defineMetadata(REPOSITORY_SYMBOL, obj, entity)
+    if (entityConfig.entity.options.method == Source.normal || entityConfig.entity.options.method == Source.request) {
+      data = transform2Array(data)
+      let obj = Reflect.getOwnMetadata(REPOSITORY_SYMBOL, entity) || {};
+      (<any[]>data)
+        // .filter((item) => item[entityConfig.primaryKey] != undefined)
+        .forEach((item) => {
+          obj[item[entityConfig.primaryKey] || `${Math.random()}`] =
+            Object.assign({}, item)
+        })
+      Reflect.defineMetadata(REPOSITORY_SYMBOL, obj, entity)
+    }
   }
   /**
    * normal模式下使用,手动添加实例
