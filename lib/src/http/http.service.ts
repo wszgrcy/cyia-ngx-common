@@ -30,7 +30,14 @@ import { from } from 'rxjs';
  * 从仓库中获取,转换为数组
  *
  */
-
+/**
+ * 目前body传参是按照json 格式来的
+ * 对应xwwurlencode,不兼容body的对象,要么接受传数据,要么自己格式化字符串
+ * 对应formdata, 也是自行传入表单
+ * 对应graphql, 未测试,应该也不能合并
+ * 对应纯数据,没有任何结构,可能是文件,不兼容
+ * ?暂时,对body采用替换方式.
+ */
 @Injectable()
 export class CyiaHttpService {
   static relations: RelationOption[] = []
@@ -143,7 +150,7 @@ export class CyiaHttpService {
         )
     }
   }
-  getEntity<T>(entity: Type<T>): (param: HttpRequestConfig) => Observable<T> {
+  getEntity<T>(entity: Type<T>): (param?: HttpRequestConfig) => Observable<T> {
     return this._getEntity(entity, (entityConfig, param) => this.getData(entityConfig.entity)(param))
   }
   getEntityList<T>(entity: Type<T>): (param: HttpRequestConfig) => Observable<T[]> {
@@ -341,6 +348,8 @@ export class CyiaHttpService {
     let url = this.mergeUrlList(defalutParams.url, params.url)
     let options = Object.assign({}, params.options, defalutParams.options)
     for (const key in options) options[key] = Object.assign({}, defalutParams.options ? defalutParams.options[key] : undefined, params.options ? params.options[key] : undefined)
+    //doc 多种发送数据结构无法一一兼容,只能暂时先指定替换(后期可能会通过函数方式自行合并)
+    options.body = params.options ? params.options.body : (defalutParams.options ? defalutParams.options.body : undefined);
     return this.http.request(method, url, options).pipe(
       take(1),
       tap((res) => CyiaHttpService.savePlainData(res, defalutEntityArgs.entity)),

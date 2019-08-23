@@ -33,3 +33,24 @@ export class One2OneMultiEntity {
   @OneToOne(() => One21P3Entity)
   p3
 }
+
+@Entity({
+  request: {
+    url: 'http://127.0.0.1:3000/mainwithonetoone',
+    method: 'post',
+    options: {
+      body: { a: '1', c: 222 },
+      headers: {
+        test1: 'ceshi'
+      }
+    }
+  }
+})
+export class One2OneOnlyTestReqEntity {
+  @PrimaryColumn()
+  id
+  @OneToOne(() => One21P2Entity)
+  p2
+  @OneToOne(() => One21P3Entity)
+  p3
+}
