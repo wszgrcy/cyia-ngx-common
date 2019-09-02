@@ -31,12 +31,7 @@ import { from } from 'rxjs';
  *
  */
 /**
- * 目前body传参是按照json 格式来的
- * 对应xwwurlencode,不兼容body的对象,要么接受传数据,要么自己格式化字符串
- * 对应formdata, 也是自行传入表单
- * 对应graphql, 未测试,应该也不能合并
- * 对应纯数据,没有任何结构,可能是文件,不兼容
- * ?暂时,对body采用替换方式.
+ * doc 对于body,直接替换,不搞其他方法,因为不同原因太过复杂,不考虑 
  */
 @Injectable()
 export class CyiaHttpService {
@@ -335,9 +330,8 @@ export class CyiaHttpService {
   /**
    * 通过请求获得数据
    *
-   * @param {HttpRequestConfig} params
-   * @param {RegisterEntityOption} defalutEntityArgs
-   * @param {boolean} [active=false]
+   * @param {HttpRequestConfig} params 请求时的
+   * @param {RegisterEntityOption} defalutEntityArgs 默认类中的
    * @returns
    * @memberof CyiaHttpService
    */
@@ -346,17 +340,12 @@ export class CyiaHttpService {
     const defalutParams = defalutEntityArgs.options.request
     let method: HttpMethod = params.method || defalutParams.method
     let url = this.mergeUrlList(defalutParams.url, params.url)
-    let options = Object.assign({}, params.options, defalutParams.options)
-    for (const key in options) options[key] = Object.assign({}, defalutParams.options ? defalutParams.options[key] : undefined, params.options ? params.options[key] : undefined)
-    //doc 多种发送数据结构无法一一兼容,只能暂时先指定替换(后期可能会通过函数方式自行合并)
-    options.body = params.options ? params.options.body : (defalutParams.options ? defalutParams.options.body : undefined);
+    /**只合并一次 */
+    let options = Object.assign({}, defalutParams.options || undefined, params.options || undefined)
     return this.http.request(method, url, options).pipe(
       take(1),
       tap((res) => CyiaHttpService.savePlainData(res, defalutEntityArgs.entity)),
-      map((item) => {
-        if (!defalutEntityArgs.options.dataPosition || !defalutEntityArgs.options.dataPosition.length) return item
 
-      })
     )
   }
   private sourceByRepository(entity: RegisterEntityOption) {
