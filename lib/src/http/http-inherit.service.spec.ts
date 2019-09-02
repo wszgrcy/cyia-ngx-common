@@ -5,6 +5,7 @@ import { NgModule, Type } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { OriginEntity, InheritEntity } from '../test/testclass/inherit.class';
 import '../test/mock-one-to-one';
+import { One21P2Entity } from '../test/testclass/base.class';
 @NgModule({
   declarations: [],
   imports: [HttpClientModule],
@@ -13,7 +14,7 @@ import '../test/mock-one-to-one';
 class TestHttpModule {
 
 }
-fdescribe('类继承属性测试', () => {
+describe('类继承属性测试', () => {
   let service: CyiaHttpService
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -22,9 +23,11 @@ fdescribe('类继承属性测试', () => {
     service = TestBed.get(CyiaHttpService);
   });
 
-  fit('继承', (done) => {
+  it('继承', (done) => {
     service.getEntity(InheritEntity)().subscribe((val) => {
       console.log('返回', val);
+      expect(!!val).toBe(true)
+      expect(val.p2 instanceof One21P2Entity).toEqual(true)
       done();
     })
   }, 1000)

@@ -24,10 +24,18 @@ export class Many2OneP2Entity {
 
 @Entity({
   request: {
-    url: 'http://127.0.0.1:3000/onetoonep2',
+    // url: 'http://127.0.0.1:3000/onetoonep2',
     method: 'get',
   }
-})
+}, {
+    request: async (result) => {
+      console.log(result);
+      console.log('通过被动请求返回的url,不是预设');
+      return {
+        url: 'http://127.0.0.1:3000/onetoonep2'
+      }
+    }
+  })
 export class One21P2Entity {
   @PrimaryColumn()
   id
