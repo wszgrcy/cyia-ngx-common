@@ -133,15 +133,18 @@ describe('请求参数测试', () => {
     http.post('http://127.0.0.1:3000/aaa', { p1: 1, p2: 2 }, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    }).subscribe((val) => {
-      console.log('原始返回值', val);
-      done()
+      }, observe: 'response'
     })
+      // .pipe(take(1))
+      .subscribe((val) => {
+        console.log('原始返回值', val);
+        expect(val).toBeTruthy()
+        done()
+      })
     let req = httpTestingController.expectOne('http://127.0.0.1:3000/aaa');
     console.log('查看请求参数', req);
-    req.request
-    req.event(new HttpResponse({ body: { c: '返回' }, status: 200 }))
+    // req.request
+    req.event(new HttpResponse({ body: { c: '返回' }, status: 404 }))
     req.flush({ flush: '用这个返回' })
 
     console.log('原始', req);
