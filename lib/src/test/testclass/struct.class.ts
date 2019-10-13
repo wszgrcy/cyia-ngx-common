@@ -14,6 +14,36 @@ export class NoRelationStructEntity {
   code
 }
 @Entity({
+  request: {
+    url: 'http://127.0.0.1:3000/structlist2'
+  }
+})
+export class StructListEntity {
+  @PrimaryColumn()
+  id
+  @EntityColumn(() => ColumnItemEntity)
+  data: ColumnItemEntity[]
+
+}
+@Entity({
+  request: {
+    url: 'http://127.0.0.1:3000/structlist1'
+  }
+})
+export class StructList1Entity {
+  @PrimaryColumn()
+  id
+  @EntityColumn(() => ColumnItemEntity)
+  data: ColumnItemEntity[]
+
+}
+@Entity({
+  method: Source.normal
+})
+export class ColumnItemEntity {
+  data
+}
+@Entity({
   method: Source.normal
 })
 export class ColumnP2Entity {

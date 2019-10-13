@@ -1,6 +1,6 @@
 {
   "name": "cyia-ngx-common",
-  "version": "1.2.1",
+  "version": "2.0.2",
   "description": "cyia公共模块",
   "author": {
     "name": "cyia",
@@ -12,8 +12,8 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@angular/common": ">=6.0.0",
-    "@angular/core": ">=6.0.0",
+    "@angular/common": ">=8.0.0",
+    "@angular/core": ">=8.0.0",
     "rxjs": ">=6.2.2",
     "reflect-metadata": "0.1.13"
   }

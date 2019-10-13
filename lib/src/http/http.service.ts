@@ -3,10 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { REQUEST_LIST } from './http.token';
 import { RequestItem, HttpRequestItem, HttpUrl, HttpMethod, HttpRequestConfig } from './http.define';
 import { _deepCloneObject } from '../object/deepassign';
-import { Observable, Subject, of } from 'rxjs';
-import { HttpClientItemConfig, HttpClientItemConfigBase } from './http.class';
+import { Observable, of } from 'rxjs';
 import { take, map, tap, switchMap } from "rxjs/operators";
-// import { CloneParam } from '../decorator/cloneParam.decorator';
 import { RegisterEntityOption } from "../type/options/register-entity.options";
 import { throwIf } from '../util/throw-if';
 import { stronglyTyped } from '../util/strongly-typed';
@@ -113,8 +111,6 @@ export class CyiaHttpService {
   /**
    * url路径合并
    *
-   * @param {...string[]} list
-   * @returns
    * @memberof CyiaHttpService
    */
   mergeUrlList(...list: string[]) {
@@ -130,7 +126,17 @@ export class CyiaHttpService {
       }, '')
   }
 
-  private _getEntity(entity, fn: (...args) => Observable<any>) {
+  /**
+   *
+   *
+   * @author cyia
+   * @date 2019-10-13
+   *
+   * @param entity 定义的实体
+   * @param fn 获得数据的函数
+   * @returns
+   */
+  private _getEntity<T = any>(entity: Type<T>, fn: (...args) => Observable<any>) {
     let entityConfig = CyiaHttpService.getEntityConfig(entity)
     throwIf(!entityConfig.entity, '未查找到实体')
     return (param?) => {
@@ -162,31 +168,34 @@ export class CyiaHttpService {
   /**
    * 对是实体属性的字段实现
    *
-   * @private
-   * @param {*} data 传入值可能为对象,或数组
-   * @param {EntityConfig} entityConfig
-   * @memberof CyiaHttpService
+   * @author cyia
+   * @date 2019-10-13
+   *
+   * @param data 需要结构化的数据
+   * @param entityConfig
+   * @returns
    */
   private async entityColumnImplementation(data, entityConfig: EntityConfig) {
-    let { entityColumns } = entityConfig
-    let dataList = transform2Array(data)
+    let {/**实体列配置 */ entityColumns } = entityConfig
+    const dataList = transform2Array(data)
     for (let i = 0; i < entityColumns.length; i++) {
       const entityColumn = entityColumns[i];
-      let result = await this._getEntity(entityColumn.targetEntityFn(), () => of(dataList.map((item) => item[entityColumn.propertyName])))().toPromise()
-      if (data instanceof Array) {
-        data.forEach((item, j) => {
-          item[entityColumn.propertyName] = result[j]
-        });
-      } else data[entityColumn.propertyName] = result[0]
+      for (let j = 0; j < dataList.length; j++) {
+        const dataItem = dataList[j];
+        /**需要结构化的源数据 */
+        let entityColumnRaw = dataItem[entityColumn.propertyName];
+        /**结构化返回的数据 */
+        let result = await this._getEntity(entityColumn.targetEntityFn(), () => of(entityColumnRaw))().toPromise()
+        if (data instanceof Array) {
+          data[j][entityColumn.propertyName] = result
+        } else data[entityColumn.propertyName] = result
+      }
     }
     return data
   }
   /**
    * 关联实现
    * todo 使用返回数据查找剩余
-   * @param {*} result
-   * @param {EntityConfig['relations']} relations
-   * @param {EntityConfig['primaryKey']} primaryKey
    * @memberof CyiaHttpService
    */
   private async relationsImplementation(result, relations: EntityConfig['relations'], primaryKey: EntityConfig['primaryKey']) {
@@ -213,9 +222,6 @@ export class CyiaHttpService {
   /**
    * 需要找对应关系,但是不能直接传参使用这个方法
    *
-   * @param {EntityConfig} entityConfig
-   * @param {*} implementationResult
-   * @returns
    * @memberof CyiaHttpService
    */
   private async  getDataByRelation(entityConfig: EntityConfig, implementationResult) {
@@ -230,10 +236,6 @@ export class CyiaHttpService {
    * 一对一不是加在主键上,而是加在一对一关系上
    * 一对一关系实现
    * 引用改变
-   * @param {*} data 主数据
-   * @param {string} key 附加数据键
-   * @param {string} primaryKey 主键
-   * @param {*} inverseEntity 一对一实体
    * @memberof CyiaHttpService
    */
   async  oneToOneImplementation<I>(data, primaryKey: string, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig) {
@@ -249,10 +251,6 @@ export class CyiaHttpService {
    * 多对一, item的某个键值,等于另一个的主键
    *
    *
-   * @param {*} data 主数据
-   * @param {string} key 附加数据键
-   * @param {string} primaryKey 主键
-   * @param {*} inverseEntity 一对一实体
    * @memberof CyiaHttpService
    */
   async  ManyToOneImplementation<I>(data: any[], primaryKey: string, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig) {
@@ -271,10 +269,6 @@ export class CyiaHttpService {
    * 2. 是否直接从请求中查找,
    * 3. 先查找,查找不到再请求(一对多可能丢失)
    * @template I
-   * @param {*} result
-   * @param {string} primaryKey
-   * @param {EntityConfig['relations'][0]} targetRelation
-   * @param {EntityConfig} inverseEntityConfig
    * @memberof CyiaHttpService
    */
   async oneToManyImplementation<I>(result, primaryKey: string, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig) {
@@ -292,13 +286,7 @@ export class CyiaHttpService {
   }
   /**
    * 通用关系实现,先查找仓库->匹配函数->如果没有,请求->匹配函数
-   *
-   * @param {*} data 需要关联的数据
-   * @param {*} primaryKey 主键
-   * @param {EntityConfig['relations'][0]} targetRelation 关联配置
-   * @param {EntityConfig} inverseEntityConfig 被查找一方的所有实体配置
-   * @param {(...args) => (...args) => boolean} relationFn 不同关联策略(一对一,一对多,多对一)的匹配函数
-   * @param {{ relationMatchingMode?: RelationMatchingMode }} options  目前保存请求模式(只请求仓库,只请求url,自动)
+   *(只请求仓库,只请求url,自动)
    * @memberof CyiaHttpService
    */
   async generalRelationImplementation(data, primaryKey, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig, relationFn: (...args) => (...args) => boolean, options: { mod?: RelationMatchingMode }) {
@@ -330,9 +318,6 @@ export class CyiaHttpService {
   /**
    * 通过请求获得数据
    *
-   * @param {HttpRequestConfig} params 请求时的
-   * @param {RegisterEntityOption} defalutEntityArgs 默认类中的
-   * @returns
    * @memberof CyiaHttpService
    */
   private sourceByrequest(params: HttpRequestConfig, defalutEntityArgs: RegisterEntityOption) {
@@ -354,10 +339,8 @@ export class CyiaHttpService {
   /**
    * 获得实体的一些配置
    *
-   * @private
+   *
    * @template T
-   * @param {Type<T>} entity
-   * @returns {EntityConfig}
    * @memberof CyiaHttpService
    */
   static getEntityConfig<T>(entity: Type<T>): EntityConfig {
@@ -374,10 +357,8 @@ export class CyiaHttpService {
   /**
    * 保存纯数据
    * 只有实体是手动添加(normal)或请求(request)才会保存
-   * @private
+   *
    * @template T
-   * @param {*} data 数据
-   * @param {Type<T>} entity 实体
    * @memberof CyiaHttpService
    */
   static savePlainData<T>(data, entity: Type<T>) {
@@ -397,8 +378,6 @@ export class CyiaHttpService {
   /**
    * normal模式下使用,手动添加实例
    *
-   * @static
-   * @param {*} data
    * @memberof CyiaHttpService
    */
   static addToRepository(data) {
