@@ -8,8 +8,6 @@ import { HttpRequestConfig } from "../../http/http.define";
  * todo childentity
  *
  * @export
- * @param {EntityOptions} options
- * @returns
  */
 export function Entity(options: EntityOptions, relationOptions?: RelationEntityOptions) {
   return function <T extends { new(...args: any[]): {} }>(constructor: T) {

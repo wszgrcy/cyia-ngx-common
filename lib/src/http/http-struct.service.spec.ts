@@ -4,12 +4,8 @@ import { take, timeout } from 'rxjs/operators';
 import { NgModule, Type } from '@angular/core';
 // import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpClientModule } from '@angular/common/http';
-import { OneToManyOnly as OneToManySingleEntity, OneToManyMultiEntity } from '../test/testclass/one-to-many.class';
-import { Many2OneOnlyEntity as Many2OneSingleEntity, Many2OneMultiEntity } from '../test/testclass/many-to-one.class';
-import { One2OneOnlyEntity, One2OneMultiEntity } from '../test/testclass/one-to-one.class';
-import { One21P2Entity, One21P3Entity, Many2OneP2Entity } from '../test/testclass/base.class';
-import { OneTOneChainEntity, OneTOneChainP2Entity, OneTOneChainP3Entity } from '../test/testclass/chain.class';
-import { NoRelationStructEntity, RelationStructEntity, RColumnP2Entity, OntoOne1Entity, ColumnP2Entity, Relate121WithStructureEntity, Struct2Entity, Struct2DataEntity } from '../test/testclass/struct.class';
+
+import { NoRelationStructEntity, RelationStructEntity, RColumnP2Entity, OntoOne1Entity, ColumnP2Entity, Relate121WithStructureEntity, Struct2Entity, Struct2DataEntity, StructListEntity, ColumnItemEntity, StructList1Entity } from '../test/testclass/struct.class';
 import '../test/mock-struct'
 @NgModule({
   declarations: [],
@@ -37,6 +33,18 @@ describe('结构测试', () => {
     let res = await struct(NoRelationStructEntity)
     console.log(res);
     expect(res.data instanceof ColumnP2Entity).toBe(true)
+    return done()
+  })
+  it('结构化数组2', async (done) => {
+    let res = await struct(StructListEntity)
+    expect(res.data instanceof Array).toBe(true)
+    expect(res.data[0] instanceof ColumnItemEntity).toBe(true)
+    return done()
+  })
+  it('结构化数组1', async (done) => {
+    let res = await struct(StructList1Entity)
+    expect(res.data instanceof Array).toBe(true)
+    expect(res.data[0] instanceof ColumnItemEntity).toBe(true)
     return done()
   })
   it('有关系多层次', async (done) => {

@@ -5,9 +5,6 @@ import { Type } from "@angular/core";
  *
  * @export
  * @template T
- * @param {*} data
- * @param {Type<T>} entity
- * @returns {T}
  */
 // export function stronglyTyped<T>(data: any, entity: Type<T>): T;
 export function stronglyTyped<T, D>(data: D, entity: Type<T>): D extends Array<any> ? T[] : T {

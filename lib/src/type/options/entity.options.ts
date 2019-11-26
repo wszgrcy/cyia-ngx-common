@@ -25,7 +25,7 @@ export class EntityOptions {
  * 被关联时使用的实体装饰器
  *
  * @export
- * @class RelationEntityOptions
+ *
  */
 export class RelationEntityOptions {
   request?: (result) => Promise<HttpRequestConfig> = async () => ({})
