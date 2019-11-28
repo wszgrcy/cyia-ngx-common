@@ -20,7 +20,7 @@ export class LoadingHintService {
     private componentFactoryResolver: ComponentFactoryResolver,
     private injector: Injector,
     private applicationRef: ApplicationRef,
-    @Inject(DOCUMENT) private document: any
+    @Inject(DOCUMENT) private document: Document
   ) {
     LoadingHintService.install.subscribe((item) => {
       let config: InstallConfig = item as any;
@@ -37,17 +37,27 @@ export class LoadingHintService {
   }
 
   install(viewContainerRef: LoadingHintContainer, component: Type<any>) {
-    const blockEl: HTMLElement = viewContainerRef === 'root' ? this.document.body : viewContainerRef.element.nativeElement;
-    const el = blockEl.insertAdjacentElement('beforebegin', this.document.createElement('div'));
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(component);
-    const ref = componentFactory.create(this.injector, undefined, el);
-    const loadingEl: HTMLElement = ref.location.nativeElement;
-    loadingEl.style.position = 'absolute';
-    loadingEl.style.width = `${blockEl.clientWidth}px`;
-    loadingEl.style.height = `${blockEl.clientHeight}px`;
+    let loadingHintElement: HTMLElement;
+    let blockEl: HTMLElement;
+    if (viewContainerRef === 'root') {
+      loadingHintElement = this.document.body.insertAdjacentElement('afterbegin', this.document.createElement('div')) as any;
+      blockEl = this.document.body;
+    } else {
+      blockEl = viewContainerRef.element.nativeElement;
+      loadingHintElement = blockEl.insertAdjacentElement('beforebegin', this.document.createElement('div')) as any;
+
+    }
+    const ref = componentFactory.create(this.injector, undefined, loadingHintElement);
+    loadingHintElement = ref.location.nativeElement;
+    loadingHintElement.style.position = 'absolute';
+    loadingHintElement.style.width = `${blockEl.clientWidth}px`;
+    loadingHintElement.style.height = `${blockEl.clientHeight}px`;
     this.applicationRef.attachView(ref.hostView);
-    const marginLeft = blockEl.offsetLeft - loadingEl.offsetLeft;
-    loadingEl.style.marginLeft = `${marginLeft}px`;
+    if (viewContainerRef !== 'root') {
+      const marginLeft = blockEl.offsetLeft - loadingHintElement.offsetLeft;
+      loadingHintElement.style.marginLeft = `${marginLeft}px`;
+    }
     LoadingHintService.map.set(viewContainerRef, ref);
   }
   uninstall(viewContainerRef: LoadingHintContainer) {
