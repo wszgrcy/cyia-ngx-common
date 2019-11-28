@@ -22,6 +22,10 @@
         // "dist/lib",
         "./lib/src"
       ],
+      "cyia-ngx-common/loading-hint": [
+        // "dist/lib",
+        "./lib/src/loading-hint"
+      ],
       // "lib/*": [
       //   "dist/lib/*"
       // ]

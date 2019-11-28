@@ -1,0 +1,13 @@
+:host {
+  animation: 3s color infinite;
+
+  @keyframes color {
+    from {
+      color: red
+    }
+
+    to {
+      color: green
+    }
+  }
+}
