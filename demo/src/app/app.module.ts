@@ -7,6 +7,11 @@ import { CyiaHttpModule } from 'cyia-ngx-common';
 // import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from "@angular/material";
+import { LoadModule } from './load/load.module';
+import { LoadingTestModule } from './loading-test/loading-test.module';
+import { CyiaLoadingHintModule } from 'cyia-ngx-common/loading-hint';
+import { LOAD_HINT_TOKEN } from './token';
+import { LoadComponent } from './load/load.component';
 @NgModule({
   declarations: [
     AppComponent
@@ -16,9 +21,14 @@ import { MatSnackBarModule } from "@angular/material";
     // HttpClientModule,
     CyiaHttpModule.forRoot(requestList),
     BrowserAnimationsModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    LoadModule,
+    LoadingTestModule,
+    CyiaLoadingHintModule
   ],
-  providers: [],
+  providers: [{
+    provide: LOAD_HINT_TOKEN, useValue: { component: LoadComponent }
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
