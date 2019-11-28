@@ -16,7 +16,7 @@ export interface OneToOneMetaOption {
  */
 export class EntityOptions {
   method?: Source = Source.request;
-  request?: HttpRequestConfig = new HttpRequestConfig()
+  request?: HttpRequestConfig | ((...args) => HttpRequestConfig) = new HttpRequestConfig()
   /**被继承时,保留哪些字段 */
   // reserve?: Reserve[]
 }

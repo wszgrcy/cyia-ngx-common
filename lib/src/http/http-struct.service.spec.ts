@@ -49,7 +49,7 @@ describe('结构测试', () => {
   })
   it('有关系多层次', async (done) => {
     let res = await struct(RelationStructEntity)
-    // console.log('有关系', res);
+    console.log('有关系一对一', res);
     expect(res.onetoone instanceof OntoOne1Entity).toBe(true)
     return done()
   })

@@ -11,7 +11,9 @@ import { HttpRequestConfig } from "../../http/http.define";
  */
 export function Entity(options: EntityOptions, relationOptions?: RelationEntityOptions) {
   return function <T extends { new(...args: any[]): {} }>(constructor: T) {
-    options.request = Object.assign(new HttpRequestConfig(), options.request)
+    if (typeof options.request != 'function') {
+      options.request = Object.assign(new HttpRequestConfig(), options.request)
+    }
     Reflect.defineMetadata(ENTITY_SYMBOL, {
       entity: constructor,
       options: Object.assign(new EntityOptions(), options),

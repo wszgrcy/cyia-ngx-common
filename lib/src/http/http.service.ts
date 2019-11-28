@@ -1,6 +1,6 @@
 import { Injectable, Inject, Type, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { REQUEST_LIST } from './http.token';
+import { REQUEST_LIST, REQUEST_URLPREFIX } from './http.token';
 import { RequestItem, HttpRequestItem, HttpUrl, HttpMethod, HttpRequestConfig } from './http.define';
 import { _deepCloneObject } from '../object/deepassign';
 import { Observable, of } from 'rxjs';
@@ -40,7 +40,8 @@ export class CyiaHttpService {
     CyiaHttpService.entityList.push(options)
   }
   constructor(
-    @Optional() @Inject(REQUEST_LIST) private requestList: RequestItem[],
+    @Optional() @Inject(REQUEST_LIST) private requestList: RequestItem[] = [],
+    @Optional() @Inject(REQUEST_URLPREFIX) private urlprefix: string = '',
     public http: HttpClient
   ) { }
 
@@ -110,12 +111,15 @@ export class CyiaHttpService {
 
   /**
    * url路径合并
-   *
+   * doc 如果有http/https前缀,那么在这个之前的都会被覆盖掉
    * @memberof CyiaHttpService
    */
   mergeUrlList(...list: string[]) {
-    return list.filter((url) => url)
+    return list
+      .filter((url) => url)
       .reduce((pre, cur, i) => {
+        if (/^https?:\/\//.test(cur)) pre = '';
+
         if (pre && pre.endsWith('/') && cur.startsWith('/')) {
           return `${pre}${cur.substr(1)}`
         } else if (pre && !pre.endsWith('/') && !cur.startsWith('/')) {
@@ -151,16 +155,16 @@ export class CyiaHttpService {
         )
     }
   }
-  getEntity<T>(entity: Type<T>): (param?: HttpRequestConfig) => Observable<T> {
+  getEntity<T>(entity: Type<T>): (param?: HttpRequestConfig | any[]) => Observable<T> {
     return this._getEntity(entity, (entityConfig, param) => this.getData(entityConfig.entity)(param))
   }
-  getEntityList<T>(entity: Type<T>): (param: HttpRequestConfig) => Observable<T[]> {
+  getEntityList<T>(entity: Type<T>): (param: HttpRequestConfig | any[]) => Observable<T[]> {
     return this.getEntity(entity) as any
   }
   private getData(entity: EntityConfig['entity']) {
     switch (entity.options.method) {
       case Source.request:
-        return (param: HttpRequestConfig = {}) => this.sourceByrequest(param, entity)
+        return (param: HttpRequestConfig | any[] = {}) => this.sourceByrequest(param, entity)
       case Source.normal:
         return () => this.sourceByRepository(entity)
     }
@@ -320,18 +324,30 @@ export class CyiaHttpService {
    *
    * @memberof CyiaHttpService
    */
-  private sourceByrequest(params: HttpRequestConfig, defalutEntityArgs: RegisterEntityOption) {
+  private sourceByrequest(params: HttpRequestConfig | any[], defalutEntityArgs: RegisterEntityOption) {
     /**类中设置的默认参数HttpRequestConfig */
-    const defalutParams = defalutEntityArgs.options.request
-    let method: HttpMethod = params.method || defalutParams.method
-    let url = this.mergeUrlList(defalutParams.url, params.url)
-    /**只合并一次 */
-    let options = Object.assign({}, defalutParams.options || undefined, params.options || undefined)
-    return this.http.request(method, url, options).pipe(
-      take(1),
-      tap((res) => CyiaHttpService.savePlainData(res, defalutEntityArgs.entity)),
+    const defalutRequest = defalutEntityArgs.options.request;
+    if (typeof defalutRequest == 'function') {
+      const defalutParams = Object.assign(new HttpRequestConfig(), defalutRequest(params));
+      let method = defalutParams.method
+      let url = this.mergeUrlList(this.urlprefix, defalutParams.url)
+      let options = Object.assign({}, defalutParams.options || undefined)
+      return this.http.request(method, url, options).pipe(
+        take(1),
+        tap((res) => CyiaHttpService.savePlainData(res, defalutEntityArgs.entity)),
+      )
+    } else if (!(params instanceof Array)) {
+      const defalutParams = defalutRequest
+      let method: HttpMethod = params.method || defalutParams.method
+      let url = this.mergeUrlList(this.urlprefix, defalutParams.url, params.url)
+      /**只合并一次 */
+      let options = Object.assign({}, defalutParams.options || undefined, params.options || undefined)
+      return this.http.request(method, url, options).pipe(
+        take(1),
+        tap((res) => CyiaHttpService.savePlainData(res, defalutEntityArgs.entity)),
+      )
 
-    )
+    }
   }
   private sourceByRepository(entity: RegisterEntityOption) {
     return of(Object.values(this.getEntityRepository(entity.entity)))

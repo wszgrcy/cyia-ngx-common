@@ -41,3 +41,7 @@ export interface RequestItem<T = string> {
 export class HttpHeaders {
   [header: string]: string | string[]
 }
+
+export interface CyiaHttpModuleConfig {
+  urlPrefix?: string
+}

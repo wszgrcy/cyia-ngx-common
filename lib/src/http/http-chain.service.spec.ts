@@ -39,7 +39,7 @@ xdescribe('服务测试', () => {
   /**一对一,返回的为单对象 */
   async function one21Chain() {
     let res = await service.getEntity(OneTOneChainEntity)({}).pipe(take(1)).toPromise()
-    console.log(res);
+    console.log('查看一对一返回',res);
     expect(res).not.toBe(null)
     expect(res.second instanceof OneTOneChainP2Entity).toBe(true)
     //doc 没有设计链式请求,所以必然失败
