@@ -1,19 +1,17 @@
 import { ViewContainerRef, Type, InjectionToken } from '@angular/core';
 export type LoadingHintContainer = ViewContainerRef | 'root';
+/**作为第二个参数 */
 export interface CyiaLoadHintConfig {
-  // container?: LoadingHintContainer;
   component?: Type<any>;
-  timeout?: number;
-
+  // todo
+  duration?: number;
 }
+/**内部不暴露的 */
 export interface InstallConfig extends CyiaLoadHintConfig {
   container?: LoadingHintContainer;
   token?: InjectionToken<CyiaLoadHintConfig>;
-  // component: Type<any>;
-  // timeout?: number;
 }
-export interface CyiaLoadHintOption {
+/**只传一个对象 */
+export interface CyiaLoadHintOption extends CyiaLoadHintConfig {
   container?: (type) => ViewContainerRef | 'root';
-  loadingHintComponent?: Type<any>;
-  timeout?: number;
 }

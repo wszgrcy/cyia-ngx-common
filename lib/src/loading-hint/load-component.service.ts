@@ -15,6 +15,7 @@ export class LoadingHintService {
   static install = new Subject<InstallConfig>();
   static uninstall = new Subject<ViewContainerRef | 'root'>();
   static map = new Map<LoadingHintContainer, ComponentRef<any>>();
+  // uninstallQueue = new Subject<{ ref: ComponentRef<any>, duration };>()
   constructor(
     @Optional() @Inject(CYIA_LOADING_HINT_COMPONENT) globalLoadingComponent: Type<any>,
     private componentFactoryResolver: ComponentFactoryResolver,
@@ -39,7 +40,7 @@ export class LoadingHintService {
   install(viewContainerRef: LoadingHintContainer, component: Type<any>) {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(component);
     let loadingHintElement: HTMLElement = LoadingHintService.map.get(viewContainerRef) &&
-    LoadingHintService.map.get(viewContainerRef).location.nativeElement;
+      LoadingHintService.map.get(viewContainerRef).location.nativeElement;
     let blockEl: HTMLElement;
     // doc 如果该元素上已生成加载组件,跳过
     if (loadingHintElement) { return; }
