@@ -38,8 +38,11 @@ export class LoadingHintService {
 
   install(viewContainerRef: LoadingHintContainer, component: Type<any>) {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(component);
-    let loadingHintElement: HTMLElement;
+    let loadingHintElement: HTMLElement = LoadingHintService.map.get(viewContainerRef) &&
+    LoadingHintService.map.get(viewContainerRef).location.nativeElement;
     let blockEl: HTMLElement;
+    // doc 如果该元素上已生成加载组件,跳过
+    if (loadingHintElement) { return; }
     if (viewContainerRef === 'root') {
       loadingHintElement = this.document.body.insertAdjacentElement('afterbegin', this.document.createElement('div')) as any;
       blockEl = this.document.body;
