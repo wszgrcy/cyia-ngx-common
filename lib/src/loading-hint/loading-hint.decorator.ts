@@ -2,7 +2,8 @@ import { LoadingHintService } from './load-component.service';
 import { ɵisPromise, ElementRef, ɵisObservable, Type, ViewContainerRef, InjectionToken } from '@angular/core';
 import { tap } from 'rxjs/operators';
 import { CyiaLoadHintConfig, CyiaLoadHintOption, LoadingHintContainer, InstallConfig } from './type';
-export function LoadingHint<T = any>(config: CyiaLoadHintOption);
+import { DEFAULT_INSTALL_CONFIG } from './const';
+export function LoadingHint<T = any>(option: CyiaLoadHintOption);
 export function LoadingHint<T = any>(container: 'root', component?: Type<any>);
 export function LoadingHint<T = any>(container: 'root', config?: CyiaLoadHintConfig);
 export function LoadingHint<T = any>(container: 'root', token?: InjectionToken<CyiaLoadHintConfig>);
@@ -32,7 +33,13 @@ export function LoadingHint<T = any>(
       } else if (arg2 && !(arg2 instanceof InjectionToken)) {
         component = arg2 as any;
       }
-      LoadingHintService.install.next({ ...otherParam, container, component, token: arg2 instanceof InjectionToken ? arg2 : undefined });
+      LoadingHintService.install.next({
+        ...DEFAULT_INSTALL_CONFIG,
+        ...otherParam,
+        container,
+        component,
+        token: arg2 instanceof InjectionToken ? arg2 : undefined
+      });
 
       const res = fn.call(this, arguments);
       if (ɵisPromise(res)) {

@@ -4,7 +4,16 @@ export type LoadingHintContainer = ViewContainerRef | 'root';
 export interface CyiaLoadHintConfig {
   component?: Type<any>;
   // todo
+  /**持续时间(代替自动关闭使用) */
   duration?: number;
+  /**超时关闭 */
+  timeout?: number;
+  closeMod?: CyiaLoadingHintClose;
+}
+export enum CyiaLoadingHintClose {
+  default = 0,
+  duration,
+  component
 }
 /**内部不暴露的 */
 export interface InstallConfig extends CyiaLoadHintConfig {
