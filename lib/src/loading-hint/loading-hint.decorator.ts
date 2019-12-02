@@ -4,12 +4,10 @@ import { tap } from 'rxjs/operators';
 import { CyiaLoadHintConfig, CyiaLoadHintOption, LoadingHintContainer, InstallConfig } from './type';
 import { DEFAULT_INSTALL_CONFIG } from './const';
 export function LoadingHint<T = any>(option: CyiaLoadHintOption);
-export function LoadingHint<T = any>(container: 'root', component?: Type<any>);
-export function LoadingHint<T = any>(container: 'root', config?: CyiaLoadHintConfig);
-export function LoadingHint<T = any>(container: 'root', token?: InjectionToken<CyiaLoadHintConfig>);
-export function LoadingHint<T = any>(elementRefFn: (type: T) => ViewContainerRef, token?: InjectionToken<CyiaLoadHintConfig>);
-export function LoadingHint<T = any>(elementRefFn: (type: T) => ViewContainerRef, config?: CyiaLoadHintConfig);
-export function LoadingHint<T = any>(elementRefFn: (type: T) => ViewContainerRef, component?: Type<any>);
+export function LoadingHint<T = any>(
+  container: 'root' | ((type: T) => ViewContainerRef),
+  config?: Type<any> | CyiaLoadHintConfig | InjectionToken<CyiaLoadHintConfig>
+);
 export function LoadingHint<T = any>(
   arg1: CyiaLoadHintOption | ((type: T) => ViewContainerRef) | 'root',
   arg2?: Type<any> | CyiaLoadHintConfig | InjectionToken<CyiaLoadHintConfig>) {
@@ -44,11 +42,11 @@ export function LoadingHint<T = any>(
       const res = fn.call(this, arguments);
       if (ɵisPromise(res)) {
         return res.then((value) => {
-          LoadingHintService.uninstall.next(container);
+          LoadingHintService.complete.next(container);
           return value;
         });
       } else if (ɵisObservable(res)) {
-        return res.pipe(tap(() => LoadingHintService.uninstall.next(container)));
+        return res.pipe(tap(() => LoadingHintService.complete.next(container)));
       }
       return res;
     };

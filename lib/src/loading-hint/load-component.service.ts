@@ -15,15 +15,14 @@ import { CYIA_LOADING_HINT_CLOSE_FN, CYIA_LOADING_HINT_COMPLETE$ } from './const
 @Injectable()
 export class LoadingHintService {
   /**
-   * todo 1.载入组件关闭,分为异步结束(默认),定时,及组件控制
-   * todo 2.在异步结束时传入信号给载入组件(仅在组件控制时使用)
+   *  1.载入组件关闭,分为异步结束(默认),定时,及组件控制
+   *  2.在异步结束时传入信号给载入组件(仅在组件控制时使用)
    * todo 3.设置超时自动关闭
    */
   static install = new Subject<InstallConfig>();
-  static uninstall = new Subject<ViewContainerRef | 'root'>();
+  static complete = new Subject<ViewContainerRef | 'root'>();
   static map = new Map<LoadingHintContainer, ComponentRef<any>>();
   static unAutoControlList: InstallConfig[] = [];
-  // uninstallQueue = new Subject<{ ref: ComponentRef<any>, duration };>()
   constructor(
     @Optional() @Inject(CYIA_LOADING_HINT_COMPONENT) globalLoadingComponent: Type<any>,
     private componentFactoryResolver: ComponentFactoryResolver,
@@ -43,7 +42,7 @@ export class LoadingHintService {
           timer(item.duration).subscribe(() => {
             const i = LoadingHintService.unAutoControlList.findIndex((unAutoControlItem) => item === unAutoControlItem);
             LoadingHintService.unAutoControlList.splice(i, 1);
-            LoadingHintService.uninstall.next(item.container);
+            LoadingHintService.complete.next(item.container);
           });
           break;
         case CyiaLoadingHintClose.component:
@@ -55,7 +54,7 @@ export class LoadingHintService {
       this.install(config.container, config.component);
     });
 
-    const [autoClose, sendMessage] = partition(LoadingHintService.uninstall,
+    const [autoClose, sendEvent] = partition(LoadingHintService.complete,
       (item) => !LoadingHintService.unAutoControlList.find((unAutoControlItem) => unAutoControlItem.container === item)
     );
 
@@ -63,8 +62,8 @@ export class LoadingHintService {
       .subscribe((item) => {
         this.autoClose(item);
       });
-    sendMessage.subscribe((item) => {
-      this.sendMessage(item);
+    sendEvent.subscribe((item) => {
+      this.sendEvent(item);
     });
   }
   /**
@@ -118,7 +117,7 @@ export class LoadingHintService {
       }
     }
   }
-  sendMessage(viewContainerRef: LoadingHintContainer) {
+  sendEvent(viewContainerRef: LoadingHintContainer) {
     const ref = LoadingHintService.map.get(viewContainerRef);
     (<Subject<any>>ref.instance[CYIA_LOADING_HINT_COMPLETE$]).next();
   }
