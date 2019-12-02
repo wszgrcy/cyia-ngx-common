@@ -5,11 +5,12 @@ import {
   Optional,
   InjectionToken
 } from '@angular/core';
-import { Subject, timer } from 'rxjs';
+import { Subject, timer, of, from, fromEvent, partition } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { CYIA_LOADING_HINT_COMPONENT } from './token';
 import { CyiaLoadHintConfig, InstallConfig, LoadingHintContainer, CyiaLoadingHintClose } from './type';
 import { filter, take } from 'rxjs/operators';
+import { CYIA_LOADING_HINT_CLOSE_FN } from './const';
 
 @Injectable()
 export class LoadingHintService {
@@ -53,14 +54,18 @@ export class LoadingHintService {
       }
       this.install(config.container, config.component);
     });
-    LoadingHintService.uninstall
-      .pipe(
-        filter((item) => !!LoadingHintService.unAutoControlList.find((unAutoControlItem) => unAutoControlItem.container === item))
-      )
-      .subscribe((item) => {
-        this.uninstall(item);
-      });
 
+    const [autoClose, sendMessage] = partition(LoadingHintService.uninstall,
+      (item) => !LoadingHintService.unAutoControlList.find((unAutoControlItem) => unAutoControlItem.container === item)
+    );
+
+    autoClose
+      .subscribe((item) => {
+        this.autoClose(item);
+      });
+    sendMessage.subscribe((item) => {
+
+    });
   }
   /**
    * todo
@@ -90,7 +95,8 @@ export class LoadingHintService {
 
     }
     const componentRef = componentFactory.create(this.injector, undefined, loadingHintElement);
-    // componentRef.instance
+    componentRef.instance[CYIA_LOADING_HINT_CLOSE_FN] = () => componentRef.destroy();
+
     loadingHintElement = componentRef.location.nativeElement;
     loadingHintElement.style.position = 'absolute';
     loadingHintElement.style.width = `${blockEl.clientWidth}px`;
@@ -102,7 +108,7 @@ export class LoadingHintService {
     }
     LoadingHintService.map.set(viewContainerRef, componentRef);
   }
-  uninstall(viewContainerRef: LoadingHintContainer) {
+  autoClose(viewContainerRef: LoadingHintContainer) {
     const ref = LoadingHintService.map.get(viewContainerRef);
     if (ref) {
       try {
@@ -110,5 +116,8 @@ export class LoadingHintService {
       } catch (error) {
       }
     }
+  }
+  sendMessage(viewContainerRef: LoadingHintContainer) {
+    const ref = LoadingHintService.map.get(viewContainerRef);
   }
 }
