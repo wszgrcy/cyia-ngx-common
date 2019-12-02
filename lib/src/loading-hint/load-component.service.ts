@@ -5,12 +5,12 @@ import {
   Optional,
   InjectionToken
 } from '@angular/core';
-import { Subject, timer, of, from, fromEvent, partition } from 'rxjs';
+import { Subject, timer, of, from, fromEvent, partition, BehaviorSubject } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { CYIA_LOADING_HINT_COMPONENT } from './token';
 import { CyiaLoadHintConfig, InstallConfig, LoadingHintContainer, CyiaLoadingHintClose } from './type';
 import { filter, take } from 'rxjs/operators';
-import { CYIA_LOADING_HINT_CLOSE_FN } from './const';
+import { CYIA_LOADING_HINT_CLOSE_FN, CYIA_LOADING_HINT_COMPLETE$ } from './const';
 
 @Injectable()
 export class LoadingHintService {
@@ -64,7 +64,7 @@ export class LoadingHintService {
         this.autoClose(item);
       });
     sendMessage.subscribe((item) => {
-
+      this.sendMessage(item);
     });
   }
   /**
@@ -96,6 +96,7 @@ export class LoadingHintService {
     }
     const componentRef = componentFactory.create(this.injector, undefined, loadingHintElement);
     componentRef.instance[CYIA_LOADING_HINT_CLOSE_FN] = () => componentRef.destroy();
+    componentRef.instance[CYIA_LOADING_HINT_COMPLETE$] = new Subject();
 
     loadingHintElement = componentRef.location.nativeElement;
     loadingHintElement.style.position = 'absolute';
@@ -119,5 +120,6 @@ export class LoadingHintService {
   }
   sendMessage(viewContainerRef: LoadingHintContainer) {
     const ref = LoadingHintService.map.get(viewContainerRef);
+    (<Subject<any>>ref.instance[CYIA_LOADING_HINT_COMPLETE$]).next();
   }
 }
