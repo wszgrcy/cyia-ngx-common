@@ -8,7 +8,7 @@ import {
 import { Subject, timer, of, from, fromEvent, partition, BehaviorSubject, Observable } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { CYIA_LOADING_HINT_COMPONENT } from './token';
-import { CyiaLoadHintConfig, InstallConfig, LoadingHintContainer, CyiaLoadingHintClose } from './type';
+import { CyiaLoadHintConfig, InstallConfig, LoadingHintContainer, CyiaLoadingHintClose, UnInstallConfig } from './type';
 import { filter, take, map, switchMap } from 'rxjs/operators';
 import { CYIA_LOADING_HINT_CLOSE_FN, CYIA_LOADING_HINT_COMPLETE$ } from './const';
 
@@ -23,12 +23,13 @@ export class LoadingHintService {
   ) { }
   /**
    *  1.载入组件关闭,分为异步结束(默认),定时,及组件控制
-   *  2.在异步结束时传入信号给载入组件(仅在组件控制时使用)
+   *  2.在异步结束时传入信号(方法的返回值)给载入组件(仅在组件控制时使用)
    *  3.设置超时自动关闭
-   * todo 4.关闭类型为组件时,是否设置组件阻塞关闭
+   *  4.关闭类型为组件时,是否设置组件阻塞关闭
+   *
    */
   private static install$ = new Subject<InstallConfig>();
-  private static uninstall$ = new Subject<LoadingHintContainer>();
+  private static uninstall$ = new Subject<UnInstallConfig>();
   private static componentRefMap = new Map<LoadingHintContainer, ComponentRef<any>>();
   private static configMap = new Map<LoadingHintContainer, InstallConfig>();
   /**非自动控制的组件列表 */
@@ -53,7 +54,7 @@ export class LoadingHintService {
 
     }
 
-    LoadingHintService.uninstall$.next(config.container);
+    LoadingHintService.uninstall$.next({ container: config.container, result });
     return observable.pipe(take(1));
   }
   start() {
@@ -94,11 +95,11 @@ export class LoadingHintService {
   }
   private uninstallListen() {
     const [autoUninstall, sendEvent] = partition(LoadingHintService.uninstall$,
-      (item) => !this.unAutoControlList.find((unAutoControlItem) => unAutoControlItem.container === item)
+      (item) => !this.unAutoControlList.find((unAutoControlItem) => unAutoControlItem.container === item.container)
     );
     autoUninstall
       .subscribe((item) => {
-        this.autoUninstall(item);
+        this.autoUninstall(item.container);
       });
     sendEvent.subscribe((item) => {
       this.sendEvent(item);
@@ -152,11 +153,11 @@ export class LoadingHintService {
       LoadingHintService.componentRefMap.delete(viewContainerRef);
     }
   }
-  sendEvent(viewContainerRef: LoadingHintContainer) {
-    const ref = LoadingHintService.componentRefMap.get(viewContainerRef);
+  sendEvent(unInstallConfig: UnInstallConfig) {
+    const ref = LoadingHintService.componentRefMap.get(unInstallConfig.container);
     if (ref) {
       try {
-        (<Subject<any>>ref.instance[CYIA_LOADING_HINT_COMPLETE$]).next();
+        (<Subject<any>>ref.instance[CYIA_LOADING_HINT_COMPLETE$]).next(unInstallConfig.result);
       } catch (error) {
         console.error(error);
       }

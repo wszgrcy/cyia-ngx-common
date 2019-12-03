@@ -21,7 +21,10 @@ export interface InstallConfig extends CyiaLoadHintConfig {
   container?: LoadingHintContainer;
   token?: InjectionToken<CyiaLoadHintConfig>;
 }
-
+export interface UnInstallConfig {
+  container?: LoadingHintContainer;
+  result?: any;
+}
 /**只传一个对象 */
 export interface CyiaLoadHintOption extends CyiaLoadHintConfig {
   container?: (type) => ViewContainerRef | 'root';
