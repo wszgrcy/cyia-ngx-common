@@ -31,7 +31,7 @@ export function LoadingHint<T = any>(
       } else if (arg2 && !(arg2 instanceof InjectionToken)) {
         component = arg2 as any;
       }
-      LoadingHintService.install.next({
+      LoadingHintService.install$.next({
         ...DEFAULT_INSTALL_CONFIG,
         ...otherParam,
         container,
@@ -42,11 +42,11 @@ export function LoadingHint<T = any>(
       const res = fn.call(this, arguments);
       if (ɵisPromise(res)) {
         return res.then((value) => {
-          LoadingHintService.complete.next(container);
+          LoadingHintService.uninstall$.next(container);
           return value;
         });
       } else if (ɵisObservable(res)) {
-        return res.pipe(tap(() => LoadingHintService.complete.next(container)));
+        return res.pipe(tap(() => LoadingHintService.uninstall$.next(container)));
       }
       return res;
     };

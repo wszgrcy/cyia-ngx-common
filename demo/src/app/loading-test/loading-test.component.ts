@@ -51,7 +51,7 @@ export class LoadingTestComponent implements OnInit {
     //   }, 100);
     // })
   }
-  @LoadingHint((type: LoadingTestComponent) => type.loadCompRef, { component: LoadComponent, closeMod: CyiaLoadingHintClose.component })
+  @LoadingHint((type: LoadingTestComponent) => type.loadCompRef, { component: LoadComponent, closeMod: CyiaLoadingHintClose.component, timeout: 300 })
   loadComp() {
     return new Promise((res) => {
       setTimeout(() => {
