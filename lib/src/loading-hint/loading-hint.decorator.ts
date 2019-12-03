@@ -42,7 +42,6 @@ export function LoadingHint<T = any>(
       LoadingHintService.install(installConfig);
 
       const res = fn.call(this, arguments);
-      // ! 把相关逻辑移入服务
       if (ɵisPromise(res)) {
         return res.then((value) => {
           return LoadingHintService.uninstall(installConfig, value).toPromise();
