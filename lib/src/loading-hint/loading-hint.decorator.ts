@@ -1,8 +1,9 @@
 import { LoadingHintService } from './load-component.service';
 import { ɵisPromise, ElementRef, ɵisObservable, Type, ViewContainerRef, InjectionToken } from '@angular/core';
-import { tap } from 'rxjs/operators';
+import { tap, map, switchMap } from 'rxjs/operators';
 import { CyiaLoadHintConfig, CyiaLoadHintOption, LoadingHintContainer, InstallConfig } from './type';
 import { DEFAULT_INSTALL_CONFIG } from './const';
+import { of } from 'rxjs';
 export function LoadingHint<T = any>(option: CyiaLoadHintOption);
 export function LoadingHint<T = any>(
   container: 'root' | ((type: T) => ViewContainerRef),
@@ -31,22 +32,25 @@ export function LoadingHint<T = any>(
       } else if (arg2 && !(arg2 instanceof InjectionToken)) {
         component = arg2 as any;
       }
-      LoadingHintService.install$.next({
+      const installConfig: InstallConfig = {
         ...DEFAULT_INSTALL_CONFIG,
         ...otherParam,
         container,
         component,
         token: arg2 instanceof InjectionToken ? arg2 : undefined
-      });
+      };
+      LoadingHintService.install(installConfig);
 
       const res = fn.call(this, arguments);
+      // ! 把相关逻辑移入服务
       if (ɵisPromise(res)) {
         return res.then((value) => {
-          LoadingHintService.uninstall$.next(container);
-          return value;
+          return LoadingHintService.uninstall(installConfig, value).toPromise();
         });
       } else if (ɵisObservable(res)) {
-        return res.pipe(tap(() => LoadingHintService.uninstall$.next(container)));
+        return res.pipe(
+          switchMap((value) => LoadingHintService.uninstall(installConfig, value))
+        );
       }
       return res;
     };
@@ -54,7 +58,3 @@ export function LoadingHint<T = any>(
     return property;
   };
 }
-
-// function getContainer() {
-
-// }

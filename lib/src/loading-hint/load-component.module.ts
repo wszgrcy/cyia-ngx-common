@@ -8,5 +8,7 @@ import { LoadingHintService } from './load-component.service';
   providers: [LoadingHintService],
 })
 export class CyiaLoadingHintModule {
-  constructor(service: LoadingHintService) { }
+  constructor(service: LoadingHintService) {
+    service.start();
+  }
 }

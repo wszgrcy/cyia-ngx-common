@@ -39,10 +39,10 @@ export class LoadingTestComponent implements OnInit {
   }
   loadObservableE() {
     return this.loadObservable().subscribe((val) => {
-      console.log('执行完成');
+      console.log('执行完成', val);
     })
   }
-  @LoadingHint((type: LoadingTestComponent) => type.loadDurRef, { duration: 5000, component: LoadComponent, closeMod: CyiaLoadingHintClose.duration })
+  @LoadingHint((type: LoadingTestComponent) => type.loadDurRef, { duration: 5000, component: LoadComponent, uninstallMod: CyiaLoadingHintClose.duration })
   loadDuration() {
     console.log('持续一定时间');
     // return new Promise((res) => {
@@ -51,13 +51,18 @@ export class LoadingTestComponent implements OnInit {
     //   }, 100);
     // })
   }
-  @LoadingHint((type: LoadingTestComponent) => type.loadCompRef, { component: LoadComponent, closeMod: CyiaLoadingHintClose.component, timeout: 300 })
+  @LoadingHint((type: LoadingTestComponent) => type.loadCompRef, { component: LoadComponent, uninstallMod: CyiaLoadingHintClose.component, blockReturn: true })
   loadComp() {
     return new Promise((res) => {
       setTimeout(() => {
-        res()
+        res(123)
       }, 1000);
     })
 
+  }
+  loadCompE() {
+    this.loadComp().then((value) => {
+      console.log('返回数据', value)
+    })
   }
 }

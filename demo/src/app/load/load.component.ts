@@ -15,10 +15,12 @@ export class LoadComponent implements OnInit {
     (this[CYIA_LOADING_HINT_COMPLETE$] as Subject<any>).subscribe(() => {
       console.log('完成');
       this.complete = '已完成'
-      setTimeout(() => {
-        this[CYIA_LOADING_HINT_CLOSE_FN]()
-      }, 1000);
+      // setTimeout(() => {
+      //   this[CYIA_LOADING_HINT_CLOSE_FN]()
+      // }, 1000);
     })
   }
-
+  close() {
+    this[CYIA_LOADING_HINT_CLOSE_FN]()
+  }
 }
