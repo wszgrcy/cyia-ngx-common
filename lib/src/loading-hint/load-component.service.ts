@@ -8,7 +8,7 @@ import {
 import { Subject, timer, of, from, fromEvent, partition, BehaviorSubject, Observable } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { CYIA_LOADING_HINT_COMPONENT } from './token';
-import { CyiaLoadHintConfig, InstallConfig, LoadingHintContainer, CyiaLoadingHintClose, UnInstallConfig } from './type';
+import { CyiaLoadHintConfig, InstallConfig, LoadingHintContainer, CyiaLoadingHintUninstall, UnInstallConfig } from './type';
 import { filter, take, map, switchMap } from 'rxjs/operators';
 import { CYIA_LOADING_HINT_CLOSE_FN, CYIA_LOADING_HINT_COMPLETE$ } from './const';
 
@@ -51,9 +51,7 @@ export class LoadingHintService {
       } else {
         observable = of(result);
       }
-
     }
-
     LoadingHintService.uninstall$.next({ container: config.container, result });
     return observable.pipe(take(1));
   }
@@ -70,7 +68,7 @@ export class LoadingHintService {
       config.component = config.component || this.globalLoadingComponent;
       LoadingHintService.configMap.set(config.container, config);
       switch (config.uninstallMod) {
-        case CyiaLoadingHintClose.duration:
+        case CyiaLoadingHintUninstall.duration:
           this.unAutoControlList.push(config);
           timer(config.duration).subscribe(() => {
             const i = this.unAutoControlList.findIndex((unAutoControlItem) => config === unAutoControlItem);
@@ -78,7 +76,7 @@ export class LoadingHintService {
             LoadingHintService.uninstall(config);
           });
           break;
-        case CyiaLoadingHintClose.component:
+        case CyiaLoadingHintUninstall.component:
           this.unAutoControlList.push(config);
           break;
         default:
@@ -133,6 +131,7 @@ export class LoadingHintService {
     loadingHintElement.style.width = `${blockEl.clientWidth}px`;
     loadingHintElement.style.height = `${blockEl.clientHeight}px`;
     this.applicationRef.attachView(componentRef.hostView);
+    componentRef.changeDetectorRef.detectChanges();
     if (viewContainerRef !== 'root') {
       const marginLeft = blockEl.offsetLeft - loadingHintElement.offsetLeft;
       loadingHintElement.style.marginLeft = `${marginLeft}px`;
@@ -170,6 +169,5 @@ export class LoadingHintService {
   }
   componentUninstall(viewContainerRef: LoadingHintContainer) {
     this.uninstall(viewContainerRef);
-
   }
 }

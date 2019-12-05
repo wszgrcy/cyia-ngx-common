@@ -8,10 +8,10 @@ export interface CyiaLoadHintConfig {
   duration?: number;
   /**超时关闭 */
   timeout?: number;
-  uninstallMod?: CyiaLoadingHintClose;
+  uninstallMod?: CyiaLoadingHintUninstall;
   blockReturn?: boolean;
 }
-export enum CyiaLoadingHintClose {
+export enum CyiaLoadingHintUninstall {
   default = 0,
   duration,
   component
@@ -27,5 +27,5 @@ export interface UnInstallConfig {
 }
 /**只传一个对象 */
 export interface CyiaLoadHintOption extends CyiaLoadHintConfig {
-  container?: (type) => ViewContainerRef | 'root';
+  container?: ((type) => ViewContainerRef) | 'root';
 }

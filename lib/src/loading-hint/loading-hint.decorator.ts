@@ -25,6 +25,7 @@ export function LoadingHint<T = any>(
       } else if (typeof arg1 === 'object') {
         container = arg1.container instanceof Function ? arg1.container(this) : arg1.container;
         otherParam = arg1;
+        ({ component } = arg1);
       }
       if (arg2 && (arg2.hasOwnProperty('component'))) {
         component = (arg2 as any).component;
