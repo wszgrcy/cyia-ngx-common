@@ -1,6 +1,6 @@
-import { PrimaryColumn } from "../../decorator/entity/columns/primary-column.decorator";
-import { Entity, OneToMany, ManyToOne } from "../../decorator/entity";
-import { OneToManyP2, Many2OneP2Entity } from "./base.class";
+import { PrimaryColumn } from '../../decorator/entity/columns/primary-column.decorator';
+import { Entity, OneToMany, ManyToOne } from '../../decorator/entity';
+import { OneToManyP2, Many2OneP2Entity } from './base.class';
 
 @Entity({
   request: {
@@ -10,9 +10,9 @@ import { OneToManyP2, Many2OneP2Entity } from "./base.class";
 })
 export class Many2OneOnlyEntity {
   @PrimaryColumn()
-  id
+  id;
   @ManyToOne(() => Many2OneP2Entity, (type) => type.id)
-  p2: Many2OneP2Entity
+  p2: Many2OneP2Entity;
 
 }
 @Entity({
@@ -23,8 +23,8 @@ export class Many2OneOnlyEntity {
 })
 export class Many2OneMultiEntity {
   @PrimaryColumn()
-  id
+  id;
   @ManyToOne(() => Many2OneP2Entity, (type) => type.id)
-  p2: Many2OneP2Entity
+  p2: Many2OneP2Entity;
 
 }

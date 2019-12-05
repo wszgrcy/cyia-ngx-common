@@ -19,16 +19,16 @@ class TestHttpModule {
 
 }
 describe('原始请求测试', () => {
-  let service: CyiaHttpService
+  let service: CyiaHttpService;
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TestHttpModule]
-    })
+    });
     service = TestBed.get(CyiaHttpService);
   });
 
   it('请求参数(application/x-www-form-urlencoded)', async (done) => {
-    let res = service.getEntity(One2OneOnlyTestReqEntity)({
+    const res = service.getEntity(One2OneOnlyTestReqEntity)({
       method: 'post',
       options: {
         body: 'a=1&b=123456&c=3432',
@@ -39,10 +39,10 @@ describe('原始请求测试', () => {
       }
     }).toPromise().catch((val) => {
       console.log('数据格式不正确', val);
-    })
+    });
     console.log('返回数据?', res);
-    done()
-  })
+    done();
+  });
 
 });
 

@@ -1,9 +1,9 @@
 /**请求方法 */
 export type HttpMethod = 'get' | 'head' | 'post' | 'put' | 'delete' | 'options' | 'patch';
 /**监听类型 */
-export type HttpObserve = 'body' | 'events' | 'response'
+export type HttpObserve = 'body' | 'events' | 'response';
 /**监听类型 */
-export type HttpResponseType = 'arraybuffer' | 'blob' | 'json' | 'text'
+export type HttpResponseType = 'arraybuffer' | 'blob' | 'json' | 'text';
 
 /**请求token值,用于类型提示 */
 export type HttpTokenName = string;
@@ -16,16 +16,16 @@ export class HttpRequestOptions {
   observe?: HttpObserve;
   params?: {
     [param: string]: string | string[];
-  } = {}
-  reportProgress?: boolean;//doc 报告进度,上传用
-  responseType?: any;//?目前用不到
+  } = {};
+  reportProgress?: boolean; // doc 报告进度,上传用
+  responseType?: any; // ?目前用不到
   withCredentials?: boolean;
 }
 /**request请求参数 */
 export class HttpRequestConfig {
-  method?: HttpMethod = 'get'
+  method?: HttpMethod = 'get';
   url?: HttpUrl = '';
-  options?: HttpRequestOptions
+  options?: HttpRequestOptions;
 }
 export class HttpRequestItem<T = string> extends HttpRequestConfig {
   token: T;
@@ -43,5 +43,5 @@ export class HttpHeaders {
 }
 
 export interface CyiaHttpModuleConfig {
-  urlPrefix?: string
+  urlPrefix?: string;
 }

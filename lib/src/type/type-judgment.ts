@@ -24,43 +24,44 @@ export namespace TypeJudgment {
     /**
      * 获得类型
      *
-     * 
+     *
      * @param  param 变量
-     * @returns 
+     * @returns
      * @memberof TypeJudgment
      */
     export function getType(param: any): jsNativeType {
-        return TypeJudgment.transform2Enum(Object.prototype.toString.call(param))
+        return TypeJudgment.transform2Enum(Object.prototype.toString.call(param));
     }
 
     export function transform2Enum(str: string): jsNativeType {
-        let result = str.match(/^\[object ([A-Z][a-zA-Z]{1,10})\]$/)
+        const result = str.match(/^\[object ([A-Z][a-zA-Z]{1,10})\]$/);
         let type: jsNativeType;
-        if (result)
+        if (result) {
             type = result[1] as jsNativeType;
-        else
-            type = jsNativeType.wrong
+        } else {
+            type = jsNativeType.wrong;
+        }
         return type;
     }
 
     /**
      *获得数组子元素的类型
      *
-     * 
+     *
      * @param  array
-     * @returns 
+     * @returns
      * @memberof TypeJudgment
      */
     export function getArrayType(array: any[]): jsNativeType {
         let preType: jsNativeType = jsNativeType.undefined;
         for (let i = 0; i < array.length; i++) {
             const element = array[i];
-            let type = this.getType(element)
+            const type = this.getType(element);
             if (preType !== jsNativeType.undefined) {
-                if (preType != type)
-                    return jsNativeType.multi
-            }
-            else preType = type;
+                if (preType != type) {
+                    return jsNativeType.multi;
+                }
+            } else { preType = type; }
         }
         return preType;
     }

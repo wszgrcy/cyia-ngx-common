@@ -41,8 +41,8 @@
 
 //     }
 // }
-class TreeLike<T>{
-    children?: TreeLike<T>[]
+class TreeLike<T> {
+    children?: TreeLike<T>[];
     [name: string]: any
 }
 // let res = treeSearch([{
@@ -61,14 +61,14 @@ class TreeLike<T>{
 // console.log(res)
 
 export function getNode<T = any>(list: TreeLike<T>[], item: TreeLike<T>, searchfn: (listItem: TreeLike<T>, searchItem: TreeLike<T>) => boolean) {
-    let tempList = list.slice()
-    let i = 0
+    let tempList = list.slice();
+    let i = 0;
     while (i !== tempList.length) {
-        let item = tempList[i]
+        const item = tempList[i];
         if (item.children && item.children.length) {
-            tempList = tempList.concat(item.children)
+            tempList = tempList.concat(item.children);
         }
-        i++
+        i++;
     }
-    return tempList.find((tempItem) => searchfn(tempItem, item))
+    return tempList.find((tempItem) => searchfn(tempItem, item));
 }

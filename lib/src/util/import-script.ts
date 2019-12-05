@@ -1,4 +1,4 @@
-const importGroup: { [name: string]: Promise<ImportResult> } = {}
+const importGroup: { [name: string]: Promise<ImportResult> } = {};
 export function importScript(path: string, options = { document }): Promise<ImportResult> {
 
     return importGroup[path] || (importGroup[path] = new Promise(resolve => {
@@ -6,7 +6,7 @@ export function importScript(path: string, options = { document }): Promise<Impo
             resolve(item);
         };
 
-        const script = options.document.createElement('script')
+        const script = options.document.createElement('script');
         script.type = 'text/javascript';
         script.src = path;
         script.charset = 'utf-8';
@@ -27,5 +27,5 @@ export function importScript(path: string, options = { document }): Promise<Impo
 }
 export interface ImportResult {
     result: boolean;
-    msg: any
+    msg: any;
 }

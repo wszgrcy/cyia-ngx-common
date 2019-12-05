@@ -1,6 +1,6 @@
-import { PrimaryColumn } from "../../decorator/entity/columns/primary-column.decorator";
-import { Entity, OneToMany, OneToOne } from "../../decorator/entity";
-import { One21P2Entity, One21P3Entity } from "./base.class";
+import { PrimaryColumn } from '../../decorator/entity/columns/primary-column.decorator';
+import { Entity, OneToMany, OneToOne } from '../../decorator/entity';
+import { One21P2Entity, One21P3Entity } from './base.class';
 
 
 @Entity({
@@ -11,12 +11,12 @@ import { One21P2Entity, One21P3Entity } from "./base.class";
 })
 export class One2OneOnlyEntity {
   @PrimaryColumn()
-  id
+  id;
   @OneToOne(() => One21P2Entity)
-  p2
+  p2;
 
   @OneToOne(() => One21P3Entity)
-  p3
+  p3;
 }
 @Entity({
   request: {
@@ -26,12 +26,12 @@ export class One2OneOnlyEntity {
 })
 export class One2OneMultiEntity {
   @PrimaryColumn()
-  id
+  id;
   @OneToOne(() => One21P2Entity)
-  p2
+  p2;
 
   @OneToOne(() => One21P3Entity)
-  p3
+  p3;
 }
 
 @Entity({
@@ -48,9 +48,9 @@ export class One2OneMultiEntity {
 })
 export class One2OneOnlyTestReqEntity {
   @PrimaryColumn()
-  id
+  id;
   @OneToOne(() => One21P2Entity)
-  p2
+  p2;
   @OneToOne(() => One21P3Entity)
-  p3
+  p3;
 }

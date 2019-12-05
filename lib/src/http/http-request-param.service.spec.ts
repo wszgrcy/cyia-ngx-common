@@ -11,7 +11,7 @@ import { One21P2Entity, One21P3Entity, Many2OneP2Entity, OneToManyP2 } from '../
 import { OneTOneChainEntity, OneTOneChainP2Entity, OneTOneChainP3Entity } from '../test/testclass/chain.class';
 import { NoRelationStructEntity, RelationStructEntity, RColumnP2Entity, OntoOne1Entity, ColumnP2Entity, Relate121WithStructureEntity, Struct2Entity, Struct2DataEntity } from '../test/testclass/struct.class';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import '../test/mock-one-to-one'
+import '../test/mock-one-to-one';
 @NgModule({
   declarations: [],
   imports: [HttpClientTestingModule],
@@ -21,64 +21,64 @@ class TestHttpModule {
 
 }
 describe('请求参数测试', () => {
-  let service: CyiaHttpService
-  let http: HttpClient
+  let service: CyiaHttpService;
+  let http: HttpClient;
   let httpTestingController: HttpTestingController;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TestHttpModule]
-    })
+    });
     service = TestBed.get(CyiaHttpService);
-    http = TestBed.get(HttpClient)
-    httpTestingController = TestBed.get(HttpTestingController)
+    http = TestBed.get(HttpClient);
+    httpTestingController = TestBed.get(HttpTestingController);
   });
 
 
 
   it('请求参数(单一)', async (done) => {
-    let res = service.getEntity(One2OneOnlyEntity)().toPromise()
+    const res = service.getEntity(One2OneOnlyEntity)().toPromise();
     // console.log('返回', res);
-    let req = httpTestingController.expectOne('http://127.0.0.1:3000/mainwithonetoone')
+    const req = httpTestingController.expectOne('http://127.0.0.1:3000/mainwithonetoone');
     console.log('单一', req);
-    expect(req.request.url).toEqual('http://127.0.0.1:3000/mainwithonetoone', `不相等${req.request.url}`)
-    expect(req.request.method.toLocaleLowerCase()).toEqual('get')
-    done()
-  })
+    expect(req.request.url).toEqual('http://127.0.0.1:3000/mainwithonetoone', `不相等${req.request.url}`);
+    expect(req.request.method.toLocaleLowerCase()).toEqual('get');
+    done();
+  });
   it('请求参数(body)', async (done) => {
-    let res = service.getEntity(One2OneOnlyTestReqEntity)().toPromise()
+    const res = service.getEntity(One2OneOnlyTestReqEntity)().toPromise();
     // console.log('返回', res);
-    let req = httpTestingController.expectOne('http://127.0.0.1:3000/mainwithonetoone')
+    const req = httpTestingController.expectOne('http://127.0.0.1:3000/mainwithonetoone');
     console.log('body', req);
-    expect(req.request.url).toEqual('http://127.0.0.1:3000/mainwithonetoone', `不相等${req.request.url}`)
-    expect(req.request.method.toLocaleLowerCase()).toEqual('post')
-    expect(req.request.body.a).toEqual('1')
-    expect(req.request.headers.get('test1')).toEqual('ceshi')
-    done()
-  })
+    expect(req.request.url).toEqual('http://127.0.0.1:3000/mainwithonetoone', `不相等${req.request.url}`);
+    expect(req.request.method.toLocaleLowerCase()).toEqual('post');
+    expect(req.request.body.a).toEqual('1');
+    expect(req.request.headers.get('test1')).toEqual('ceshi');
+    done();
+  });
   it('请求参数(合并参数)', async (done) => {
     console.log('合并参数');
-    let res = service.getEntity(One2OneOnlyTestReqEntity)({
+    const res = service.getEntity(One2OneOnlyTestReqEntity)({
       options: {
         body: { b: 2, a: 1 },
         headers: {
           test1: 'ceshi2'
         }
       }
-    }).toPromise()
+    }).toPromise();
     // console.log('返回', res);
-    let req = httpTestingController.expectOne('http://127.0.0.1:3000/mainwithonetoone')
+    const req = httpTestingController.expectOne('http://127.0.0.1:3000/mainwithonetoone');
     console.log('合并参数', req);
-    expect(req.request.url).toEqual('http://127.0.0.1:3000/mainwithonetoone', `不相等${req.request.url}`)
-    expect(req.request.method.toLocaleLowerCase()).toEqual('post')
-    expect(req.request.body.a).toEqual(1)
-    expect(req.request.body.b).toEqual(2)
+    expect(req.request.url).toEqual('http://127.0.0.1:3000/mainwithonetoone', `不相等${req.request.url}`);
+    expect(req.request.method.toLocaleLowerCase()).toEqual('post');
+    expect(req.request.body.a).toEqual(1);
+    expect(req.request.body.b).toEqual(2);
     // expect(req.request.body.b).toEqual(2)
-    expect(req.request.headers.get('test1')).toEqual('ceshi2')
-    done()
-  })
+    expect(req.request.headers.get('test1')).toEqual('ceshi2');
+    done();
+  });
   it('请求参数(application/x-www-form-urlencoded)', async (done) => {
-    let res = service.getEntity(One2OneOnlyTestReqEntity)({
+    const res = service.getEntity(One2OneOnlyTestReqEntity)({
       options: {
         body: { b: 2, a: 1, obj: { a: { b: 2 } } },
         headers: {
@@ -86,22 +86,22 @@ describe('请求参数测试', () => {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       }
-    }).toPromise()
+    }).toPromise();
     // console.log('返回', res);
-    let req = httpTestingController.expectOne('http://127.0.0.1:3000/mainwithonetoone')
+    const req = httpTestingController.expectOne('http://127.0.0.1:3000/mainwithonetoone');
     console.log('表单www', req);
-    expect(req.request.url).toEqual('http://127.0.0.1:3000/mainwithonetoone', `不相等${req.request.url}`)
-    expect(req.request.method.toLocaleLowerCase()).toEqual('post')
-    expect(req.request.body.a).toEqual(1)
-    expect(req.request.body.b).toEqual(2)
-    expect(req.request.body.b).toEqual(2)
-    expect(req.request.headers.get('test1')).toEqual('ceshi2')
-    expect(req.request.headers.get('Content-Type')).toEqual('application/x-www-form-urlencoded')
-    done()
-  })
+    expect(req.request.url).toEqual('http://127.0.0.1:3000/mainwithonetoone', `不相等${req.request.url}`);
+    expect(req.request.method.toLocaleLowerCase()).toEqual('post');
+    expect(req.request.body.a).toEqual(1);
+    expect(req.request.body.b).toEqual(2);
+    expect(req.request.body.b).toEqual(2);
+    expect(req.request.headers.get('test1')).toEqual('ceshi2');
+    expect(req.request.headers.get('Content-Type')).toEqual('application/x-www-form-urlencoded');
+    done();
+  });
   xit('模拟请求参数(application/x-www-form-urlencoded)', async (done) => {
     console.log('模拟参数');
-    let res = service.getEntity(One2OneOnlyTestReqEntity)({
+    const res = service.getEntity(One2OneOnlyTestReqEntity)({
       options: {
         body: { b: 2, a: 1, obj: { a: { b: 2 } } },
         headers: {
@@ -109,26 +109,26 @@ describe('请求参数测试', () => {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       }
-    }).pipe(take(1)).toPromise()
+    }).pipe(take(1)).toPromise();
     res.then((val) => {
       console.log('数据返回', val);
-      done()
-    })
+      done();
+    });
     // console.log('返回', res);
     console.log('期待');
-    let req = httpTestingController.expectOne('http://127.0.0.1:3000/mainwithonetoone')
+    const req = httpTestingController.expectOne('http://127.0.0.1:3000/mainwithonetoone');
     console.log('查看数据');
     console.log('模拟请求', req);
     // req.flush({ a: 1, b: '更改body?', }, { status: 200 })
-    req.event(new HttpResponse({ body: { c: '返回' }, status: 200 }))
-    expect(req.request.url).toEqual('http://127.0.0.1:3000/mainwithonetoone', `不相等${req.request.url}`)
-    expect(req.request.method.toLocaleLowerCase()).toEqual('post')
-    expect(req.request.body.a).toEqual(1)
-    expect(req.request.body.b).toEqual(2)
-    expect(req.request.body.b).toEqual(2)
-    expect(req.request.headers.get('test1')).toEqual('ceshi2')
-    expect(req.request.headers.get('Content-Type')).toEqual('application/x-www-form-urlencoded')
-  })
+    req.event(new HttpResponse({ body: { c: '返回' }, status: 200 }));
+    expect(req.request.url).toEqual('http://127.0.0.1:3000/mainwithonetoone', `不相等${req.request.url}`);
+    expect(req.request.method.toLocaleLowerCase()).toEqual('post');
+    expect(req.request.body.a).toEqual(1);
+    expect(req.request.body.b).toEqual(2);
+    expect(req.request.body.b).toEqual(2);
+    expect(req.request.headers.get('test1')).toEqual('ceshi2');
+    expect(req.request.headers.get('Content-Type')).toEqual('application/x-www-form-urlencoded');
+  });
   it('原始数据模拟', async (done) => {
     http.post('http://127.0.0.1:3000/aaa', { p1: 1, p2: 2 }, {
       headers: {
@@ -138,16 +138,16 @@ describe('请求参数测试', () => {
       // .pipe(take(1))
       .subscribe((val) => {
         console.log('原始返回值', val);
-        expect(val).toBeTruthy()
-        done()
-      })
-    let req = httpTestingController.expectOne('http://127.0.0.1:3000/aaa');
+        expect(val).toBeTruthy();
+        done();
+      });
+    const req = httpTestingController.expectOne('http://127.0.0.1:3000/aaa');
     console.log('查看请求参数', req);
     // req.request
-    req.event(new HttpResponse({ body: { c: '返回' }, status: 404 }))
-    req.flush({ flush: '用这个返回' })
+    req.event(new HttpResponse({ body: { c: '返回' }, status: 404 }));
+    req.flush({ flush: '用这个返回' });
 
     console.log('原始', req);
-  })
+  });
 });
 

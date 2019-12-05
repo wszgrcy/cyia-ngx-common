@@ -1,11 +1,11 @@
-import { PrimaryColumn } from "../../decorator/entity/columns/primary-column.decorator";
-import { Entity, OneToMany } from "../../decorator/entity";
+import { PrimaryColumn } from '../../decorator/entity/columns/primary-column.decorator';
+import { Entity, OneToMany } from '../../decorator/entity';
 @Entity({ request: { url: 'http://127.0.0.1:3000/onetomanyp2' } })
 export class OneToManyP2 {
   @PrimaryColumn()
-  id
-  mainid
-  city
+  id;
+  mainid;
+  city;
 }
 
 @Entity({
@@ -16,9 +16,9 @@ export class OneToManyP2 {
 })
 export class Many2OneP2Entity {
   @PrimaryColumn()
-  id
+  id;
 
-  city
+  city;
 
 }
 
@@ -33,13 +33,13 @@ export class Many2OneP2Entity {
       console.log('通过被动请求返回的url,不是预设');
       return {
         url: 'http://127.0.0.1:3000/onetoonep2'
-      }
+      };
     }
   })
 export class One21P2Entity {
   @PrimaryColumn()
-  id
-  city
+  id;
+  city;
 }
 @Entity({
   request: {
@@ -49,6 +49,6 @@ export class One21P2Entity {
 })
 export class One21P3Entity {
   @PrimaryColumn()
-  id
-  province
+  id;
+  province;
 }

@@ -1,2 +1,2 @@
-export * from './type-judgment'
-export * from './options/entity.options'
+export * from './type-judgment';
+export * from './options/entity.options';

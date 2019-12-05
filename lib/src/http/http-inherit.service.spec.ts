@@ -15,22 +15,22 @@ class TestHttpModule {
 
 }
 describe('类继承属性测试', () => {
-  let service: CyiaHttpService
+  let service: CyiaHttpService;
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TestHttpModule]
-    })
+    });
     service = TestBed.get(CyiaHttpService);
   });
 
   it('继承', (done) => {
     service.getEntity(InheritEntity)().subscribe((val) => {
       console.log('返回', val);
-      expect(!!val).toBe(true)
-      expect(val.p2 instanceof One21P2Entity).toEqual(true)
+      expect(!!val).toBe(true);
+      expect(val.p2 instanceof One21P2Entity).toEqual(true);
       done();
-    })
-  }, 1000)
+    });
+  }, 1000);
 
 });
 

@@ -1,6 +1,6 @@
-import { HttpRequestConfig } from "../../http/http.define";
-import { RelationMatchingMode } from "./relations.options";
-import { Type } from "@angular/core";
+import { HttpRequestConfig } from '../../http/http.define';
+import { RelationMatchingMode } from './relations.options';
+import { Type } from '@angular/core';
 
 export interface OneToOneMetaOption {
 
@@ -16,7 +16,7 @@ export interface OneToOneMetaOption {
  */
 export class EntityOptions {
   method?: Source = Source.request;
-  request?: HttpRequestConfig | ((...args) => HttpRequestConfig) = new HttpRequestConfig()
+  request?: HttpRequestConfig | ((...args) => HttpRequestConfig) = new HttpRequestConfig();
   /**被继承时,保留哪些字段 */
   // reserve?: Reserve[]
 }
@@ -28,8 +28,8 @@ export class EntityOptions {
  *
  */
 export class RelationEntityOptions {
-  request?: (result) => Promise<HttpRequestConfig> = async () => ({})
-  mode?: RelationMatchingMode = RelationMatchingMode.auto
+  mode?: RelationMatchingMode = RelationMatchingMode.auto;
+  request?: (result) => Promise<HttpRequestConfig> = async () => ({});
 }
 
 // export interface Chain {
@@ -53,9 +53,9 @@ export enum RequestFlag {
      */append
 }
 export interface EntityColumnOption {
-  targetEntityFn: () => Type<any>
-  propertyName: string
+  targetEntityFn: () => Type<any>;
+  propertyName: string;
 }
 
-export type Reserve = 'headers' | 'body' | 'params' | 'method' | 'url' | 'reportProgress' | 'responseType' | 'withCredentials' | 'observe'
+export type Reserve = 'headers' | 'body' | 'params' | 'method' | 'url' | 'reportProgress' | 'responseType' | 'withCredentials' | 'observe';
 // export type ContentType = 'json' | 'form-data' | 'x-www-form-urlencoded'|'raw'|'binary'

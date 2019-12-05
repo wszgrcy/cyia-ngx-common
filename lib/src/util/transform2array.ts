@@ -1,3 +1,3 @@
 export function transform2Array(val: any | any[]) {
-  return [].concat(...[val])
+  return [].concat(...[val]);
 }

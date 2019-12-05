@@ -1,3 +1,1 @@
-export interface MethodDecoratorFactory {
-    (...param): (target, name: string, descriptor: PropertyDescriptor) => {}
-}
+export type MethodDecoratorFactory = (...param) => (target, name: string, descriptor: PropertyDescriptor) => {};

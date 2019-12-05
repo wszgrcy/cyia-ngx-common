@@ -1,13 +1,13 @@
-import * as mockjs from "mockjs";
+import * as mockjs from 'mockjs';
 (() => {
-  const id = mockjs.mock('@guid')
-  const pid2 = mockjs.mock('@guid')
-  const pid3 = mockjs.mock('@guid')
+  const id = mockjs.mock('@guid');
+  const pid2 = mockjs.mock('@guid');
+  const pid3 = mockjs.mock('@guid');
   mockjs.mock('http://127.0.0.1:3000/mainwithonetoone', {
     'id': id,
     'p2': pid2,
     'p3': pid3,
-  })
+  });
   mockjs.mock('http://127.0.0.1:3000/mainwithonetoonemulti', [
     {
       'id': id,
@@ -15,7 +15,7 @@ import * as mockjs from "mockjs";
     {
       'id': pid2,
     },
-  ])
+  ]);
   mockjs.mock('http://127.0.0.1:3000/onetoonep2',
     [
       {
@@ -27,7 +27,7 @@ import * as mockjs from "mockjs";
         'city': mockjs.mock('@city')
       },
     ]
-  )
+  );
   mockjs.mock('http://127.0.0.1:3000/onetoonep3',
     [
       {
@@ -40,7 +40,7 @@ import * as mockjs from "mockjs";
       },
 
     ]
-  )
+  );
   // mockjs.setup({ timeout: 0 })
-})()
+})();
 

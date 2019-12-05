@@ -1,7 +1,7 @@
-import { Entity } from "../../decorator/entity/entity.decorator";
-import { PrimaryColumn } from "../../decorator/entity/columns/primary-column.decorator";
-import { One21P2Entity } from "./base.class";
-import { OneToOne } from "../../decorator/entity/property/one-to-one.decorator";
+import { Entity } from '../../decorator/entity/entity.decorator';
+import { PrimaryColumn } from '../../decorator/entity/columns/primary-column.decorator';
+import { One21P2Entity } from './base.class';
+import { OneToOne } from '../../decorator/entity/property/one-to-one.decorator';
 
 // import { Entity, PrimaryColumn } from ".";
 
@@ -13,9 +13,9 @@ import { OneToOne } from "../../decorator/entity/property/one-to-one.decorator";
 })
 export class OriginEntity {
     @PrimaryColumn()
-    id
+    id;
     @OneToOne(() => One21P2Entity)
-    p2
+    p2;
 }
 @Entity({
     request: {
@@ -24,7 +24,7 @@ export class OriginEntity {
     },
     // reserve: ['url']
 })
-export class InheritEntity extends OriginEntity{
+export class InheritEntity extends OriginEntity {
 
 }
 

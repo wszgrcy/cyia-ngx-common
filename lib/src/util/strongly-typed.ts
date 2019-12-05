@@ -1,4 +1,4 @@
-import { Type } from "@angular/core";
+import { Type } from '@angular/core';
 
 /**
  * 强类型化,不会查找原型链上的属性
@@ -9,15 +9,15 @@ import { Type } from "@angular/core";
 // export function stronglyTyped<T>(data: any, entity: Type<T>): T;
 export function stronglyTyped<T, D>(data: D, entity: Type<T>): D extends Array<any> ? T[] : T {
   if (data instanceof Array) {
-    return data.map((item) => _stronglyTypedSingle(item, entity)) as any
+    return data.map((item) => _stronglyTypedSingle(item, entity)) as any;
   }
-  return _stronglyTypedSingle(data, entity) as any
+  return _stronglyTypedSingle(data, entity) as any;
 }
 function _stronglyTypedSingle<T>(data, entity: Type<T>) {
-  let instance = new entity()
+  const instance = new entity();
   for (const x in data) {
-    if (!data.hasOwnProperty(x)) continue
-    instance[x] = data[x]
+    if (!data.hasOwnProperty(x)) { continue; }
+    instance[x] = data[x];
   }
-  return instance
+  return instance;
 }

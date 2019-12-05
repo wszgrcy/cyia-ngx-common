@@ -1,6 +1,6 @@
-import { Type } from "@angular/core";
-import { CyiaHttpService } from "../../../http";
-import { PRIMARY_COLUMN_SYMBOL, ENTITY_COLUMN_SYMBOL } from "../../../symbol/entity.symbol";
+import { Type } from '@angular/core';
+import { CyiaHttpService } from '../../../http';
+import { PRIMARY_COLUMN_SYMBOL, ENTITY_COLUMN_SYMBOL } from '../../../symbol/entity.symbol';
 
 /**
  * 需要知道是哪个实体
@@ -11,7 +11,7 @@ import { PRIMARY_COLUMN_SYMBOL, ENTITY_COLUMN_SYMBOL } from "../../../symbol/ent
  */
 export function EntityColumn<T>(targetEntityFn: () => Type<T>) {
   return function (target, key: string) {
-    let list: any[] = Reflect.getMetadata(ENTITY_COLUMN_SYMBOL, target.constructor) || []
+    const list: any[] = Reflect.getMetadata(ENTITY_COLUMN_SYMBOL, target.constructor) || [];
     list.push({
       targetEntityFn,
       propertyName: key
@@ -21,7 +21,7 @@ export function EntityColumn<T>(targetEntityFn: () => Type<T>) {
       // options,
       // target: target.constructor,
       // propertyName: propertyKey
-    })
-    Reflect.defineMetadata(ENTITY_COLUMN_SYMBOL, list, target.constructor)
-  }
+    });
+    Reflect.defineMetadata(ENTITY_COLUMN_SYMBOL, list, target.constructor);
+  };
 }

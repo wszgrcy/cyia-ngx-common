@@ -2,9 +2,9 @@ import { HttpMethod, HttpHeaders, HttpRequestConfig } from './http.define';
 import { Type } from '@angular/core';
 
 
-export abstract class HttpClientItemConfig<T,D> {
-    sub: D
-    abstract defalut: HttpClientItemConfigBase<T>
+export abstract class HttpClientItemConfig<T, D> {
+    sub: D;
+    abstract defalut: HttpClientItemConfigBase<T>;
     constructor(
     ) {
     }

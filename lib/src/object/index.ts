@@ -1,1 +1,1 @@
-export * from './deepassign'
+export * from './deepassign';
