@@ -11,10 +11,11 @@ export function LoadingHint<T = any>(
 );
 export function LoadingHint<T = any>(
   arg1: CyiaLoadHintOption | ((type: T) => ViewContainerRef) | 'root',
-  arg2?: Type<any> | CyiaLoadHintConfig | InjectionToken<CyiaLoadHintConfig>) {
-  return function (target, key: string, property: PropertyDescriptor) {
+  arg2?: Type<any> | CyiaLoadHintConfig | InjectionToken<CyiaLoadHintConfig>
+) {
+  return function(target, key: string, property: PropertyDescriptor) {
     const fn: Function = property.value;
-    property.value = function () {
+    property.value = function() {
       let container: LoadingHintContainer;
       let component: Type<any>;
       let otherParam = {};
@@ -27,7 +28,7 @@ export function LoadingHint<T = any>(
         otherParam = arg1;
         ({ component } = arg1);
       }
-      if (arg2 && (arg2.hasOwnProperty('component'))) {
+      if (arg2 && arg2.hasOwnProperty('component')) {
         component = (arg2 as any).component;
         otherParam = arg2;
       } else if (arg2 && !(arg2 instanceof InjectionToken)) {
@@ -44,13 +45,11 @@ export function LoadingHint<T = any>(
 
       const res = fn.call(this, arguments);
       if (ɵisPromise(res)) {
-        return res.then((value) => {
+        return res.then(value => {
           return LoadingHintService.uninstall(installConfig, value).toPromise();
         });
       } else if (ɵisObservable(res)) {
-        return res.pipe(
-          switchMap((value) => LoadingHintService.uninstall(installConfig, value))
-        );
+        return res.pipe(switchMap(value => LoadingHintService.uninstall(installConfig, value)));
       }
       return res;
     };

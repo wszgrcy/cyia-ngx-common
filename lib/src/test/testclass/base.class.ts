@@ -11,7 +11,7 @@ export class OneToManyP2 {
 @Entity({
   request: {
     url: 'http://127.0.0.1:3000/many2onep2',
-    method: 'get',
+    method: 'get'
   }
 })
 export class Many2OneP2Entity {
@@ -19,23 +19,25 @@ export class Many2OneP2Entity {
   id;
 
   city;
-
 }
 
-@Entity({
-  request: {
-    // url: 'http://127.0.0.1:3000/onetoonep2',
-    method: 'get',
-  }
-}, {
-    request: async (result) => {
+@Entity(
+  {
+    request: {
+      // url: 'http://127.0.0.1:3000/onetoonep2',
+      method: 'get'
+    }
+  },
+  {
+    request: async result => {
       console.log(result);
       console.log('通过被动请求返回的url,不是预设');
       return {
         url: 'http://127.0.0.1:3000/onetoonep2'
       };
     }
-  })
+  }
+)
 export class One21P2Entity {
   @PrimaryColumn()
   id;
@@ -44,7 +46,7 @@ export class One21P2Entity {
 @Entity({
   request: {
     url: 'http://127.0.0.1:3000/onetoonep3',
-    method: 'get',
+    method: 'get'
   }
 })
 export class One21P3Entity {

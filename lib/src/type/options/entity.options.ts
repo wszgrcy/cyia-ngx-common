@@ -3,9 +3,10 @@ import { RelationMatchingMode } from './relations.options';
 import { Type } from '@angular/core';
 
 export enum Source {
-  request, normal, /**结构化 */structure
+  request,
+  normal,
+  /**结构化 */ structure
 }
-
 
 /**
  * 实体类装饰器配置
@@ -44,17 +45,27 @@ export class RelationEntityOptions {
  * @enum {number}
  */
 export enum RequestFlag {
-    /**所有请求参数不继承 */new, /**原有数据上追加,
+  /**所有请求参数不继承 */ new,
+  /**原有数据上追加,
     url上表现为路径合并
     header,body,param上表现为对象合并
 
 
-     */append
+     */ append
 }
 export interface EntityColumnOption {
   targetEntityFn: () => Type<any>;
   propertyName: string;
 }
 
-export type Reserve = 'headers' | 'body' | 'params' | 'method' | 'url' | 'reportProgress' | 'responseType' | 'withCredentials' | 'observe';
+export type Reserve =
+  | 'headers'
+  | 'body'
+  | 'params'
+  | 'method'
+  | 'url'
+  | 'reportProgress'
+  | 'responseType'
+  | 'withCredentials'
+  | 'observe';
 // export type ContentType = 'json' | 'form-data' | 'x-www-form-urlencoded'|'raw'|'binary'

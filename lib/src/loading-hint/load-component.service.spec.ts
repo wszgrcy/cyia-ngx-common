@@ -1,4 +1,13 @@
-import { NgModule, InjectionToken, ViewContainerRef, Type, Component, ViewChild, ChangeDetectorRef, OnInit } from '@angular/core';
+import {
+  NgModule,
+  InjectionToken,
+  ViewContainerRef,
+  Type,
+  Component,
+  ViewChild,
+  ChangeDetectorRef,
+  OnInit
+} from '@angular/core';
 import { LoadingHint } from './loading-hint.decorator';
 import { TestBed, async, ComponentFixture } from '@angular/core/testing';
 import { LoadingHintService } from './load-component.service';
@@ -9,9 +18,12 @@ import { CyiaLoadingHintModule } from './load-component.module';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  template: `<div class="loading__text">加载中</div><button class="close__button" (click)="close()" *ngIf="complete">完成</button>`,
+  template: `
+    <div class="loading__text">加载中</div>
+    <button class="close__button" (click)="close()" *ngIf="complete">完成</button>
+  `,
   host: {
-    'class': 'loading__hint'
+    class: 'loading__hint'
   }
 })
 class LoadingTestComponent implements OnInit {
@@ -21,7 +33,7 @@ class LoadingTestComponent implements OnInit {
     // this.cd.detectChanges();
   }
   ngOnInit(): void {
-    (this[CYIA_LOADING_HINT_COMPLETE$] as Subject<any>).subscribe((val) => {
+    (this[CYIA_LOADING_HINT_COMPLETE$] as Subject<any>).subscribe(val => {
       this.complete = true;
       this.cd.detectChanges();
     });
@@ -29,16 +41,14 @@ class LoadingTestComponent implements OnInit {
   close() {
     this[CYIA_LOADING_HINT_CLOSE_FN]();
   }
-
 }
 @Component({
   template: `
-  <div style="width:100px;height:100px" #promiseTemplateRef >
-  <button (click)="runPromise()">点击</button>
-  <div class="test-anchor"></div>
-  </div>
-
-`,
+    <div style="width:100px;height:100px" #promiseTemplateRef>
+      <button (click)="runPromise()">点击</button>
+      <div class="test-anchor"></div>
+    </div>
+  `,
   host: {
     class: 'test__component'
   }
@@ -46,15 +56,15 @@ class LoadingTestComponent implements OnInit {
 class TestComponent {
   @ViewChild('promiseTemplateRef', { static: true, read: ViewContainerRef }) promiseContainerRef: ViewContainerRef;
   subject = new Subject();
-  constructor() { }
+  constructor() {}
   runPromise() {
-    this.loadingWithPromise().then((res) => {
+    this.loadingWithPromise().then(res => {
       this.subject.next(res);
     });
   }
   @LoadingHint({ container: (type: TestComponent) => type.promiseContainerRef, component: LoadingTestComponent })
   loadingWithPromise() {
-    return new Promise((res) => {
+    return new Promise(res => {
       setTimeout(() => {
         res(1000);
       }, 500);
@@ -67,7 +77,7 @@ class TestComponent {
     uninstallMod: CyiaLoadingHintUninstall.duration
   })
   loadingWithPromiseCloseWithDuration() {
-    return new Promise((res) => {
+    return new Promise(res => {
       setTimeout(() => {
         res(1000);
       }, 500);
@@ -79,7 +89,7 @@ class TestComponent {
     uninstallMod: CyiaLoadingHintUninstall.component
   })
   loadingWithPromiseCloseWithComponent() {
-    return new Promise((res) => {
+    return new Promise(res => {
       setTimeout(() => {
         res(1000);
       }, 500);
@@ -92,15 +102,12 @@ class TestComponent {
     blockReturn: true
   })
   loadingWithPromiseCloseWithComponentBlock() {
-    return new Promise((res) => {
+    return new Promise(res => {
       setTimeout(() => {
         res(1000);
       }, 500);
     });
   }
-
-
-
 }
 @NgModule({
   imports: [CyiaLoadingHintModule, CommonModule],
@@ -110,7 +117,6 @@ class TestComponent {
 })
 class TestModule {
   // constructor() {
-
   // }
 }
 describe('载入提示组件装饰器配置测试', () => {
@@ -157,18 +163,21 @@ describe('载入提示组件装饰器配置测试', () => {
   // let loadingHintService=jasmine.createSpyObj('LoadingHintService')
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [LoadingHintService, {
-        provide: TOKEN, useValue: { component: component }
-      }]
+      providers: [
+        LoadingHintService,
+        {
+          provide: TOKEN,
+          useValue: { component: component }
+        }
+      ]
     });
     service = TestBed.get(LoadingHintService);
-
   });
   function testConfigAndResult(testConfig, testResult) {
     return new Promise((res, rej) => {
       const orgInstall = LoadingHintService.install;
       const orgUnInstall = LoadingHintService.uninstall;
-      LoadingHintService.install = (config) => {
+      LoadingHintService.install = config => {
         for (const x in config) {
           if (config.hasOwnProperty(x) && config[x] !== undefined) {
             expect(config[x]).toBe(testConfig[x]);
@@ -197,81 +206,90 @@ describe('载入提示组件装饰器配置测试', () => {
         LoadingHintService.uninstall = orgUnInstall;
         return of(1);
       };
-
     });
   }
-  it('以option加载配置', (done) => {
-    testConfigAndResult({ container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.default }, 1000).then(() => {
+  it('以option加载配置', done => {
+    testConfigAndResult(
+      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.default },
+      1000
+    ).then(() => {
       done();
     });
     const comp = new SubComponent();
     comp.runOption();
   });
-  it('以config加载配置', (done) => {
-    testConfigAndResult({ container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.default }, 1000).then(() => {
+  it('以config加载配置', done => {
+    testConfigAndResult(
+      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.default },
+      1000
+    ).then(() => {
       done();
     });
     const comp = new SubComponent();
     comp.runConfig();
   });
-  it('以token加载配置', (done) => {
+  it('以token加载配置', done => {
     testConfigAndResult(
-      { container: container, uninstallMod: CyiaLoadingHintUninstall.default, token: TOKEN }
-      , 1000).then(() => {
-        done();
-      });
+      { container: container, uninstallMod: CyiaLoadingHintUninstall.default, token: TOKEN },
+      1000
+    ).then(() => {
+      done();
+    });
     const comp = new SubComponent();
     comp.runToken();
   });
-  it('以option加载配置(root容器)', (done) => {
+  it('以option加载配置(root容器)', done => {
     testConfigAndResult(
-      { container: ROOT_CONTAINER, component: component, uninstallMod: CyiaLoadingHintUninstall.default }
-      , 1000).then(() => {
-        done();
-      });
+      { container: ROOT_CONTAINER, component: component, uninstallMod: CyiaLoadingHintUninstall.default },
+      1000
+    ).then(() => {
+      done();
+    });
     const comp = new SubComponent();
     comp.runOptionContainerWithRoot();
   });
-  it('以config加载配置(root容器)', (done) => {
+  it('以config加载配置(root容器)', done => {
     testConfigAndResult(
-      { container: ROOT_CONTAINER, component: component, uninstallMod: CyiaLoadingHintUninstall.default }
-      , 1000).then(() => {
-        done();
-      });
+      { container: ROOT_CONTAINER, component: component, uninstallMod: CyiaLoadingHintUninstall.default },
+      1000
+    ).then(() => {
+      done();
+    });
     const comp = new SubComponent();
     comp.runConfigContainerWithRoot();
   });
-  it('以token加载配置(root容器)', (done) => {
+  it('以token加载配置(root容器)', done => {
     testConfigAndResult(
-      { container: ROOT_CONTAINER, uninstallMod: CyiaLoadingHintUninstall.default, token: TOKEN }
-      , 1000).then(() => {
-        done();
-      });
+      { container: ROOT_CONTAINER, uninstallMod: CyiaLoadingHintUninstall.default, token: TOKEN },
+      1000
+    ).then(() => {
+      done();
+    });
     const comp = new SubComponent();
     comp.runTokenContainerWithRoot();
   });
-  it('以config加载配置(组件控制关闭)', (done) => {
-    testConfigAndResult({ container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.component }, 1000).then(() => {
+  it('以config加载配置(组件控制关闭)', done => {
+    testConfigAndResult(
+      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.component },
+      1000
+    ).then(() => {
       done();
     });
     const comp = new SubComponent();
     comp.runConfigCloseWithComponent();
   });
-  it('以config加载配置(持续时间控制关闭)', (done) => {
+  it('以config加载配置(持续时间控制关闭)', done => {
     testConfigAndResult(
-      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.duration, duration: 500 }
-      , 1000).then(() => {
-        done();
-      });
+      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.duration, duration: 500 },
+      1000
+    ).then(() => {
+      done();
+    });
     const comp = new SubComponent();
     comp.runConfigCloseWithDuration();
   });
-
-
 });
 describe('载入提示组件运行测试', () => {
-
-
   let service: LoadingHintService;
   let componentFixture: ComponentFixture<TestComponent>;
   let componentInstance: TestComponent;
@@ -288,10 +306,10 @@ describe('载入提示组件运行测试', () => {
     componentFixture = TestBed.createComponent(TestComponent);
     componentInstance = componentFixture.componentInstance;
   });
-  it('异步返回关闭模式', async (done) => {
+  it('异步返回关闭模式', async done => {
     componentFixture.autoDetectChanges(true);
     const start = Date.now();
-    componentInstance.subject.subscribe((val) => {
+    componentInstance.subject.subscribe(val => {
       expect(val).toBe(1000);
       expect(Date.now() - start).toBeGreaterThanOrEqual(500);
       done();
@@ -307,10 +325,10 @@ describe('载入提示组件运行测试', () => {
     expect(loadingHintEl.clientHeight).toEqual(testEl.clientHeight);
     // expect(loadingHintEl.style.pointerEvents).toEqual('')
   });
-  it('定时关闭模式', async (done) => {
+  it('定时关闭模式', async done => {
     componentFixture.autoDetectChanges(true);
     const start = Date.now();
-    componentInstance.loadingWithPromiseCloseWithDuration().then((val) => {
+    componentInstance.loadingWithPromiseCloseWithDuration().then(val => {
       expect(val).toBe(1000);
       expect(Date.now() - start).toBeGreaterThanOrEqual(500);
       done();
@@ -325,11 +343,11 @@ describe('载入提示组件运行测试', () => {
     expect(loadingHintEl.clientHeight).toEqual(testEl.clientHeight);
     // expect(loadingHintEl.style.pointerEvents).toEqual('')
   });
-  it('组件关闭模式', async (done) => {
+  it('组件关闭模式', async done => {
     componentFixture.autoDetectChanges(true);
     const start = Date.now();
 
-    componentInstance.loadingWithPromiseCloseWithComponent().then((val) => {
+    componentInstance.loadingWithPromiseCloseWithComponent().then(val => {
       expect(val).toBe(1000);
       expect(Date.now() - start).toBeGreaterThanOrEqual(500);
       setTimeout(() => {
@@ -353,11 +371,11 @@ describe('载入提示组件运行测试', () => {
     expect(loadingHintEl.clientHeight).toEqual(testEl.clientHeight);
     // expect(loadingHintEl.style.pointerEvents).toEqual('')
   });
-  it('组件关闭模式(阻塞)', async (done) => {
+  it('组件关闭模式(阻塞)', async done => {
     componentFixture.autoDetectChanges(true);
     const start = Date.now();
 
-    componentInstance.loadingWithPromiseCloseWithComponentBlock().then((val) => {
+    componentInstance.loadingWithPromiseCloseWithComponentBlock().then(val => {
       expect(val).toBe(1000);
       expect(Date.now() - start).toBeGreaterThanOrEqual(500);
     });

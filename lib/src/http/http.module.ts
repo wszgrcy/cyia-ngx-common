@@ -5,20 +5,16 @@ import { NgModule, ModuleWithProviders } from '@angular/core';
 import { REQUEST_LIST } from './http.token';
 
 @NgModule({
-    declarations: [],
-    imports: [HttpClientModule],
-    providers: [],
+  declarations: [],
+  imports: [HttpClientModule],
+  providers: []
 })
 export class CyiaHttpModule {
-    // static forRoot(config?: CyiaHttpModuleConfig): ModuleWithProviders
-    static forRoot(requestList?: RequestItem[]): ModuleWithProviders {
-        return {
-            ngModule: CyiaHttpModule,
-            providers: [
-                { provide: REQUEST_LIST, useValue: requestList },
-                CyiaHttpService
-            ],
-
-        };
-    }
+  // static forRoot(config?: CyiaHttpModuleConfig): ModuleWithProviders
+  static forRoot(requestList?: RequestItem[]): ModuleWithProviders {
+    return {
+      ngModule: CyiaHttpModule,
+      providers: [{ provide: REQUEST_LIST, useValue: requestList }, CyiaHttpService]
+    };
+  }
 }

@@ -35,8 +35,4 @@ export function OneToOne<S = any, I = any>(inverseFn: () => Type<I>, options?: a
     // })
     // return descriptor
   };
-
 }
-
-
-

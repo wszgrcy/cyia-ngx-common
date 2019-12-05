@@ -1,8 +1,5 @@
-
 describe('强类型化', () => {
-  class A {
-
-  }
+  class A {}
   function testIt(msg, entity, data) {
     it(msg, () => {
       const instance = new entity();

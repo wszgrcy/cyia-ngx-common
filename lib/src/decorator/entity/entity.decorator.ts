@@ -10,15 +10,19 @@ import { HttpRequestConfig } from '../../http/http.define';
  * @export
  */
 export function Entity(options: EntityOptions, relationOptions?: RelationEntityOptions) {
-  return function <T extends new (...args: any[]) => {}>(constructor: T) {
+  return function<T extends new (...args: any[]) => {}>(constructor: T) {
     if (typeof options.request !== 'function') {
       options.request = Object.assign(new HttpRequestConfig(), options.request);
     }
-    Reflect.defineMetadata(ENTITY_SYMBOL, {
-      entity: constructor,
-      options: Object.assign(new EntityOptions(), options),
-      relationOptions: Object.assign(new RelationEntityOptions(), relationOptions)
-    }, constructor);
+    Reflect.defineMetadata(
+      ENTITY_SYMBOL,
+      {
+        entity: constructor,
+        options: Object.assign(new EntityOptions(), options),
+        relationOptions: Object.assign(new RelationEntityOptions(), relationOptions)
+      },
+      constructor
+    );
   };
 }
 // export function EntityList(options: EntityOptions, relationOptions?: RelationEntityOptions) {
@@ -30,4 +34,3 @@ export function Entity(options: EntityOptions, relationOptions?: RelationEntityO
 //     }, constructor)
 //   }
 // }
-

@@ -30,7 +30,6 @@ export class StructListEntity {
   id;
   @EntityColumn(() => ColumnItemEntity)
   data: ColumnItemEntity[];
-
 }
 @Entity({
   request: {
@@ -55,10 +54,7 @@ export class StructList1Entity {
   id;
   @EntityColumn(() => ColumnItemEntity)
   data: ColumnItemEntity[];
-
 }
-
-
 
 /**
  * 结构化返回的情况下,进行不同层级下的关联

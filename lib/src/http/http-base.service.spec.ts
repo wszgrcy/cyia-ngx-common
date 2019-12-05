@@ -22,11 +22,9 @@ import { One21P2Entity, One21P3Entity, Many2OneP2Entity } from '../test/testclas
 @NgModule({
   declarations: [],
   imports: [HttpClientModule],
-  providers: [CyiaHttpService],
+  providers: [CyiaHttpService]
 })
-class TestHttpModule {
-
-}
+class TestHttpModule {}
 describe('服务测试', () => {
   let service: CyiaHttpService;
   beforeEach(() => {
@@ -37,7 +35,10 @@ describe('服务测试', () => {
   });
   /**一对一,返回的为单对象 */
   async function one21Single() {
-    const res = await service.getEntity(One2OneOnlyEntity)({}).pipe(take(1)).toPromise();
+    const res = await service
+      .getEntity(One2OneOnlyEntity)({})
+      .pipe(take(1))
+      .toPromise();
     expect(res).not.toBe(null);
     expect(res.p2 instanceof One21P2Entity).toBe(true);
     expect(res.p3 instanceof One21P3Entity).toBe(true);
@@ -45,79 +46,94 @@ describe('服务测试', () => {
 
   /**一对一返回列表 */
   async function one21Multi() {
-    const res = await service.getEntityList(One2OneMultiEntity)({}).pipe(take(1)).toPromise();
+    const res = await service
+      .getEntityList(One2OneMultiEntity)({})
+      .pipe(take(1))
+      .toPromise();
     expect(res).not.toBe(null);
     expect(res instanceof Array).toBe(true);
-    res.forEach((item) => {
+    res.forEach(item => {
       expect(item.p2 instanceof One21P2Entity).toBe(true);
       expect(item.p3 instanceof One21P3Entity).toBe(true);
     });
   }
   /**多对一,单一*/
   async function many21Single() {
-    const res = await service.getEntity(Many2OneSingleEntity)({}).pipe(take(1)).toPromise();
+    const res = await service
+      .getEntity(Many2OneSingleEntity)({})
+      .pipe(take(1))
+      .toPromise();
     expect(res).not.toBe(null);
     expect(res.p2.city).not.toBe(null);
   }
   /**多对一,数组 */
   async function many21Multi() {
-    const res = await service.getEntityList(Many2OneMultiEntity)({}).pipe(take(1)).toPromise();
+    const res = await service
+      .getEntityList(Many2OneMultiEntity)({})
+      .pipe(take(1))
+      .toPromise();
     expect(res).not.toBe(null);
     expect(res instanceof Array).toBe(true);
-    res.forEach((item) => {
+    res.forEach(item => {
       expect(item.p2 instanceof Many2OneP2Entity).toBe(true);
       expect(item.p2.city).not.toBe(null);
     });
   }
   async function one2ManySingle() {
-    const res = await service.getEntity(OneToManySingleEntity)({}).pipe(take(1)).toPromise();
+    const res = await service
+      .getEntity(OneToManySingleEntity)({})
+      .pipe(take(1))
+      .toPromise();
     expect(res).not.toBe(null);
     expect(res.p2).not.toBe(null);
     expect(res.p2 instanceof Array).toBe(true);
   }
   async function one2ManyMulti() {
-    const res = await service.getEntityList(OneToManyMultiEntity)({}).pipe(take(1)).toPromise();
+    const res = await service
+      .getEntityList(OneToManyMultiEntity)({})
+      .pipe(take(1))
+      .toPromise();
     expect(res).not.toBe(null);
     expect(res instanceof Array).toBe(true);
-    res.forEach((item) => {
+    res.forEach(item => {
       expect(item.p2).not.toBe(null);
       expect(item.p2 instanceof Array).toBe(true);
     });
   }
-  it('一对一关系', async (done) => {
+  it('一对一关系', async done => {
     await one21Single();
     return done();
   });
-  it('一对一关系(数组)', async (done) => {
+  it('一对一关系(数组)', async done => {
     await one21Multi();
     return done();
   });
-  it('一对一关系二次(数组)', async (done) => {
+  it('一对一关系二次(数组)', async done => {
     await one21Multi();
     await one21Multi();
     return done();
   });
-  it('一对一关系二次调用(测试仓库)', async (done) => {
+  it('一对一关系二次调用(测试仓库)', async done => {
     await one21Single();
     await one21Single();
     return done();
   });
-  it('多对一关系', async (done) => {
+  it('多对一关系', async done => {
     await many21Single();
     done();
     return true;
   });
-  it('多对一关系,数组', async (done) => {
+  it('多对一关系,数组', async done => {
     await many21Multi();
     done();
     return true;
   });
-  it('一对多关系', async (done) => {
+  it('一对多关系', async done => {
     await one2ManySingle();
     done();
     return true;
   });
-  it('一对多关系(数组)', async (done) => {
+  it('一对多关系(数组)', async done => {
     await one2ManyMulti();
     done();
     return true;
@@ -126,4 +142,3 @@ describe('服务测试', () => {
   //   // console.log('用来接屎', action);
   // })
 });
-

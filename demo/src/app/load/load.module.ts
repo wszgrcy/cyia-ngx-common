@@ -3,10 +3,8 @@ import { CommonModule } from '@angular/common';
 import { LoadComponent } from './load.component';
 
 @NgModule({
-  imports: [
-    CommonModule
-  ],
+  imports: [CommonModule],
   declarations: [LoadComponent],
   entryComponents: [LoadComponent]
 })
-export class LoadModule { }
+export class LoadModule {}

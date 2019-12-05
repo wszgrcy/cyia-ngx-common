@@ -6,25 +6,22 @@ import { OneToOne } from '../../decorator/entity/property/one-to-one.decorator';
 // import { Entity, PrimaryColumn } from ".";
 
 @Entity({
-    request: {
-        url: 'http://127.0.0.1:3000/t1',
-        method: 'get',
-    }
+  request: {
+    url: 'http://127.0.0.1:3000/t1',
+    method: 'get'
+  }
 })
 export class OriginEntity {
-    @PrimaryColumn()
-    id;
-    @OneToOne(() => One21P2Entity)
-    p2;
+  @PrimaryColumn()
+  id;
+  @OneToOne(() => One21P2Entity)
+  p2;
 }
 @Entity({
-    request: {
-        url: 'http://127.0.0.1:3000/mainwithonetoone',
-        method: 'get',
-    },
-    // reserve: ['url']
+  request: {
+    url: 'http://127.0.0.1:3000/mainwithonetoone',
+    method: 'get'
+  }
+  // reserve: ['url']
 })
-export class InheritEntity extends OriginEntity {
-
-}
-
+export class InheritEntity extends OriginEntity {}

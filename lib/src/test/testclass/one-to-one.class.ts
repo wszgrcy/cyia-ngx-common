@@ -2,11 +2,10 @@ import { PrimaryColumn } from '../../decorator/entity/columns/primary-column.dec
 import { Entity, OneToMany, OneToOne } from '../../decorator/entity';
 import { One21P2Entity, One21P3Entity } from './base.class';
 
-
 @Entity({
   request: {
     url: 'http://127.0.0.1:3000/mainwithonetoone',
-    method: 'get',
+    method: 'get'
   }
 })
 export class One2OneOnlyEntity {
@@ -21,7 +20,7 @@ export class One2OneOnlyEntity {
 @Entity({
   request: {
     url: 'http://127.0.0.1:3000/mainwithonetoonemulti',
-    method: 'get',
+    method: 'get'
   }
 })
 export class One2OneMultiEntity {

@@ -1,7 +1,6 @@
-
 class TreeLike<T> {
   children?: TreeLike<T>[];
-  [name: string]: any
+  [name: string]: any;
 }
 
 export function getNode<T = any>(
@@ -18,5 +17,5 @@ export function getNode<T = any>(
     }
     i++;
   }
-  return tempList.find((tempItem) => searchfn(tempItem, item));
+  return tempList.find(tempItem => searchfn(tempItem, item));
 }

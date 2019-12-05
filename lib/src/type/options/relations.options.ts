@@ -11,5 +11,7 @@ export interface RelationOption {
   propertyName: string;
 }
 export enum RelationMatchingMode {
-  repositoryOnly, requestOnly, auto
+  repositoryOnly,
+  requestOnly,
+  auto
 }

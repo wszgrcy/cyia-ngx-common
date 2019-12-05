@@ -5,5 +5,4 @@ export interface RegisterEntityOption {
   entity?: Type<any>;
   options?: EntityOptions;
   relationOptions?: RelationEntityOptions;
-
 }

@@ -8,19 +8,19 @@ import { Subject } from 'rxjs';
   styleUrls: ['./load.component.scss']
 })
 export class LoadComponent implements OnInit {
-  complete = '未完成'
-  constructor() { }
+  complete = '未完成';
+  constructor() {}
 
   ngOnInit() {
-    (this[CYIA_LOADING_HINT_COMPLETE$] as Subject<any>).subscribe((val) => {
+    (this[CYIA_LOADING_HINT_COMPLETE$] as Subject<any>).subscribe(val => {
       console.log('完成', val);
-      this.complete = '已完成'
+      this.complete = '已完成';
       // setTimeout(() => {
       //   this[CYIA_LOADING_HINT_CLOSE_FN]()
       // }, 1000);
-    })
+    });
   }
   close() {
-    this[CYIA_LOADING_HINT_CLOSE_FN]()
+    this[CYIA_LOADING_HINT_CLOSE_FN]();
   }
 }

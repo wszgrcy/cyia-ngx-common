@@ -10,7 +10,11 @@ import { RelationType } from '../../../type/relation.type';
  * 多对一,主键,指定对方字段
  * 多对多,?
  */
-export function ManyToOne<S = any, I = any>(inverseFn: () => Type<I>, inverseValueFn: (type: I) => I[keyof I] | any, options?: any) {
+export function ManyToOne<S = any, I = any>(
+  inverseFn: () => Type<I>,
+  inverseValueFn: (type: I) => I[keyof I] | any,
+  options?: any
+) {
   return (target: Object, propertyKey: string) => {
     const list: any[] = Reflect.getMetadata(RELATION_SYMBOL, target.constructor) || [];
     list.push({
@@ -23,8 +27,4 @@ export function ManyToOne<S = any, I = any>(inverseFn: () => Type<I>, inverseVal
     });
     Reflect.defineMetadata(RELATION_SYMBOL, list, target.constructor);
   };
-
 }
-
-
-

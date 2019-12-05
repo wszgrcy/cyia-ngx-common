@@ -23,11 +23,9 @@ import '../test/mock-chain';
 @NgModule({
   declarations: [],
   imports: [HttpClientModule],
-  providers: [CyiaHttpService],
+  providers: [CyiaHttpService]
 })
-class TestHttpModule {
-
-}
+class TestHttpModule {}
 xdescribe('服务测试', () => {
   let service: CyiaHttpService;
   beforeEach(() => {
@@ -38,7 +36,10 @@ xdescribe('服务测试', () => {
   });
   /**一对一,返回的为单对象 */
   async function one21Chain() {
-    const res = await service.getEntity(OneTOneChainEntity)({}).pipe(take(1)).toPromise();
+    const res = await service
+      .getEntity(OneTOneChainEntity)({})
+      .pipe(take(1))
+      .toPromise();
     console.log('查看一对一返回', res);
     expect(res).not.toBe(null);
     expect(res.second instanceof OneTOneChainP2Entity).toBe(true);
@@ -46,8 +47,7 @@ xdescribe('服务测试', () => {
     expect(res.second.thrid instanceof OneTOneChainP3Entity).toBe(true, '没有找到第三层,暂时还未设计');
   }
 
-
-  it('一对一->一对一', async (done) => {
+  it('一对一->一对一', async done => {
     await one21Chain();
     return done();
   });
@@ -56,4 +56,3 @@ xdescribe('服务测试', () => {
   //   // console.log('用来接屎', action);
   // })
 });
-

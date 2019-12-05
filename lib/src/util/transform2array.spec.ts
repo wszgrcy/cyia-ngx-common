@@ -24,8 +24,4 @@ describe('转换为数组', () => {
   //     ],
   //   }).compileComponents();
   // }));
-
-
-
-
 });

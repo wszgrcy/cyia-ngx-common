@@ -1,6 +1,11 @@
 import {
-  Injectable, Inject, Type, ViewContainerRef,
-  ComponentFactoryResolver, Injector, ApplicationRef,
+  Injectable,
+  Inject,
+  Type,
+  ViewContainerRef,
+  ComponentFactoryResolver,
+  Injector,
+  ApplicationRef,
   ComponentRef,
   Optional,
   InjectionToken
@@ -8,7 +13,13 @@ import {
 import { Subject, timer, of, from, fromEvent, partition, BehaviorSubject, Observable } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { CYIA_LOADING_HINT_COMPONENT } from './token';
-import { CyiaLoadHintConfig, InstallConfig, LoadingHintContainer, CyiaLoadingHintUninstall, UnInstallConfig } from './type';
+import {
+  CyiaLoadHintConfig,
+  InstallConfig,
+  LoadingHintContainer,
+  CyiaLoadingHintUninstall,
+  UnInstallConfig
+} from './type';
 import { filter, take, map, switchMap } from 'rxjs/operators';
 import { CYIA_LOADING_HINT_CLOSE_FN, CYIA_LOADING_HINT_COMPLETE$ } from './const';
 
@@ -20,7 +31,7 @@ export class LoadingHintService {
     private injector: Injector,
     private applicationRef: ApplicationRef,
     @Inject(DOCUMENT) private document: any
-  ) { }
+  ) {}
   /**
    *  1.载入组件关闭,分为异步结束(默认),定时,及组件控制
    *  2.在异步结束时传入信号(方法的返回值)给载入组件(仅在组件控制时使用)
@@ -45,9 +56,11 @@ export class LoadingHintService {
       observable = of(result).pipe(take(1));
     } else {
       if (componentRef) {
-        observable = from(new Promise<any>((res) => {
-          componentRef.onDestroy(() => res(result));
-        }));
+        observable = from(
+          new Promise<any>(res => {
+            componentRef.onDestroy(() => res(result));
+          })
+        );
       } else {
         observable = of(result);
       }
@@ -60,7 +73,7 @@ export class LoadingHintService {
     this.uninstallListen();
   }
   private installListen() {
-    LoadingHintService.install$.subscribe((item) => {
+    LoadingHintService.install$.subscribe(item => {
       let config: InstallConfig = item;
       if (item && item.token) {
         config = { ...config, ...this.injector.get(item.token) };
@@ -71,7 +84,7 @@ export class LoadingHintService {
         case CyiaLoadingHintUninstall.duration:
           this.unAutoControlList.push(config);
           timer(config.duration).subscribe(() => {
-            const i = this.unAutoControlList.findIndex((unAutoControlItem) => config === unAutoControlItem);
+            const i = this.unAutoControlList.findIndex(unAutoControlItem => config === unAutoControlItem);
             this.unAutoControlList.splice(i, 1);
             LoadingHintService.uninstall(config);
           });
@@ -92,33 +105,37 @@ export class LoadingHintService {
     });
   }
   private uninstallListen() {
-    const [autoUninstall, sendEvent] = partition(LoadingHintService.uninstall$,
-      (item) => !this.unAutoControlList.find((unAutoControlItem) => unAutoControlItem.container === item.container)
+    const [autoUninstall, sendEvent] = partition(
+      LoadingHintService.uninstall$,
+      item => !this.unAutoControlList.find(unAutoControlItem => unAutoControlItem.container === item.container)
     );
-    autoUninstall
-      .subscribe((item) => {
-        this.autoUninstall(item.container);
-      });
-    sendEvent.subscribe((item) => {
+    autoUninstall.subscribe(item => {
+      this.autoUninstall(item.container);
+    });
+    sendEvent.subscribe(item => {
       this.sendEvent(item);
     });
   }
 
-
   install(viewContainerRef: LoadingHintContainer, component: Type<any>) {
     const componentFactory = this.componentFactoryResolver.resolveComponentFactory(component);
-    let loadingHintElement: HTMLElement = LoadingHintService.componentRefMap.get(viewContainerRef) &&
+    let loadingHintElement: HTMLElement =
+      LoadingHintService.componentRefMap.get(viewContainerRef) &&
       LoadingHintService.componentRefMap.get(viewContainerRef).location.nativeElement;
     let blockEl: HTMLElement;
     // doc 如果该元素上已生成加载组件,跳过
-    if (loadingHintElement) { return; }
+    if (loadingHintElement) {
+      return;
+    }
     if (viewContainerRef === 'root') {
-      loadingHintElement = this.document.body.insertAdjacentElement('afterbegin', this.document.createElement('div')) as any;
+      loadingHintElement = this.document.body.insertAdjacentElement(
+        'afterbegin',
+        this.document.createElement('div')
+      ) as any;
       blockEl = this.document.body;
     } else {
       blockEl = viewContainerRef.element.nativeElement;
       loadingHintElement = blockEl.insertAdjacentElement('beforebegin', this.document.createElement('div')) as any;
-
     }
     const componentRef = componentFactory.create(this.injector, undefined, loadingHintElement);
     componentRef.instance[CYIA_LOADING_HINT_CLOSE_FN] = () => {
@@ -161,7 +178,6 @@ export class LoadingHintService {
         console.error(error);
       }
     }
-
   }
   /**超时 */
   timeoutUninstall(viewContainerRef: LoadingHintContainer) {

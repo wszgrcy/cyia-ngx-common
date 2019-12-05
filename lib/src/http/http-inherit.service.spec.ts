@@ -9,11 +9,9 @@ import { One21P2Entity } from '../test/testclass/base.class';
 @NgModule({
   declarations: [],
   imports: [HttpClientModule],
-  providers: [CyiaHttpService],
+  providers: [CyiaHttpService]
 })
-class TestHttpModule {
-
-}
+class TestHttpModule {}
 describe('类继承属性测试', () => {
   let service: CyiaHttpService;
   beforeEach(() => {
@@ -23,14 +21,14 @@ describe('类继承属性测试', () => {
     service = TestBed.get(CyiaHttpService);
   });
 
-  it('继承', (done) => {
-    service.getEntity(InheritEntity)().subscribe((val) => {
-      console.log('返回', val);
-      expect(!!val).toBe(true);
-      expect(val.p2 instanceof One21P2Entity).toEqual(true);
-      done();
-    });
+  it('继承', done => {
+    service
+      .getEntity(InheritEntity)()
+      .subscribe(val => {
+        console.log('返回', val);
+        expect(!!val).toBe(true);
+        expect(val.p2 instanceof One21P2Entity).toEqual(true);
+        done();
+      });
   }, 1000);
-
 });
-

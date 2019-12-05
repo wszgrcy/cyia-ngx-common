@@ -10,7 +10,7 @@ import { PRIMARY_COLUMN_SYMBOL, ENTITY_COLUMN_SYMBOL } from '../../../symbol/ent
  * @returns
  */
 export function EntityColumn<T>(targetEntityFn: () => Type<T>) {
-  return function (target, key: string) {
+  return function(target, key: string) {
     const list: any[] = Reflect.getMetadata(ENTITY_COLUMN_SYMBOL, target.constructor) || [];
     list.push({
       targetEntityFn,

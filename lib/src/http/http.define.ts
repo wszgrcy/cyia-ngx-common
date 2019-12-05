@@ -39,7 +39,7 @@ export interface RequestItem<T = string> {
   apiList: HttpRequestItem<T>[];
 }
 export class HttpHeaders {
-  [header: string]: string | string[]
+  [header: string]: string | string[];
 }
 
 export interface CyiaHttpModuleConfig {

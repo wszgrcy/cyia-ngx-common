@@ -12,11 +12,9 @@ import { OneTOneChainEntity, OneTOneChainP2Entity, OneTOneChainP3Entity } from '
 @NgModule({
   declarations: [],
   imports: [HttpClientModule],
-  providers: [CyiaHttpService],
+  providers: [CyiaHttpService]
 })
-class TestHttpModule {
-
-}
+class TestHttpModule {}
 describe('原始请求测试', () => {
   let service: CyiaHttpService;
   beforeEach(() => {
@@ -26,22 +24,23 @@ describe('原始请求测试', () => {
     service = TestBed.get(CyiaHttpService);
   });
 
-  it('请求参数(application/x-www-form-urlencoded)', async (done) => {
-    const res = service.getEntity(One2OneOnlyTestReqEntity)({
-      method: 'post',
-      options: {
-        body: 'a=1&b=123456&c=3432',
-        headers: {
-          test1: 'ceshi2',
-          'Content-Type': 'application/x-www-form-urlencoded'
+  it('请求参数(application/x-www-form-urlencoded)', async done => {
+    const res = service
+      .getEntity(One2OneOnlyTestReqEntity)({
+        method: 'post',
+        options: {
+          body: 'a=1&b=123456&c=3432',
+          headers: {
+            test1: 'ceshi2',
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      }
-    }).toPromise().catch((val) => {
-      console.log('数据格式不正确', val);
-    });
+      })
+      .toPromise()
+      .catch(val => {
+        console.log('数据格式不正确', val);
+      });
     console.log('返回数据?', res);
     done();
   });
-
 });
-

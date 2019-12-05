@@ -9,9 +9,7 @@ import { TestItem, MainEntity, NormalEntity, OneToManyEntity, MultiEntity } from
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(private http: CyiaHttpService,
-    private snackBar: MatSnackBar
-  ) { }
+  constructor(private http: CyiaHttpService, private snackBar: MatSnackBar) {}
   ngOnInit(): void {
     // this.http.request({ token: 'test', method: 'delete', suffix: '/t123' }).subscribe({
     //   next: (res) => {
@@ -32,19 +30,18 @@ export class AppComponent {
     /**
      * doc 请求new 返回之后,因为一对一的关系还会请求ext
      */
-    let b = this.http.getEntity(MultiEntity)
-    b({}).subscribe((val) => {
+    let b = this.http.getEntity(MultiEntity);
+    b({}).subscribe(val => {
       console.log(val);
       // val.id
-    })
-    this.click()
-    this.click()
-    CyiaHttpService.addToRepository([new NormalEntity(1, 5555)])
+    });
+    this.click();
+    this.click();
+    CyiaHttpService.addToRepository([new NormalEntity(1, 5555)]);
   }
   @CallControl({ method: 'sync', referenceResult: true })
   click() {
-    console.log('点击')
-    return false
+    console.log('点击');
+    return false;
   }
-
 }
