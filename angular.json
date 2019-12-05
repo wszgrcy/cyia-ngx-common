@@ -29,10 +29,12 @@
           },
           "configurations": {
             "production": {
-              "fileReplacements": [{
-                "replace": "demo/src/environments/environment.ts",
-                "with": "demo/src/environments/environment.prod.ts"
-              }],
+              "fileReplacements": [
+                {
+                  "replace": "demo/src/environments/environment.ts",
+                  "with": "demo/src/environments/environment.prod.ts"
+                }
+              ],
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -150,6 +152,7 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
+            "fix": true,
             "tsConfig": [
               "lib/tsconfig.lib.json",
               "lib/tsconfig.spec.json"

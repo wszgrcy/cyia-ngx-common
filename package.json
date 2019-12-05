@@ -7,6 +7,7 @@
     "build": "ng build",
     "test": "ng test",
     "lib:test": "ng test lib",
+    "lib:lint": "ng lint lib",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "build:lib": "ng build lib --prod",
