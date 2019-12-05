@@ -1,17 +1,15 @@
 import { Entity, PrimaryColumn, OneToOne } from '../../decorator/entity';
-
 @Entity({
   request: {
-    url: 'http://127.0.0.1:3000/chain1210'
+    url: 'http://127.0.0.1:3000/chain1212'
   }
 })
-export class OneTOneChainEntity {
+export class OneTOneChainP3Entity {
   @PrimaryColumn()
   id;
-  @OneToOne(() => OneTOneChainP2Entity)
-  second: OneTOneChainP2Entity;
   param;
 }
+
 @Entity({
   request: {
     url: 'http://127.0.0.1:3000/chain1211'
@@ -24,13 +22,16 @@ export class OneTOneChainP2Entity {
   thrid: OneTOneChainP3Entity;
   param;
 }
+
 @Entity({
   request: {
-    url: 'http://127.0.0.1:3000/chain1212'
+    url: 'http://127.0.0.1:3000/chain1210'
   }
 })
-export class OneTOneChainP3Entity {
+export class OneTOneChainEntity {
   @PrimaryColumn()
   id;
+  @OneToOne(() => OneTOneChainP2Entity)
+  second: OneTOneChainP2Entity;
   param;
 }

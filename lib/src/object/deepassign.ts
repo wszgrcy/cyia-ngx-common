@@ -11,7 +11,7 @@ export function _deepCloneObject<T>(obj: any, ...objArray: Object[]): T {
             if (TypeJudgment.getType(obj2Mixin[x]) === jsNativeType.object) {// 如果是对象
                 if (!obj[x]) { obj[x] = {}; }
                 _deepCloneObject(obj[x], obj2Mixin[x]);
-            } else if (obj2Mixin[x] != undefined) {
+            } else if (obj2Mixin[x] !== undefined) {
                 obj[x] = obj2Mixin[x];
             }
 

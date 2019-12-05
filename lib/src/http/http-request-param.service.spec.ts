@@ -9,7 +9,6 @@ import { Many2OneOnlyEntity as Many2OneSingleEntity, Many2OneMultiEntity } from 
 import { One2OneOnlyEntity, One2OneMultiEntity, One2OneOnlyTestReqEntity } from '../test/testclass/one-to-one.class';
 import { One21P2Entity, One21P3Entity, Many2OneP2Entity, OneToManyP2 } from '../test/testclass/base.class';
 import { OneTOneChainEntity, OneTOneChainP2Entity, OneTOneChainP3Entity } from '../test/testclass/chain.class';
-import { NoRelationStructEntity, RelationStructEntity, RColumnP2Entity, OntoOne1Entity, ColumnP2Entity, Relate121WithStructureEntity, Struct2Entity, Struct2DataEntity } from '../test/testclass/struct.class';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import '../test/mock-one-to-one';
 @NgModule({

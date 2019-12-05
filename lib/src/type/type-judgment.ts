@@ -58,7 +58,7 @@ export namespace TypeJudgment {
             const element = array[i];
             const type = this.getType(element);
             if (preType !== jsNativeType.undefined) {
-                if (preType != type) {
+                if (preType !== type) {
                     return jsNativeType.multi;
                 }
             } else { preType = type; }

@@ -5,7 +5,18 @@ import { NgModule, Type } from '@angular/core';
 // import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { HttpClientModule } from '@angular/common/http';
 
-import { NoRelationStructEntity, RelationStructEntity, RColumnP2Entity, OntoOne1Entity, ColumnP2Entity, Relate121WithStructureEntity, Struct2Entity, Struct2DataEntity, StructListEntity, ColumnItemEntity, StructList1Entity } from '../test/testclass/struct.class';
+import {
+  NoRelationStructEntity,
+  RelationStructEntity,
+  OntoOne1Entity,
+  ColumnP2Entity,
+  Relate121WithStructureEntity,
+  Struct2Entity,
+  Struct2DataEntity,
+  StructListEntity,
+  ColumnItemEntity,
+  StructList1Entity
+} from '../test/testclass/struct.class';
 import '../test/mock-struct';
 @NgModule({
   declarations: [],

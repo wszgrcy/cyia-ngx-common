@@ -1,4 +1,4 @@
-import { NgModule, InjectionToken, ViewContainerRef, Type, Component, ViewChild, HostBinding, ChangeDetectorRef, ApplicationRef } from '@angular/core';
+import { NgModule, InjectionToken, ViewContainerRef, Type, Component, ViewChild, ChangeDetectorRef, OnInit } from '@angular/core';
 import { LoadingHint } from './loading-hint.decorator';
 import { TestBed, async, ComponentFixture } from '@angular/core/testing';
 import { LoadingHintService } from './load-component.service';
@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
     'class': 'loading__hint'
   }
 })
-class LoadingTestComponent {
+class LoadingTestComponent implements OnInit {
   // @HostBinding('class') loadingClass = 'loading__hint';
   complete = false;
   constructor(private cd: ChangeDetectorRef) {
@@ -333,11 +333,11 @@ describe('载入提示组件运行测试', () => {
       expect(val).toBe(1000);
       expect(Date.now() - start).toBeGreaterThanOrEqual(500);
       setTimeout(() => {
-        const btn: HTMLButtonElement = document.querySelector('.close__button');
+        let btn: HTMLButtonElement = document.querySelector('.close__button');
         expect(btn).toBeTruthy();
         btn.click();
         setTimeout(() => {
-          const btn: HTMLButtonElement = document.querySelector('.close__button');
+          btn = document.querySelector('.close__button');
           expect(btn).toBeFalsy();
           done();
         }, 0);

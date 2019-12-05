@@ -68,7 +68,7 @@ export class CyiaHttpService {
    */
   static savePlainData<T>(data, entity: Type<T>) {
     const entityConfig = CyiaHttpService.getEntityConfig(entity);
-    if (entityConfig.entity.options.method == Source.normal || entityConfig.entity.options.method == Source.request) {
+    if (entityConfig.entity.options.method === Source.normal || entityConfig.entity.options.method === Source.request) {
       data = transform2Array(data);
       const obj = Reflect.getOwnMetadata(REPOSITORY_SYMBOL, entity) || {};
       (<any[]>data)
@@ -288,15 +288,27 @@ export class CyiaHttpService {
    * 引用改变
    * @memberof CyiaHttpService
    */
-  async  oneToOneImplementation<I>(data, primaryKey: string, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig) {
-    return this.generalRelationImplementation(data, primaryKey, targetRelation, inverseEntityConfig, (inverseMap) => (item, primaryValue) => {
-      if (inverseMap[primaryValue]) {
-        item[targetRelation.propertyName] = stronglyTyped(inverseMap[primaryValue], inverseEntityConfig.entity.entity);
-      } else {
-        return true;
-      }
-      return false;
-    }, { mod: inverseEntityConfig.entity.relationOptions.mode });
+  async  oneToOneImplementation<I>(
+    data,
+    primaryKey: string,
+    targetRelation: EntityConfig['relations'][0],
+    inverseEntityConfig: EntityConfig
+  ) {
+    return this.generalRelationImplementation(
+      data,
+      primaryKey,
+      targetRelation,
+      inverseEntityConfig,
+      (inverseMap) => (item, primaryValue) => {
+        if (inverseMap[primaryValue]) {
+          item[targetRelation.propertyName] = stronglyTyped(inverseMap[primaryValue], inverseEntityConfig.entity.entity);
+        } else {
+          return true;
+        }
+        return false;
+      },
+      { mod: inverseEntityConfig.entity.relationOptions.mode }
+    );
   }
   /**
    * 多对一, item的某个键值,等于另一个的主键
@@ -304,15 +316,30 @@ export class CyiaHttpService {
    *
    * @memberof CyiaHttpService
    */
-  async  ManyToOneImplementation<I>(data: any[], primaryKey: string, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig) {
-    return this.generalRelationImplementation(data, primaryKey, targetRelation, inverseEntityConfig, (inverseMap) => (item, primaryValue) => {
-      if (inverseMap[item[targetRelation.propertyName]]) {
-        item[targetRelation.propertyName] = stronglyTyped(inverseMap[item[targetRelation.propertyName]], inverseEntityConfig.entity.entity);
-      } else {
-        return true;
-      }
-      return false;
-    }, { mod: inverseEntityConfig.entity.relationOptions.mode });
+  async  ManyToOneImplementation<I>(
+    data: any[],
+    primaryKey: string,
+    targetRelation: EntityConfig['relations'][0],
+    inverseEntityConfig: EntityConfig
+  ) {
+    return this.generalRelationImplementation(
+      data,
+      primaryKey,
+      targetRelation,
+      inverseEntityConfig,
+      (inverseMap) => (item, primaryValue) => {
+        if (inverseMap[item[targetRelation.propertyName]]) {
+          item[targetRelation.propertyName] = stronglyTyped(
+            inverseMap[item[targetRelation.propertyName]],
+            inverseEntityConfig.entity.entity
+          );
+        } else {
+          return true;
+        }
+        return false;
+      },
+      { mod: inverseEntityConfig.entity.relationOptions.mode }
+    );
   }
   /**
    *
@@ -323,12 +350,16 @@ export class CyiaHttpService {
    * @template I
    * @memberof CyiaHttpService
    */
-  async oneToManyImplementation<I>(result, primaryKey: string, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig) {
+  async oneToManyImplementation<I>(
+    result, primaryKey: string, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig
+  ) {
     return this.generalRelationImplementation(result, primaryKey, targetRelation, inverseEntityConfig, (inverseMap) => {
       const inverseInstanceList = stronglyTyped(Object.values(inverseMap), inverseEntityConfig.entity.entity);
       return (item, primaryValue) => {
         /**查找到的反向的实例 */
-        const inverseInstance = inverseInstanceList.filter((inverseInstance) => item[targetRelation.propertyName] == targetRelation.inverseValueFn(inverseInstance));
+        const inverseInstance = inverseInstanceList.filter(
+          (inverseInstanceItem) => item[targetRelation.propertyName] === targetRelation.inverseValueFn(inverseInstanceItem)
+        );
         if (inverseInstance.length) {
           (item[targetRelation.propertyName] = inverseInstance);
         } else { return true; }
@@ -341,19 +372,26 @@ export class CyiaHttpService {
    *(只请求仓库,只请求url,自动)
    * @memberof CyiaHttpService
    */
-  async generalRelationImplementation(data, primaryKey, targetRelation: EntityConfig['relations'][0], inverseEntityConfig: EntityConfig, relationFn: (...args) => (...args) => boolean, options: { mod?: RelationMatchingMode }) {
+  async generalRelationImplementation(
+    data,
+    primaryKey,
+    targetRelation: EntityConfig['relations'][0],
+    inverseEntityConfig: EntityConfig,
+    relationFn: (...args) => (...args) => boolean,
+    options: { mod?: RelationMatchingMode }
+  ) {
     let unFindList = [];
     /**反向实例对象 */
     let inverseMap: { [name: string]: any };
     const matchRelation = (mainList, fn: (...args) => boolean) => mainList.filter((item) => fn(item, item[primaryKey]));
-    if (options.mod == RelationMatchingMode.auto || options.mod == RelationMatchingMode.repositoryOnly) {
+    if (options.mod === RelationMatchingMode.auto || options.mod === RelationMatchingMode.repositoryOnly) {
       inverseMap = this.getEntityRepository(inverseEntityConfig.entity.entity);
       // doc 首次匹配
       unFindList = matchRelation(transform2Array(data), relationFn(inverseMap));
     }
-    if (!unFindList.length || options.mod == RelationMatchingMode.repositoryOnly) { return; }
-    if (options.mod == RelationMatchingMode.requestOnly) { unFindList = transform2Array(data); }
-    if (options.mod == RelationMatchingMode.auto || options.mod == RelationMatchingMode.requestOnly) {
+    if (!unFindList.length || options.mod === RelationMatchingMode.repositoryOnly) { return; }
+    if (options.mod === RelationMatchingMode.requestOnly) { unFindList = transform2Array(data); }
+    if (options.mod === RelationMatchingMode.auto || options.mod === RelationMatchingMode.requestOnly) {
       // doc 请求数据
       inverseMap = {};
       transform2Array(await this.getDataByRelation(inverseEntityConfig, unFindList)).forEach((item) => {
@@ -375,7 +413,7 @@ export class CyiaHttpService {
   private sourceByrequest(params: HttpRequestConfig | any[], defalutEntityArgs: RegisterEntityOption) {
     /**类中设置的默认参数HttpRequestConfig */
     const defalutRequest = defalutEntityArgs.options.request;
-    if (typeof defalutRequest == 'function') {
+    if (typeof defalutRequest === 'function') {
       const defalutParams = Object.assign(new HttpRequestConfig(), defalutRequest(params));
       const method = defalutParams.method;
       const url = this.mergeUrlList(this.urlprefix, defalutParams.url);

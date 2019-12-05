@@ -9,7 +9,6 @@ export function importScript(path: string, options = { document }): Promise<Impo
         const script = options.document.createElement('script');
         script.type = 'text/javascript';
         script.src = path;
-        script.charset = 'utf-8';
 
         script.onload = () =>
             onSuccess({

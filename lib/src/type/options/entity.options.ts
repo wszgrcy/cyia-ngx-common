@@ -2,9 +2,10 @@ import { HttpRequestConfig } from '../../http/http.define';
 import { RelationMatchingMode } from './relations.options';
 import { Type } from '@angular/core';
 
-export interface OneToOneMetaOption {
-
+export enum Source {
+  request, normal, /**结构化 */structure
 }
+
 
 /**
  * 实体类装饰器配置
@@ -35,9 +36,7 @@ export class RelationEntityOptions {
 // export interface Chain {
 
 // }
-export enum Source {
-  request, normal, /**结构化 */structure
-}
+
 /**
  * 当被继承时候使用,是从继承原来的参数
  *
