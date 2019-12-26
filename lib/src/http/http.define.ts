@@ -1,3 +1,7 @@
+import { Observable } from 'rxjs';
+import { RelationOption } from '../type/options/relations.options';
+import { Type } from '@angular/core';
+
 /**请求方法 */
 export type HttpMethod = 'get' | 'head' | 'post' | 'put' | 'delete' | 'options' | 'patch';
 /**监听类型 */
@@ -44,4 +48,16 @@ export class HttpHeaders {
 
 export interface CyiaHttpModuleConfig {
   urlPrefix?: string;
+}
+export interface EntityQueryBuilder<T> {
+  //  private congig:string
+  (entity: Type<T>): (param?: HttpRequestConfig | any[]) => Observable<T>;
+  (entity: [Type<T>]): (param?: HttpRequestConfig | any[]) => Observable<T[]>;
+  addRelation(relation: RelationOption | RelationOption[]): this;
+  getOne?(): Observable<T>;
+  getMany?(): Observable<T[]>;
+}
+
+export interface FindOptions {
+  relations: any[];
 }

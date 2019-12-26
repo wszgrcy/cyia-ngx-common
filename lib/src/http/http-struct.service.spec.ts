@@ -42,7 +42,7 @@ describe('结构测试', () => {
 
   it('非关系多层次', async done => {
     const res = await struct(NoRelationStructEntity);
-    console.log(res);
+    console.log('返回值', res);
     expect(res.data instanceof ColumnP2Entity).toBe(true);
     return done();
   });

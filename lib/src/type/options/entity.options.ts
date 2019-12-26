@@ -3,9 +3,12 @@ import { RelationMatchingMode } from './relations.options';
 import { Type } from '@angular/core';
 
 export enum Source {
-  request,
-  normal,
-  /**结构化 */ structure
+  request = 0,
+
+  normal = 1,
+  cache = 1,
+  /**结构化 */ structure,
+  /**手动指定 */ assign
 }
 
 /**
@@ -17,6 +20,7 @@ export enum Source {
  * todo 通过请求头,获取到请求类型,然后处理参数
  */
 export class EntityOptions {
+  /**数据来源 */
   method?: Source = Source.request;
   request?: HttpRequestConfig | ((...args) => HttpRequestConfig) = new HttpRequestConfig();
   /**被继承时,保留哪些字段 */

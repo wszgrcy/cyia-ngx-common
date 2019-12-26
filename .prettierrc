@@ -8,5 +8,6 @@
         "printWidth": 10000
       }
     }
-  ]
+  ],
+  "arrowParens": "always"
 }

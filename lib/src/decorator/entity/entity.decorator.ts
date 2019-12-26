@@ -3,6 +3,7 @@ import { EntityOptions, RelationEntityOptions, Source } from '../../type/options
 import { ENTITY_SYMBOL, REPOSITORY_SYMBOL } from '../../symbol/entity.symbol';
 import { Type } from '@angular/core';
 import { HttpRequestConfig } from '../../http/http.define';
+import { mergeOptions } from 'lib/src/util/merge-options';
 
 /**
  * todo childentity
@@ -18,19 +19,10 @@ export function Entity(options: EntityOptions, relationOptions?: RelationEntityO
       ENTITY_SYMBOL,
       {
         entity: constructor,
-        options: Object.assign(new EntityOptions(), options),
-        relationOptions: Object.assign(new RelationEntityOptions(), relationOptions)
+        options: mergeOptions(new EntityOptions(), options),
+        relationOptions: mergeOptions(new RelationEntityOptions(), relationOptions)
       },
       constructor
     );
   };
 }
-// export function EntityList(options: EntityOptions, relationOptions?: RelationEntityOptions) {
-//   return function <T extends { new(...args: any[]): {} }>(constructor: T) {
-//     Reflect.defineMetadata(ENTITY_SYMBOL, {
-//       entity: constructor,
-//       options: Object.assign(new EntityListOptions(), options),
-//       relationOptions
-//     }, constructor)
-//   }
-// }
