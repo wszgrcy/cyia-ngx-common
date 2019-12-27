@@ -8,7 +8,8 @@ export enum Source {
   normal = 1,
   cache = 1,
   /**结构化 */ structure,
-  /**手动指定 */ assign
+  /**手动指定 */ assign,
+  default = 99999
 }
 
 /**

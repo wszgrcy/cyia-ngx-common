@@ -14,17 +14,22 @@ import { REPOSITORY_SYMBOL } from '../symbol/entity.symbol';
 import { RelationType } from '../type/relation.type';
 import { RelationMatchingMode } from '../type/options/relations.options';
 import { mergeUrl } from '../util/merge-url';
+import { DataSource } from './data-source/data-source';
+import { DataSourceByDefault } from './data-source/data-source-by-default';
+import { DataSourceByAssign } from './data-source/data-source-by-assign';
+import { DataSourceByRequest } from './data-source/data-souce-by-request';
+import { DataSourceByStruct } from './data-source/data-source-by-struct';
 
 export class Repository<T> {
-  // todo
-  relation: number = RelationType.ManyToOne | RelationType.OneToMany | RelationType.OneToOne;
+  private dataSourceList: DataSource[] = [new DataSourceByDefault()];
+  private relation: number = RelationType.ManyToOne | RelationType.OneToMany | RelationType.OneToOne;
   constructor(protected entity: Type<T>, protected http: HttpClient, protected urlPrefix: string) {
     this.config = Repository._getEntityConfig(entity);
     throwIf(!this.config || !this.config.entity, `未定义实体${entity}`);
   }
   /**指定返回值 */
   protected config: EntityConfig;
-  protected httpRequestConfig: HttpRequestConfig;
+  // protected httpRequestConfig: HttpRequestConfig;
   static _getEntityConfig(entity: Type<any>) {
     return EntityConfigRepository.get(entity);
   }
@@ -50,7 +55,7 @@ export class Repository<T> {
   findOne<T>() {}
   findMany<T>() {}
   find<T>(param?: HttpRequestConfig | any[]): Observable<T> {
-    this.httpRequestConfig = this._getHttpRequestConfig(param);
+    // this.httpRequestConfig = this._getHttpRequestConfig(param);
     return this._find().pipe(
       switchMap((res) => from(this.entityColumnImplementation(res))),
       switchMap((res) => from(this.relationsImplementation(res))),
@@ -58,39 +63,11 @@ export class Repository<T> {
     );
   }
   protected _find(): Observable<any> {
-    switch (this.config.entity.options.method) {
-      case Source.request:
-        return this._findByRequest();
-      case Source.normal:
-        return this._findByCache();
-      default:
-        break;
+    if (this.config.entity.options.method) {
+      const map = new Map(this.dataSourceList.map((dataSource) => [dataSource.dataSource, dataSource]));
+      return from(map.get(this.config.entity.options.method).find());
     }
-  }
-  private _findByRequest() {
-    return this.http
-      .request(
-        this.httpRequestConfig.method,
-        mergeUrl(this.urlPrefix, this.httpRequestConfig.url),
-        this.httpRequestConfig.options
-      )
-      .pipe(
-        take(1),
-        tap((res) => this.savePlainData(res))
-      );
-  }
-  private _findByCache() {
-    return of(Object.values(Repository.getEntityRepository(this.entity)));
-  }
-  /**获得http请求的配置 */
-  private _getHttpRequestConfig(param?: HttpRequestConfig | any[]) {
-    let inputParams: HttpRequestConfig = param as any;
-    if (this.config.entity.options.request instanceof Function) {
-      inputParams = this.config.entity.options.request(...(param as any[]));
-      return mergeOptions(new HttpRequestConfig(), inputParams);
-    } else {
-      return mergeOptions(new HttpRequestConfig(), this.config.entity.options.request, inputParams);
-    }
+    return from(this.dataSourceList[0].find());
   }
 
   /**
@@ -111,9 +88,12 @@ export class Repository<T> {
         /**需要结构化的源数据 */
         const entityColumnRaw = dataItem[entityColumn.propertyName];
         /**结构化返回的数据 */
-        const structRepository = new StructRepository(entityColumn.targetEntityFn(), this.http, this.urlPrefix);
-        structRepository.setResult(entityColumnRaw);
-        const result = await structRepository.find().pipe(take(1)).toPromise();
+        const structRepository = new Repository(entityColumn.targetEntityFn(), this.http, this.urlPrefix);
+        structRepository.setDataSource(new DataSourceByStruct(entityColumnRaw));
+        const result = await structRepository
+          .find()
+          .pipe(take(1))
+          .toPromise();
         dataList[j][entityColumn.propertyName] = result;
       }
     }
@@ -129,7 +109,6 @@ export class Repository<T> {
   private async relationsImplementation(data: T | T[]) {
     const relations = this.config.relations;
     const primaryKey = this.config.primaryKey;
-    console.log('准备实现关系', relations, primaryKey);
     for (let i = 0; i < relations.length; i++) {
       const relation = relations[i];
 
@@ -143,7 +122,6 @@ export class Repository<T> {
           break;
         case RelationType.OneToMany:
           if (this.relation & RelationType.OneToMany) {
-            console.log('一对多关系', data, primaryKey, relation, inverseEntityConfig);
             await this.oneToManyImplementation(data, primaryKey, relation, inverseEntityConfig);
           }
           break;
@@ -253,9 +231,15 @@ export class Repository<T> {
   }
   // protected abstract generateRepository<D>(entity: Type<D>): Repository<any>;
   private async getDataByRelation(entityConfig: EntityConfig, implementationResult) {
+    const httpconfig = entityConfig.entity.relationOptions
+      ? await entityConfig.entity.relationOptions.request(implementationResult)
+      : new HttpRequestConfig();
     const repository =
       //  this.generateRepository(entityConfig.entity.entity);
       new Repository(entityConfig.entity.entity, this.http, this.urlPrefix);
+    repository.setDataSource(
+      new DataSourceByRequest(this.http, this.urlPrefix, entityConfig.entity.options.request, httpconfig)
+    );
     repository.setLoadRelation(0);
     return repository.find(await entityConfig.entity.relationOptions.request(implementationResult)).toPromise();
   }
@@ -284,13 +268,7 @@ export class Repository<T> {
       { mod: inverseEntityConfig.entity.relationOptions.mode }
     );
   }
-}
-export class StructRepository<T> extends Repository<T> {
-  result: any;
-  setResult(result) {
-    this.result = result;
-  }
-  protected _find() {
-    return of(this.result);
+  public setDataSource(...list: DataSource[]) {
+    this.dataSourceList = list.concat(this.dataSourceList);
   }
 }

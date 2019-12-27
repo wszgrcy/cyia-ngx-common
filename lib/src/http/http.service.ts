@@ -22,6 +22,9 @@ import { Source } from '../type/options/entity.options';
 import { transform2Array } from '../util/transform2array';
 import { from } from 'rxjs';
 import { Repository } from './repository';
+import { DataSourceByRequest } from './data-source/data-souce-by-request';
+import { EntityConfigRepository } from './entity-config-repository';
+import { DataSource } from './data-source/data-source';
 
 /**
  * 1. 被动调用时参数传递 使用函数,传入上一级数据,进行判断
@@ -191,14 +194,26 @@ export class CyiaHttpService {
    */
 
   getEntity<T>(entity: Type<T>): (param?: HttpRequestConfig | any[]) => Observable<T> {
-    return (param) => new Repository(entity, this.http, this.urlprefix).find(param);
+    return (param) => {
+      const dataSource = new DataSourceByRequest(
+        this.http,
+        this.urlprefix,
+        EntityConfigRepository.get(entity).entity.options.request,
+        param
+      );
+      const repository = new Repository(entity, this.http, this.urlprefix);
+      repository.setDataSource(dataSource);
+      return repository.find(param);
+    };
     // return this._getEntity(entity, (entityConfig, param) => this.getData(entityConfig.entity)(param));
   }
   getEntityList<T>(entity: Type<T>): (param: HttpRequestConfig | any[]) => Observable<T[]> {
     return this.getEntity(entity) as any;
   }
 
-  getRepository(entity: Type<any>) {
-    return new Repository(entity, this.http, this.urlprefix);
+  getRepository(entity: Type<any>, dataSource: DataSource) {
+    const repository = new Repository(entity, this.http, this.urlprefix);
+    repository.setDataSource(dataSource);
+    return repository;
   }
 }

@@ -1,13 +1,13 @@
 import { Entity, PrimaryColumn, OneToOne, EntityColumn } from '../../decorator/entity';
 import { Source } from '../../type';
 @Entity({
-  method: Source.normal
+  method: Source.structure
 })
 export class ColumnP3Entity {
   p3;
 }
 @Entity({
-  method: Source.normal
+  method: Source.structure
 })
 export class ColumnP2Entity {
   p2;
@@ -15,7 +15,7 @@ export class ColumnP2Entity {
   data;
 }
 @Entity({
-  method: Source.normal
+  method: Source.structure
 })
 export class ColumnItemEntity {
   data;
@@ -73,7 +73,7 @@ export class RelationStructEntity {
   onetoone: OntoOne1Entity;
 }
 @Entity({
-  method: Source.normal
+  method: Source.structure
 })
 export class RColumnP2Entity {
   @PrimaryColumn()
@@ -84,7 +84,7 @@ export class RColumnP2Entity {
   onetoone;
 }
 @Entity({
-  method: Source.normal
+  method: Source.structure
 })
 export class RColumnP3Entity {
   p3;
