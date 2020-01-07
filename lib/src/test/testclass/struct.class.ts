@@ -3,21 +3,24 @@ import { Source } from '../../type';
 @Entity({
   method: Source.structure
 })
-export class ColumnP3Entity {
+/**双层结构化实体第二层 */
+export class DoubleLevelStruct2Entity {
   p3;
 }
 @Entity({
   method: Source.structure
 })
-export class ColumnP2Entity {
+/**双层结构化实体第一层 */
+export class DoubleLevelStruct1Entity {
   p2;
-  @EntityColumn(() => ColumnP3Entity)
-  data;
+  @EntityColumn(() => DoubleLevelStruct2Entity)
+  data: DoubleLevelStruct2Entity;
 }
 @Entity({
   method: Source.structure
 })
-export class ColumnItemEntity {
+/**结构化单项实体 */
+export class StructItemEntity {
   data;
 }
 @Entity({
@@ -25,22 +28,24 @@ export class ColumnItemEntity {
     url: 'http://127.0.0.1:3000/structlist2'
   }
 })
+/**单层结构化列表实体 */
 export class StructListEntity {
   @PrimaryColumn()
   id;
-  @EntityColumn(() => ColumnItemEntity)
-  data: ColumnItemEntity[];
+  @EntityColumn(() => StructItemEntity)
+  data: StructItemEntity[];
 }
 @Entity({
   request: {
     url: 'http://127.0.0.1:3000/struct1'
   }
 })
-export class NoRelationStructEntity {
+/**双层结构化单项实体 */
+export class DoubleLevelStructEntity {
   @PrimaryColumn()
   id;
-  @EntityColumn(() => ColumnP2Entity)
-  data: ColumnP2Entity;
+  @EntityColumn(() => DoubleLevelStruct1Entity)
+  data: DoubleLevelStruct1Entity;
   code;
 }
 
@@ -52,8 +57,8 @@ export class NoRelationStructEntity {
 export class StructList1Entity {
   @PrimaryColumn()
   id;
-  @EntityColumn(() => ColumnItemEntity)
-  data: ColumnItemEntity[];
+  @EntityColumn(() => StructItemEntity)
+  data: StructItemEntity[];
 }
 
 /**
