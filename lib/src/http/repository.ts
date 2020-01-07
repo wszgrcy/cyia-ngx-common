@@ -243,30 +243,51 @@ export class Repository<T> {
     repository.setLoadRelation(0);
     return repository.find(await entityConfig.entity.relationOptions.request(implementationResult)).toPromise();
   }
+  /**待合并 */
   async oneToOneImplementation<I>(
     data,
     primaryKey: string,
     targetRelation: EntityConfig['relations'][0],
     inverseEntityConfig: EntityConfig
   ) {
-    return this.generalRelationImplementation(
-      data,
-      primaryKey,
-      targetRelation,
-      inverseEntityConfig,
-      (inverseMap) => (item, primaryValue) => {
-        if (inverseMap[primaryValue]) {
-          item[targetRelation.propertyName] = stronglyTyped(
-            inverseMap[primaryValue],
-            inverseEntityConfig.entity.entity
-          );
-        } else {
-          return true;
+    const options = { mod: inverseEntityConfig.entity.relationOptions.mode };
+    let unFindList = [];
+    /**反向实例对象 */
+    let inverseMap: { [name: string]: any };
+    const matchRelation = (mainList, fn: (...args) => boolean) =>
+      mainList.filter((item) => fn(item, item[targetRelation.propertyName]));
+    if (options.mod === RelationMatchingMode.auto || options.mod === RelationMatchingMode.repositoryOnly) {
+      inverseMap = Repository.getEntityRepository(inverseEntityConfig.entity.entity);
+      // doc 首次匹配
+      unFindList = matchRelation(transform2Array(data), (item, key) => {
+        if (inverseMap[key]) {
+          item[targetRelation.propertyName] = inverseMap[key];
+          return false;
         }
-        return false;
-      },
-      { mod: inverseEntityConfig.entity.relationOptions.mode }
-    );
+        return true;
+      });
+    }
+    if (!unFindList.length || options.mod === RelationMatchingMode.repositoryOnly) {
+      return;
+    }
+    if (options.mod === RelationMatchingMode.requestOnly) {
+      unFindList = transform2Array(data);
+    }
+    if (options.mod === RelationMatchingMode.auto || options.mod === RelationMatchingMode.requestOnly) {
+      // doc 请求数据
+      inverseMap = {};
+      transform2Array(await this.getDataByRelation(inverseEntityConfig, unFindList)).forEach((item) => {
+        inverseMap[item[inverseEntityConfig.primaryKey || `${Math.random()}`]] = item;
+      });
+      // doc 获得数据后二次匹配
+      matchRelation(transform2Array(unFindList), (item, key) => {
+        if (inverseMap[key]) {
+          item[targetRelation.propertyName] = inverseMap[key];
+          return false;
+        }
+        return true;
+      });
+    }
   }
   public setDataSource(...list: DataSource[]) {
     this.dataSourceList = list.concat(this.dataSourceList);

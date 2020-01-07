@@ -12,10 +12,10 @@ export class One2OneOnlyEntity {
   @PrimaryColumn()
   id;
   @OneToOne(() => One21P2Entity)
-  p2;
+  p2: One21P2Entity;
 
   @OneToOne(() => One21P3Entity)
-  p3;
+  p3: One21P3Entity;
 }
 @Entity({
   request: {

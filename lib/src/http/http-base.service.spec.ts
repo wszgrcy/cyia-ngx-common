@@ -50,9 +50,10 @@ describe('服务测试', () => {
       .getEntityList(One2OneMultiEntity)({})
       .pipe(take(1))
       .toPromise();
+    console.log(res);
     expect(res).not.toBe(null);
     expect(res instanceof Array).toBe(true);
-    res.forEach(item => {
+    res.forEach((item) => {
       expect(item.p2 instanceof One21P2Entity).toBe(true);
       expect(item.p3 instanceof One21P3Entity).toBe(true);
     });
@@ -74,7 +75,7 @@ describe('服务测试', () => {
       .toPromise();
     expect(res).not.toBe(null);
     expect(res instanceof Array).toBe(true);
-    res.forEach(item => {
+    res.forEach((item) => {
       expect(item.p2 instanceof Many2OneP2Entity).toBe(true);
       expect(item.p2.city).not.toBe(null);
     });
@@ -95,45 +96,45 @@ describe('服务测试', () => {
       .toPromise();
     expect(res).not.toBe(null);
     expect(res instanceof Array).toBe(true);
-    res.forEach(item => {
+    res.forEach((item) => {
       expect(item.p2).not.toBe(null);
       expect(item.p2 instanceof Array).toBe(true);
     });
   }
-  it('一对一关系', async done => {
+  it('一对一关系', async (done) => {
     await one21Single();
     return done();
   });
-  it('一对一关系(数组)', async done => {
+  it('一对一关系(数组)', async (done) => {
     await one21Multi();
     return done();
   });
-  it('一对一关系二次(数组)', async done => {
+  it('一对一关系二次(数组)', async (done) => {
     await one21Multi();
     await one21Multi();
     return done();
   });
-  it('一对一关系二次调用(测试仓库)', async done => {
+  it('一对一关系二次调用(测试仓库)', async (done) => {
     await one21Single();
     await one21Single();
     return done();
   });
-  it('多对一关系', async done => {
+  it('多对一关系', async (done) => {
     await many21Single();
     done();
     return true;
   });
-  it('多对一关系,数组', async done => {
+  it('多对一关系,数组', async (done) => {
     await many21Multi();
     done();
     return true;
   });
-  it('一对多关系', async done => {
+  it('一对多关系', async (done) => {
     await one2ManySingle();
     done();
     return true;
   });
-  it('一对多关系(数组)', async done => {
+  it('一对多关系(数组)', async (done) => {
     await one2ManyMulti();
     done();
     return true;

@@ -64,7 +64,6 @@ describe('[实体请求]结构测试', () => {
   // todo 多层次下关联多层次
   it('一对一关系内包含结构化单项', async (done) => {
     const res = await request(Relate121WithStructureEntity);
-    console.log('有关系(多层次)', res);
     expect(res.struct2 instanceof Struct2Entity).toBe(true);
     expect(res.struct2.data instanceof Struct2DataEntity).toBe(true);
 

@@ -13,7 +13,7 @@ function mockOneToOneRelation(id: string) {
 }
 (() => {
   const dataItem = mockOneToOneDataItem();
-  const relation = mockOneToOneRelation(dataItem.id);
+  const relation = mockOneToOneRelation(dataItem.onetoone);
   mockjs.mock('http://127.0.0.1:3000/onetoone/onlyItem', dataItem);
   mockjs.mock('http://127.0.0.1:3000/onetoone/relationItem', relation);
 
@@ -21,6 +21,6 @@ function mockOneToOneRelation(id: string) {
     return mockOneToOneDataItem();
   });
   mockjs.mock('http://127.0.0.1:3000/onetoone/listHasOTOItem', list);
-  const relationList = list.map(({ id }) => mockOneToOneRelation(id));
+  const relationList = list.map(({ onetoone }) => mockOneToOneRelation(onetoone));
   mockjs.mock('http://127.0.0.1:3000/onetoone/relationList', relationList);
 })();

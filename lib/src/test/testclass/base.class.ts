@@ -30,7 +30,6 @@ export class Many2OneP2Entity {
   },
   {
     request: async result => {
-      console.log(result);
       console.log('通过被动请求返回的url,不是预设');
       return {
         url: 'http://127.0.0.1:3000/onetoonep2'
