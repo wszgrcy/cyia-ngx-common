@@ -170,9 +170,9 @@ export class Repository<T> {
 
   async ManyToOneImplementation<I>(
     data: any,
-    primaryKey: string,
-    targetRelation: EntityConfig['relations'][0],
-    inverseEntityConfig: EntityConfig
+    /**主键 */ primaryKey: string,
+    /**实体关系*/ targetRelation: EntityConfig['relations'][0],
+    /**被关联实体 */ inverseEntityConfig: EntityConfig
   ) {
     return this.generalRelationImplementation(
       data,
@@ -243,7 +243,9 @@ export class Repository<T> {
     repository.setLoadRelation(0);
     return repository.find(await entityConfig.entity.relationOptions.request(implementationResult)).toPromise();
   }
-  /**待合并 */
+  /**
+   *
+   * todo待合并 */
   async oneToOneImplementation<I>(
     data,
     primaryKey: string,
