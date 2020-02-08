@@ -73,8 +73,8 @@ export class Repository<T> {
   /**
    * 实体列实现
    *
-   * @private
-   * @param {*} data
+   *
+   *
    * @returns
    */
   private async entityColumnImplementation(data: T | T[]) {
@@ -102,8 +102,8 @@ export class Repository<T> {
   /**
    *关系实现
    *
-   * @private
-   * @param {*} data
+   *
+   *
    * @returns
    */
   private async relationsImplementation(data: T | T[]) {

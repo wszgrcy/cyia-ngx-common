@@ -11,7 +11,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "build:lib": "ng build lib --prod",
-    "postbuild:lib": "copy README.md .\\dist\\ngx-cyia-common",
+    "postbuild:lib": "copy README.md .\\dist\\cyia-ngx-common",
     "update": "ng update --all --force",
     "version":"ng version"
   },

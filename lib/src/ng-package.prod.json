@@ -1,0 +1,11 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../dist/cyia-ngx-common",
+  "lib": {
+    "entryFile": "./public_api.ts"
+  },
+  "deleteDestPath": true,
+  "whitelistedNonPeerDependencies": [
+    "."
+  ]
+}
