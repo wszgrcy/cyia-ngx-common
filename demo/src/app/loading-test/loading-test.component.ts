@@ -18,7 +18,7 @@ export class LoadingTestComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {}
-  @LoadingHint('root', LOAD_HINT_TOKEN)
+  @LoadingHint((type)=>type.loadPromiseRef, LOAD_HINT_TOKEN)
   loadPromise() {
     console.log('点击');
     return new Promise(res => {
@@ -39,9 +39,9 @@ export class LoadingTestComponent implements OnInit {
     });
   }
   @LoadingHint((type: LoadingTestComponent) => type.loadDurRef, {
-    duration: 5000,
+    timeout: 5000,
     component: LoadComponent,
-    uninstallMod: CyiaLoadingHintUninstall.duration
+    uninstallMod: CyiaLoadingHintUninstall.timeout
   })
   loadDuration() {
     console.log('持续一定时间');

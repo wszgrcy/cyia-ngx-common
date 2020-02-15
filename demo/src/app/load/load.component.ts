@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CYIA_LOADING_HINT_COMPLETE$, CYIA_LOADING_HINT_CLOSE_FN } from 'lib/src/loading-hint/const';
+import { CYIA_LOADING_HINT_RESULT$, CYIA_LOADING_HINT_CLOSE_FN } from 'lib/src/loading-hint/const';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -12,7 +12,7 @@ export class LoadComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    (this[CYIA_LOADING_HINT_COMPLETE$] as Subject<any>).subscribe(val => {
+    (this[CYIA_LOADING_HINT_RESULT$] as Subject<any>).subscribe(val => {
       console.log('完成', val);
       this.complete = '已完成';
       // setTimeout(() => {
@@ -21,6 +21,7 @@ export class LoadComponent implements OnInit {
     });
   }
   close() {
+    console.log('关闭')
     this[CYIA_LOADING_HINT_CLOSE_FN]();
   }
 }

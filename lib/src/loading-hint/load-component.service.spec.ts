@@ -10,10 +10,10 @@ import {
 } from '@angular/core';
 import { LoadingHint } from './loading-hint.decorator';
 import { TestBed, async, ComponentFixture } from '@angular/core/testing';
-import { LoadingHintService } from './load-component.service';
+import { LoadingHintService } from './load-hint.service';
 import { of, Subject } from 'rxjs';
 import { CyiaLoadingHintUninstall, CyiaLoadHintOption } from './type';
-import { CYIA_LOADING_HINT_COMPLETE$, CYIA_LOADING_HINT_CLOSE_FN } from './const';
+import { CYIA_LOADING_HINT_RESULT$, CYIA_LOADING_HINT_CLOSE_FN } from './const';
 import { CyiaLoadingHintModule } from './load-component.module';
 import { CommonModule } from '@angular/common';
 
@@ -33,7 +33,7 @@ class LoadingTestComponent implements OnInit {
     // this.cd.detectChanges();
   }
   ngOnInit(): void {
-    (this[CYIA_LOADING_HINT_COMPLETE$] as Subject<any>).subscribe(val => {
+    (this[CYIA_LOADING_HINT_RESULT$] as Subject<any>).subscribe((val) => {
       this.complete = true;
       this.cd.detectChanges();
     });
@@ -58,13 +58,13 @@ class TestComponent {
   subject = new Subject();
   constructor() {}
   runPromise() {
-    this.loadingWithPromise().then(res => {
+    this.loadingWithPromise().then((res) => {
       this.subject.next(res);
     });
   }
   @LoadingHint({ container: (type: TestComponent) => type.promiseContainerRef, component: LoadingTestComponent })
   loadingWithPromise() {
-    return new Promise(res => {
+    return new Promise((res) => {
       setTimeout(() => {
         res(1000);
       }, 500);
@@ -73,11 +73,11 @@ class TestComponent {
   @LoadingHint({
     container: (type: TestComponent) => type.promiseContainerRef,
     component: LoadingTestComponent,
-    duration: 600,
-    uninstallMod: CyiaLoadingHintUninstall.duration
+    timeout: 600,
+    uninstallMod: CyiaLoadingHintUninstall.timeout
   })
-  loadingWithPromiseCloseWithDuration() {
-    return new Promise(res => {
+  loadingWithPromiseCloseWithTimeout() {
+    return new Promise((res) => {
       setTimeout(() => {
         res(1000);
       }, 500);
@@ -89,7 +89,47 @@ class TestComponent {
     uninstallMod: CyiaLoadingHintUninstall.component
   })
   loadingWithPromiseCloseWithComponent() {
-    return new Promise(res => {
+    return new Promise((res) => {
+      setTimeout(() => {
+        res(1000);
+      }, 500);
+    });
+  }
+  @LoadingHint({
+    container: (type: TestComponent) => type.promiseContainerRef,
+    component: LoadingTestComponent,
+    uninstallMod: CyiaLoadingHintUninstall.component,
+    timeout: 300
+  })
+  loadingWithPromiseCloseWithComponentWithTimeoutbefore() {
+    return new Promise((res) => {
+      setTimeout(() => {
+        res(1000);
+      }, 500);
+    });
+  }
+  @LoadingHint({
+    container: (type: TestComponent) => type.promiseContainerRef,
+    component: LoadingTestComponent,
+    uninstallMod: CyiaLoadingHintUninstall.component,
+    timeout: 600
+  })
+  loadingWithPromiseCloseWithComponentWithTimeoutAfter() {
+    return new Promise((res) => {
+      setTimeout(() => {
+        res(1000);
+      }, 500);
+    });
+  }
+  @LoadingHint({
+    container: (type: TestComponent) => type.promiseContainerRef,
+    component: LoadingTestComponent,
+    uninstallMod: CyiaLoadingHintUninstall.component,
+    timeout: 300,
+    blockReturn: true
+  })
+  loadingWithPromiseCloseWithComponentWithTimeoutWithBlockReturn() {
+    return new Promise((res) => {
       setTimeout(() => {
         res(1000);
       }, 500);
@@ -102,7 +142,7 @@ class TestComponent {
     blockReturn: true
   })
   loadingWithPromiseCloseWithComponentBlock() {
-    return new Promise(res => {
+    return new Promise((res) => {
       setTimeout(() => {
         res(1000);
       }, 500);
@@ -150,8 +190,8 @@ describe('载入提示组件装饰器配置测试', () => {
     async runTokenContainerWithRoot() {
       return 1000;
     }
-    @LoadingHint(containerFn, { component: component, duration: 500, uninstallMod: CyiaLoadingHintUninstall.duration })
-    async runConfigCloseWithDuration() {
+    @LoadingHint(containerFn, { component: component, timeout: 500, uninstallMod: CyiaLoadingHintUninstall.timeout })
+    async runConfigCloseWithTimeout() {
       return 1000;
     }
     @LoadingHint(containerFn, { component: component, uninstallMod: CyiaLoadingHintUninstall.component })
@@ -177,7 +217,7 @@ describe('载入提示组件装饰器配置测试', () => {
     return new Promise((res, rej) => {
       const orgInstall = LoadingHintService.install;
       const orgUnInstall = LoadingHintService.uninstall;
-      LoadingHintService.install = config => {
+      LoadingHintService.install = (key, config) => {
         for (const x in config) {
           if (config.hasOwnProperty(x) && config[x] !== undefined) {
             expect(config[x]).toBe(testConfig[x]);
@@ -189,7 +229,7 @@ describe('载入提示组件装饰器配置测试', () => {
           }
         }
       };
-      LoadingHintService.uninstall = (config, result) => {
+      LoadingHintService.uninstall = (key, config, result) => {
         for (const x in config) {
           if (config.hasOwnProperty(x) && config[x] !== undefined) {
             expect(config[x]).toBe(testConfig[x]);
@@ -208,9 +248,9 @@ describe('载入提示组件装饰器配置测试', () => {
       };
     });
   }
-  it('以option加载配置', done => {
+  it('以option加载配置', (done) => {
     testConfigAndResult(
-      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.default },
+      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.timeout },
       1000
     ).then(() => {
       done();
@@ -218,9 +258,9 @@ describe('载入提示组件装饰器配置测试', () => {
     const comp = new SubComponent();
     comp.runOption();
   });
-  it('以config加载配置', done => {
+  it('以config加载配置', (done) => {
     testConfigAndResult(
-      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.default },
+      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.timeout },
       1000
     ).then(() => {
       done();
@@ -228,9 +268,9 @@ describe('载入提示组件装饰器配置测试', () => {
     const comp = new SubComponent();
     comp.runConfig();
   });
-  it('以token加载配置', done => {
+  it('以token加载配置', (done) => {
     testConfigAndResult(
-      { container: container, uninstallMod: CyiaLoadingHintUninstall.default, token: TOKEN },
+      { container: container, uninstallMod: CyiaLoadingHintUninstall.timeout, token: TOKEN },
       1000
     ).then(() => {
       done();
@@ -238,9 +278,9 @@ describe('载入提示组件装饰器配置测试', () => {
     const comp = new SubComponent();
     comp.runToken();
   });
-  it('以option加载配置(root容器)', done => {
+  it('以option加载配置(root容器)', (done) => {
     testConfigAndResult(
-      { container: ROOT_CONTAINER, component: component, uninstallMod: CyiaLoadingHintUninstall.default },
+      { container: ROOT_CONTAINER, component: component, uninstallMod: CyiaLoadingHintUninstall.timeout },
       1000
     ).then(() => {
       done();
@@ -248,9 +288,9 @@ describe('载入提示组件装饰器配置测试', () => {
     const comp = new SubComponent();
     comp.runOptionContainerWithRoot();
   });
-  it('以config加载配置(root容器)', done => {
+  it('以config加载配置(root容器)', (done) => {
     testConfigAndResult(
-      { container: ROOT_CONTAINER, component: component, uninstallMod: CyiaLoadingHintUninstall.default },
+      { container: ROOT_CONTAINER, component: component, uninstallMod: CyiaLoadingHintUninstall.timeout },
       1000
     ).then(() => {
       done();
@@ -258,9 +298,9 @@ describe('载入提示组件装饰器配置测试', () => {
     const comp = new SubComponent();
     comp.runConfigContainerWithRoot();
   });
-  it('以token加载配置(root容器)', done => {
+  it('以token加载配置(root容器)', (done) => {
     testConfigAndResult(
-      { container: ROOT_CONTAINER, uninstallMod: CyiaLoadingHintUninstall.default, token: TOKEN },
+      { container: ROOT_CONTAINER, uninstallMod: CyiaLoadingHintUninstall.timeout, token: TOKEN },
       1000
     ).then(() => {
       done();
@@ -268,7 +308,7 @@ describe('载入提示组件装饰器配置测试', () => {
     const comp = new SubComponent();
     comp.runTokenContainerWithRoot();
   });
-  it('以config加载配置(组件控制关闭)', done => {
+  it('以config加载配置(组件控制关闭)', (done) => {
     testConfigAndResult(
       { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.component },
       1000
@@ -278,15 +318,15 @@ describe('载入提示组件装饰器配置测试', () => {
     const comp = new SubComponent();
     comp.runConfigCloseWithComponent();
   });
-  it('以config加载配置(持续时间控制关闭)', done => {
+  it('以config加载配置(持续时间控制关闭)', (done) => {
     testConfigAndResult(
-      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.duration, duration: 500 },
+      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.timeout, timeout: 500 },
       1000
     ).then(() => {
       done();
     });
     const comp = new SubComponent();
-    comp.runConfigCloseWithDuration();
+    comp.runConfigCloseWithTimeout();
   });
 });
 describe('载入提示组件运行测试', () => {
@@ -306,48 +346,62 @@ describe('载入提示组件运行测试', () => {
     componentFixture = TestBed.createComponent(TestComponent);
     componentInstance = componentFixture.componentInstance;
   });
-  it('异步返回关闭模式', async done => {
+  it('异步(Promise)返回关闭模式', async (done) => {
     componentFixture.autoDetectChanges(true);
     const start = Date.now();
-    componentInstance.subject.subscribe(val => {
+    componentInstance.subject.subscribe((val) => {
       expect(val).toBe(1000);
       expect(Date.now() - start).toBeGreaterThanOrEqual(500);
       done();
     });
     componentInstance.runPromise();
-    const loadingHintEl: HTMLElement = document.querySelector('.test__component .loading__hint');
-    const el = loadingHintEl.querySelector('.loading__text');
-    expect(el).toBeTruthy();
-    const testEl = document.querySelector('.test__component .loading__hint+div');
-    expect(testEl).toBeTruthy();
-    expect(testEl.querySelector('.test-anchor')).toBeTruthy();
-    expect(loadingHintEl.clientWidth).toEqual(testEl.clientWidth);
-    expect(loadingHintEl.clientHeight).toEqual(testEl.clientHeight);
+    await new Promise((res) => {
+      setTimeout(() => {
+        res();
+      }, 0);
+    });
+    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
+    const blockedEl = document.querySelector('.test__component>div');
+    expect(blockedEl.querySelector('.loading__text')).toBeTruthy();
+    expect(blockedEl).toBeTruthy();
+    expect(blockedEl.querySelector('.test-anchor')).toBeTruthy();
+    expect(loadingEl.clientWidth).toEqual(blockedEl.clientWidth);
+    expect(loadingEl.clientHeight).toEqual(blockedEl.clientHeight);
     // expect(loadingHintEl.style.pointerEvents).toEqual('')
   });
-  it('定时关闭模式', async done => {
+  it('组件关闭模式(非阻塞,Promise,定时)', async (done) => {
     componentFixture.autoDetectChanges(true);
     const start = Date.now();
-    componentInstance.loadingWithPromiseCloseWithDuration().then(val => {
+    componentInstance.loadingWithPromiseCloseWithTimeout().then((val) => {
       expect(val).toBe(1000);
       expect(Date.now() - start).toBeGreaterThanOrEqual(500);
-      done();
+      // componentFixture.changeDetectorRef.detectChanges();
+      setTimeout(() => {
+        const btn = document.querySelector('.loading__hint');
+        expect(btn).toBeFalsy();
+        done();
+      }, 200);
     });
-    const loadingHintEl: HTMLElement = document.querySelector('.test__component .loading__hint');
-    const el = loadingHintEl.querySelector('.loading__text');
+    await new Promise((res) => {
+      setTimeout(() => {
+        res();
+      }, 0);
+    });
+    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
+    const el = loadingEl.querySelector('.loading__text');
     expect(el).toBeTruthy();
-    const testEl = document.querySelector('.test__component .loading__hint+div');
-    expect(testEl).toBeTruthy();
-    expect(testEl.querySelector('.test-anchor')).toBeTruthy();
-    expect(loadingHintEl.clientWidth).toEqual(testEl.clientWidth);
-    expect(loadingHintEl.clientHeight).toEqual(testEl.clientHeight);
+    const blockedEl = document.querySelector('.test__component>div');
+    expect(blockedEl).toBeTruthy();
+    expect(blockedEl.querySelector('.test-anchor')).toBeTruthy();
+    expect(loadingEl.clientWidth).toEqual(blockedEl.clientWidth);
+    expect(loadingEl.clientHeight).toEqual(blockedEl.clientHeight);
     // expect(loadingHintEl.style.pointerEvents).toEqual('')
   });
-  it('组件关闭模式', async done => {
+  it('组件关闭模式(手动,Promise,非阻塞)', async (done) => {
     componentFixture.autoDetectChanges(true);
     const start = Date.now();
 
-    componentInstance.loadingWithPromiseCloseWithComponent().then(val => {
+    componentInstance.loadingWithPromiseCloseWithComponent().then((val) => {
       expect(val).toBe(1000);
       expect(Date.now() - start).toBeGreaterThanOrEqual(500);
       setTimeout(() => {
@@ -361,34 +415,143 @@ describe('载入提示组件运行测试', () => {
         }, 0);
       }, 0);
     });
-    const loadingHintEl: HTMLElement = document.querySelector('.test__component .loading__hint');
-    const el = loadingHintEl.querySelector('.loading__text');
+    await new Promise((res) => {
+      setTimeout(() => {
+        res();
+      }, 0);
+    });
+    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
+    const blockEl = document.querySelector('.test__component>div');
+    expect(blockEl.querySelector('.test-anchor')).toBeTruthy();
+    const el = blockEl.querySelector('.loading__text');
     expect(el).toBeTruthy();
-    const testEl = document.querySelector('.test__component .loading__hint+div');
-    expect(testEl).toBeTruthy();
-    expect(testEl.querySelector('.test-anchor')).toBeTruthy();
-    expect(loadingHintEl.clientWidth).toEqual(testEl.clientWidth);
-    expect(loadingHintEl.clientHeight).toEqual(testEl.clientHeight);
+    expect(blockEl).toBeTruthy();
+    expect(loadingEl.clientWidth).toEqual(blockEl.clientWidth);
+    expect(loadingEl.clientHeight).toEqual(blockEl.clientHeight);
     // expect(loadingHintEl.style.pointerEvents).toEqual('')
   });
-  it('组件关闭模式(阻塞)', async done => {
+  it('组件关闭模式(返回>超时,Promise,非阻塞)', async (done) => {
     componentFixture.autoDetectChanges(true);
     const start = Date.now();
 
-    componentInstance.loadingWithPromiseCloseWithComponentBlock().then(val => {
+    componentInstance.loadingWithPromiseCloseWithComponentWithTimeoutbefore().then((val) => {
       expect(val).toBe(1000);
       expect(Date.now() - start).toBeGreaterThanOrEqual(500);
+      setTimeout(() => {
+        const btn: HTMLButtonElement = document.querySelector('.close__button');
+        // expect(btn).toBeTruthy();
+        // setTimeout(() => {
+        // btn = document.querySelector('.close__button');
+        expect(btn).toBeFalsy();
+        done();
+        // }, 0);
+      }, 0);
     });
-    const loadingHintEl: HTMLElement = document.querySelector('.test__component .loading__hint');
-    const el = loadingHintEl.querySelector('.loading__text');
+    await new Promise((res) => {
+      setTimeout(() => {
+        res();
+      }, 0);
+    });
+    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
+    const blockEl = document.querySelector('.test__component>div');
+    expect(blockEl.querySelector('.test-anchor')).toBeTruthy();
+    const el = blockEl.querySelector('.loading__text');
     expect(el).toBeTruthy();
-    const testEl = document.querySelector('.test__component .loading__hint+div');
-    expect(testEl).toBeTruthy();
-    expect(testEl.querySelector('.test-anchor')).toBeTruthy();
-    expect(loadingHintEl.clientWidth).toEqual(testEl.clientWidth);
-    expect(loadingHintEl.clientHeight).toEqual(testEl.clientHeight);
+    expect(blockEl).toBeTruthy();
+    expect(loadingEl.clientWidth).toEqual(blockEl.clientWidth);
+    expect(loadingEl.clientHeight).toEqual(blockEl.clientHeight);
+    // expect(loadingHintEl.style.pointerEvents).toEqual('')
+  });
+  it('组件关闭模式(返回<超时,Promise,非阻塞)', async (done) => {
+    componentFixture.autoDetectChanges(true);
+    const start = Date.now();
+
+    componentInstance.loadingWithPromiseCloseWithComponentWithTimeoutAfter().then((val) => {
+      expect(val).toBe(1000);
+      expect(Date.now() - start).toBeGreaterThanOrEqual(500);
+      setTimeout(() => {
+        let btn: HTMLButtonElement = document.querySelector('.close__button');
+        expect(btn).toBeTruthy();
+        setTimeout(() => {
+          btn = document.querySelector('.close__button');
+          expect(btn).toBeFalsy();
+          done();
+        }, 200);
+      }, 0);
+    });
+    await new Promise((res) => {
+      setTimeout(() => {
+        res();
+      }, 0);
+    });
+    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
+    const blockEl = document.querySelector('.test__component>div');
+    expect(blockEl.querySelector('.test-anchor')).toBeTruthy();
+    const el = blockEl.querySelector('.loading__text');
+    expect(el).toBeTruthy();
+    expect(blockEl).toBeTruthy();
+    expect(loadingEl.clientWidth).toEqual(blockEl.clientWidth);
+    expect(loadingEl.clientHeight).toEqual(blockEl.clientHeight);
+    // expect(loadingHintEl.style.pointerEvents).toEqual('')
+  });
+  it('组件关闭模式(返回>超时,Promise,阻塞)', async (done) => {
+    componentFixture.autoDetectChanges(true);
+    const start = Date.now();
+
+    componentInstance.loadingWithPromiseCloseWithComponentWithTimeoutWithBlockReturn().then((val) => {
+      expect(val).toBe(1000);
+      expect(Date.now() - start).toBeGreaterThanOrEqual(500);
+      setTimeout(() => {
+        const btn: HTMLButtonElement = document.querySelector('.close__button');
+        // expect(btn).toBeTruthy();
+        // setTimeout(() => {
+        // btn = document.querySelector('.close__button');
+        expect(btn).toBeFalsy();
+        done();
+        // }, 0);
+      }, 0);
+    });
+    await new Promise((res) => {
+      setTimeout(() => {
+        res();
+      }, 0);
+    });
+    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
+    const blockEl = document.querySelector('.test__component>div');
+    expect(blockEl.querySelector('.test-anchor')).toBeTruthy();
+    const el = blockEl.querySelector('.loading__text');
+    expect(el).toBeTruthy();
+    expect(blockEl).toBeTruthy();
+    expect(loadingEl.clientWidth).toEqual(blockEl.clientWidth);
+    expect(loadingEl.clientHeight).toEqual(blockEl.clientHeight);
+    // expect(loadingHintEl.style.pointerEvents).toEqual('')
+  });
+  it('组件关闭模式(阻塞,手动,Promise)', async (done) => {
+    componentFixture.autoDetectChanges(true);
+    const start = Date.now();
+
+    componentInstance.loadingWithPromiseCloseWithComponentBlock().then((val) => {
+      expect(val).toBe(1000);
+      expect(Date.now() - start).toBeGreaterThanOrEqual(500);
+      const btn = document.querySelector('.close__button');
+      expect(btn).toBeTruthy();
+    });
+    await new Promise((res) => {
+      setTimeout(() => {
+        res();
+      }, 0);
+    });
+    const blockedEl: HTMLElement = document.querySelector('.test__component>div');
+    const el = blockedEl.querySelector('.loading__text');
+    console.log(el);
+    expect(el).toBeTruthy();
+    const loadingEl = document.querySelector('.test__component .test-anchor+.loading__hint');
+    expect(loadingEl).toBeTruthy();
+    expect(blockedEl.clientWidth).toEqual(loadingEl.clientWidth);
+    expect(blockedEl.clientHeight).toEqual(loadingEl.clientHeight);
+
     setTimeout(() => {
-      let btn: HTMLButtonElement = loadingHintEl.querySelector('.close__button');
+      let btn: HTMLButtonElement = loadingEl.querySelector('.close__button');
       expect(btn).toBeTruthy();
       btn.click();
       setTimeout(() => {
