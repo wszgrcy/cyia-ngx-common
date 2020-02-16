@@ -1,4 +1,4 @@
-import { LoadingHintService } from './load-hint.service';
+import { LoadingHintService } from './loading-hint.service';
 import { ɵisPromise, ElementRef, ɵisObservable, Type, ViewContainerRef, InjectionToken } from '@angular/core';
 import { tap, map, switchMap } from 'rxjs/operators';
 import { CyiaLoadHintConfig, CyiaLoadHintOption, LoadingHintViewContainer, InstallConfig } from './type';
@@ -14,20 +14,21 @@ export function LoadingHint<T = any>(
   arg2?: Type<any> | CyiaLoadHintConfig | InjectionToken<CyiaLoadHintConfig>
 ) {
   return function(target, key: string, property: PropertyDescriptor) {
-    const LOADING_HINT_KEY = Symbol();
-
     const fn: Function = property.value;
     property.value = function() {
+      const LOADING_HINT_KEY = Symbol(Date.now());
       const installConfig = getInstallConfig.call(this, arg1, arg2);
       LoadingHintService.install(LOADING_HINT_KEY, installConfig);
 
-      const res = fn.call(this, arguments);
+      const res = fn.apply(this, arguments);
       if (ɵisPromise(res)) {
         return res.then((value) => {
-          return LoadingHintService.uninstall(LOADING_HINT_KEY, installConfig, value).toPromise();
+          return LoadingHintService.uninstall(LOADING_HINT_KEY, installConfig.container, value).toPromise();
         });
       } else if (ɵisObservable(res)) {
-        return res.pipe(switchMap((value) => LoadingHintService.uninstall(LOADING_HINT_KEY, installConfig, value)));
+        return res.pipe(
+          switchMap((value) => LoadingHintService.uninstall(LOADING_HINT_KEY, installConfig.container, value))
+        );
       }
       return res;
     };

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { LoadingHintService } from './load-hint.service';
+import { LoadingHintService } from './loading-hint.service';
 
 @NgModule({
   declarations: [],

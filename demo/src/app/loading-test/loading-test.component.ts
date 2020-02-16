@@ -18,13 +18,14 @@ export class LoadingTestComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {}
-  @LoadingHint((type)=>type.loadPromiseRef, LOAD_HINT_TOKEN)
+  @LoadingHint((type) => type.loadPromiseRef, LOAD_HINT_TOKEN)
   loadPromise() {
     console.log('点击');
-    return new Promise(res => {
+    return new Promise((res) => {
       setTimeout(() => {
-        res();
-      }, 3000);
+        console.log('返回');
+        res(13);
+      }, 1000);
     });
   }
 
@@ -34,22 +35,22 @@ export class LoadingTestComponent implements OnInit {
     return timer(3000);
   }
   loadObservableE() {
-    return this.loadObservable().subscribe(val => {
+    return this.loadObservable().subscribe((val) => {
       console.log('执行完成', val);
     });
   }
   @LoadingHint((type: LoadingTestComponent) => type.loadDurRef, {
-    timeout: 5000,
+    duration: 5000,
     component: LoadComponent,
-    uninstallMod: CyiaLoadingHintUninstall.timeout
+    uninstallMod: CyiaLoadingHintUninstall.duration
   })
   loadDuration() {
     console.log('持续一定时间');
-    // return new Promise((res) => {
-    //   setTimeout(() => {
-    //     res()
-    //   }, 100);
-    // })
+    return new Promise((res) => {
+      setTimeout(() => {
+        res();
+      }, 100);
+    });
   }
   @LoadingHint((type: LoadingTestComponent) => type.loadCompRef, {
     component: LoadComponent,
@@ -57,15 +58,29 @@ export class LoadingTestComponent implements OnInit {
     blockReturn: true
   })
   loadComp() {
-    return new Promise(res => {
+    return new Promise((res) => {
       setTimeout(() => {
         res(123);
       }, 1000);
     });
   }
-  loadCompE() {
-    this.loadComp().then(value => {
-      console.log('返回数据', value);
+  @LoadingHint((type: LoadingTestComponent) => type.loadCompRef, {
+    component: LoadComponent,
+    delay: 1000,
+    // blockReturn: true
+  })
+  loadCompDefault() {
+    let d = Date.now();
+    return new Promise((res) => {
+      setTimeout(() => {
+        res(d);
+      }, 3200);
+    });
+  }
+  loadCompDefaultE() {
+    console.log('点击')
+    this.loadCompDefault().then((item: any) => {
+      console.log(Date.now() - item);
     });
   }
 }

@@ -10,12 +10,14 @@ import {
 } from '@angular/core';
 import { LoadingHint } from './loading-hint.decorator';
 import { TestBed, async, ComponentFixture } from '@angular/core/testing';
-import { LoadingHintService } from './load-hint.service';
+import { LoadingHintService } from './loading-hint.service';
 import { of, Subject } from 'rxjs';
 import { CyiaLoadingHintUninstall, CyiaLoadHintOption } from './type';
 import { CYIA_LOADING_HINT_RESULT$, CYIA_LOADING_HINT_CLOSE_FN } from './const';
-import { CyiaLoadingHintModule } from './load-component.module';
+import { CyiaLoadingHintModule } from './loading-hint.module';
 import { CommonModule } from '@angular/common';
+import { delay } from '../test/util/async';
+import { del } from 'selenium-webdriver/http';
 
 @Component({
   template: `
@@ -74,7 +76,7 @@ class TestComponent {
     container: (type: TestComponent) => type.promiseContainerRef,
     component: LoadingTestComponent,
     timeout: 600,
-    uninstallMod: CyiaLoadingHintUninstall.timeout
+    uninstallMod: CyiaLoadingHintUninstall.default
   })
   loadingWithPromiseCloseWithTimeout() {
     return new Promise((res) => {
@@ -148,6 +150,98 @@ class TestComponent {
       }, 500);
     });
   }
+  @LoadingHint({
+    container: (type: TestComponent) => type.promiseContainerRef,
+    component: LoadingTestComponent
+  })
+  loadingWithDefault(number: number) {
+    return delay(number);
+  }
+  @LoadingHint({
+    container: (type: TestComponent) => type.promiseContainerRef,
+    component: LoadingTestComponent,
+    timeout: 500
+  })
+  loadingWithDefaultWithTimeout(number: number) {
+    return delay(number);
+  }
+  @LoadingHint({
+    container: (type: TestComponent) => type.promiseContainerRef,
+    component: LoadingTestComponent,
+    timeout: 1100,
+    blockReturn: true
+  })
+  loadingWithDefaultWithTimeoutWithBlock(number: number) {
+    return delay(number);
+  }
+  @LoadingHint({
+    container: (type: TestComponent) => type.promiseContainerRef,
+    component: LoadingTestComponent,
+    delay: 100
+  })
+  loadingWithDefaultWithTimeoutWithDelay(number: number) {
+    return delay(number);
+  }
+  @LoadingHint({
+    container: (type: TestComponent) => type.promiseContainerRef,
+    component: LoadingTestComponent,
+    uninstallMod: CyiaLoadingHintUninstall.duration,
+
+    duration: 500
+  })
+  loadingWithDurationBefore(number: number) {
+    return delay(number);
+  }
+  @LoadingHint({
+    container: (type: TestComponent) => type.promiseContainerRef,
+    component: LoadingTestComponent,
+    uninstallMod: CyiaLoadingHintUninstall.duration,
+    duration: 1100
+  })
+  loadingWithDurationAfter(number: number) {
+    return delay(number);
+  }
+  @LoadingHint({
+    container: (type: TestComponent) => type.promiseContainerRef,
+    component: LoadingTestComponent,
+    uninstallMod: CyiaLoadingHintUninstall.duration,
+    duration: 1100,
+    blockReturn: true
+  })
+  loadingWithDurationAfterWithBlock(number: number) {
+    return delay(number);
+  }
+  @LoadingHint({
+    container: (type: TestComponent) => type.promiseContainerRef,
+    component: LoadingTestComponent,
+    uninstallMod: CyiaLoadingHintUninstall.duration,
+    duration: 1100,
+    delay: 100,
+    blockReturn: true
+  })
+  loadingWithDurationAfterWithBlockWithDelay(number: number) {
+    return delay(number);
+  }
+  @LoadingHint({
+    container: (type: TestComponent) => type.promiseContainerRef,
+    component: LoadingTestComponent,
+    uninstallMod: CyiaLoadingHintUninstall.duration,
+    duration: 1100,
+    delay: 50
+  })
+  loadingWithDurationAfterWithDelay(number: number) {
+    return delay(number);
+  }
+  @LoadingHint({
+    container: (type: TestComponent) => type.promiseContainerRef,
+    component: LoadingTestComponent,
+    uninstallMod: CyiaLoadingHintUninstall.duration,
+    duration: 1100,
+    delay: 150
+  })
+  loadingWithDurationAfterWithDelay2(number: number) {
+    return delay(number);
+  }
 }
 @NgModule({
   imports: [CyiaLoadingHintModule, CommonModule],
@@ -190,7 +284,7 @@ describe('载入提示组件装饰器配置测试', () => {
     async runTokenContainerWithRoot() {
       return 1000;
     }
-    @LoadingHint(containerFn, { component: component, timeout: 500, uninstallMod: CyiaLoadingHintUninstall.timeout })
+    @LoadingHint(containerFn, { component: component, timeout: 500, uninstallMod: CyiaLoadingHintUninstall.default })
     async runConfigCloseWithTimeout() {
       return 1000;
     }
@@ -218,6 +312,7 @@ describe('载入提示组件装饰器配置测试', () => {
       const orgInstall = LoadingHintService.install;
       const orgUnInstall = LoadingHintService.uninstall;
       LoadingHintService.install = (key, config) => {
+        console.log('传入配置', config, '测试配置', testConfig);
         for (const x in config) {
           if (config.hasOwnProperty(x) && config[x] !== undefined) {
             expect(config[x]).toBe(testConfig[x]);
@@ -229,18 +324,22 @@ describe('载入提示组件装饰器配置测试', () => {
           }
         }
       };
-      LoadingHintService.uninstall = (key, config, result) => {
-        for (const x in config) {
-          if (config.hasOwnProperty(x) && config[x] !== undefined) {
-            expect(config[x]).toBe(testConfig[x]);
-          }
-        }
-        for (const x in testConfig) {
-          if (testConfig.hasOwnProperty(x) && testConfig[x] !== undefined) {
-            expect(testConfig[x]).toBe(config[x]);
-          }
-        }
-        expect(result).toBe(testResult);
+
+      LoadingHintService.uninstall = (key, result) => {
+        // const config = LoadingHintService.configMap.get(key);
+        // console.log('配置', config);
+
+        // for (const x in config) {
+        //   if (config.hasOwnProperty(x) && config[x] !== undefined) {
+        //     expect(config[x]).toBe(testConfig[x]);
+        //   }
+        // }
+        // for (const x in testConfig) {
+        //   if (testConfig.hasOwnProperty(x) && testConfig[x] !== undefined) {
+        //     expect(testConfig[x]).toBe(config[x]);
+        //   }
+        // }
+        // expect(result).toBe(testResult);
         res();
         LoadingHintService.install = orgInstall;
         LoadingHintService.uninstall = orgUnInstall;
@@ -250,7 +349,7 @@ describe('载入提示组件装饰器配置测试', () => {
   }
   it('以option加载配置', (done) => {
     testConfigAndResult(
-      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.timeout },
+      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.default, delay: 0 },
       1000
     ).then(() => {
       done();
@@ -260,7 +359,7 @@ describe('载入提示组件装饰器配置测试', () => {
   });
   it('以config加载配置', (done) => {
     testConfigAndResult(
-      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.timeout },
+      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.default, delay: 0 },
       1000
     ).then(() => {
       done();
@@ -270,7 +369,7 @@ describe('载入提示组件装饰器配置测试', () => {
   });
   it('以token加载配置', (done) => {
     testConfigAndResult(
-      { container: container, uninstallMod: CyiaLoadingHintUninstall.timeout, token: TOKEN },
+      { container: container, uninstallMod: CyiaLoadingHintUninstall.default, token: TOKEN, delay: 0 },
       1000
     ).then(() => {
       done();
@@ -280,7 +379,7 @@ describe('载入提示组件装饰器配置测试', () => {
   });
   it('以option加载配置(root容器)', (done) => {
     testConfigAndResult(
-      { container: ROOT_CONTAINER, component: component, uninstallMod: CyiaLoadingHintUninstall.timeout },
+      { container: ROOT_CONTAINER, component: component, uninstallMod: CyiaLoadingHintUninstall.default, delay: 0 },
       1000
     ).then(() => {
       done();
@@ -290,7 +389,7 @@ describe('载入提示组件装饰器配置测试', () => {
   });
   it('以config加载配置(root容器)', (done) => {
     testConfigAndResult(
-      { container: ROOT_CONTAINER, component: component, uninstallMod: CyiaLoadingHintUninstall.timeout },
+      { container: ROOT_CONTAINER, component: component, uninstallMod: CyiaLoadingHintUninstall.default, delay: 0 },
       1000
     ).then(() => {
       done();
@@ -300,7 +399,7 @@ describe('载入提示组件装饰器配置测试', () => {
   });
   it('以token加载配置(root容器)', (done) => {
     testConfigAndResult(
-      { container: ROOT_CONTAINER, uninstallMod: CyiaLoadingHintUninstall.timeout, token: TOKEN },
+      { container: ROOT_CONTAINER, uninstallMod: CyiaLoadingHintUninstall.default, token: TOKEN, delay: 0 },
       1000
     ).then(() => {
       done();
@@ -310,7 +409,7 @@ describe('载入提示组件装饰器配置测试', () => {
   });
   it('以config加载配置(组件控制关闭)', (done) => {
     testConfigAndResult(
-      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.component },
+      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.component, delay: 0 },
       1000
     ).then(() => {
       done();
@@ -320,7 +419,13 @@ describe('载入提示组件装饰器配置测试', () => {
   });
   it('以config加载配置(持续时间控制关闭)', (done) => {
     testConfigAndResult(
-      { container: container, component: component, uninstallMod: CyiaLoadingHintUninstall.timeout, timeout: 500 },
+      {
+        container: container,
+        component: component,
+        uninstallMod: CyiaLoadingHintUninstall.default,
+        timeout: 500,
+        delay: 0
+      },
       1000
     ).then(() => {
       done();
@@ -330,6 +435,26 @@ describe('载入提示组件装饰器配置测试', () => {
   });
 });
 describe('载入提示组件运行测试', () => {
+  function componentLoading() {
+    const blockedEl: HTMLElement = document.querySelector('.test__component>div');
+    const el = blockedEl.querySelector('.loading__text');
+    expect(el).toBeTruthy();
+    const loadingEl = document.querySelector('.test__component .test-anchor+.loading__hint');
+    expect(loadingEl).toBeTruthy();
+    expect(blockedEl.clientWidth).toEqual(loadingEl.clientWidth);
+    expect(blockedEl.clientHeight).toEqual(loadingEl.clientHeight);
+  }
+  /**判断组件是否关闭 */
+  function componentClose(delay, expectValue, start: number, isclose: boolean) {
+    expect(expectValue).toBe(delay);
+    expect(Date.now() - start).toBeGreaterThanOrEqual(delay);
+    const div = document.querySelector('.loading__text');
+    if (isclose) {
+      expect(div).toBeFalsy();
+    } else {
+      expect(div).toBeTruthy();
+    }
+  }
   let service: LoadingHintService;
   let componentFixture: ComponentFixture<TestComponent>;
   let componentInstance: TestComponent;
@@ -346,58 +471,8 @@ describe('载入提示组件运行测试', () => {
     componentFixture = TestBed.createComponent(TestComponent);
     componentInstance = componentFixture.componentInstance;
   });
-  it('异步(Promise)返回关闭模式', async (done) => {
-    componentFixture.autoDetectChanges(true);
-    const start = Date.now();
-    componentInstance.subject.subscribe((val) => {
-      expect(val).toBe(1000);
-      expect(Date.now() - start).toBeGreaterThanOrEqual(500);
-      done();
-    });
-    componentInstance.runPromise();
-    await new Promise((res) => {
-      setTimeout(() => {
-        res();
-      }, 0);
-    });
-    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
-    const blockedEl = document.querySelector('.test__component>div');
-    expect(blockedEl.querySelector('.loading__text')).toBeTruthy();
-    expect(blockedEl).toBeTruthy();
-    expect(blockedEl.querySelector('.test-anchor')).toBeTruthy();
-    expect(loadingEl.clientWidth).toEqual(blockedEl.clientWidth);
-    expect(loadingEl.clientHeight).toEqual(blockedEl.clientHeight);
-    // expect(loadingHintEl.style.pointerEvents).toEqual('')
-  });
-  it('组件关闭模式(非阻塞,Promise,定时)', async (done) => {
-    componentFixture.autoDetectChanges(true);
-    const start = Date.now();
-    componentInstance.loadingWithPromiseCloseWithTimeout().then((val) => {
-      expect(val).toBe(1000);
-      expect(Date.now() - start).toBeGreaterThanOrEqual(500);
-      // componentFixture.changeDetectorRef.detectChanges();
-      setTimeout(() => {
-        const btn = document.querySelector('.loading__hint');
-        expect(btn).toBeFalsy();
-        done();
-      }, 200);
-    });
-    await new Promise((res) => {
-      setTimeout(() => {
-        res();
-      }, 0);
-    });
-    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
-    const el = loadingEl.querySelector('.loading__text');
-    expect(el).toBeTruthy();
-    const blockedEl = document.querySelector('.test__component>div');
-    expect(blockedEl).toBeTruthy();
-    expect(blockedEl.querySelector('.test-anchor')).toBeTruthy();
-    expect(loadingEl.clientWidth).toEqual(blockedEl.clientWidth);
-    expect(loadingEl.clientHeight).toEqual(blockedEl.clientHeight);
-    // expect(loadingHintEl.style.pointerEvents).toEqual('')
-  });
-  it('组件关闭模式(手动,Promise,非阻塞)', async (done) => {
+
+  it('组件,Promise', async (done) => {
     componentFixture.autoDetectChanges(true);
     const start = Date.now();
 
@@ -415,11 +490,7 @@ describe('载入提示组件运行测试', () => {
         }, 0);
       }, 0);
     });
-    await new Promise((res) => {
-      setTimeout(() => {
-        res();
-      }, 0);
-    });
+    await delay(0);
     const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
     const blockEl = document.querySelector('.test__component>div');
     expect(blockEl.querySelector('.test-anchor')).toBeTruthy();
@@ -430,7 +501,7 @@ describe('载入提示组件运行测试', () => {
     expect(loadingEl.clientHeight).toEqual(blockEl.clientHeight);
     // expect(loadingHintEl.style.pointerEvents).toEqual('')
   });
-  it('组件关闭模式(返回>超时,Promise,非阻塞)', async (done) => {
+  it('组件,超时,Promise,返回>超时', async (done) => {
     componentFixture.autoDetectChanges(true);
     const start = Date.now();
 
@@ -439,19 +510,11 @@ describe('载入提示组件运行测试', () => {
       expect(Date.now() - start).toBeGreaterThanOrEqual(500);
       setTimeout(() => {
         const btn: HTMLButtonElement = document.querySelector('.close__button');
-        // expect(btn).toBeTruthy();
-        // setTimeout(() => {
-        // btn = document.querySelector('.close__button');
         expect(btn).toBeFalsy();
         done();
-        // }, 0);
       }, 0);
     });
-    await new Promise((res) => {
-      setTimeout(() => {
-        res();
-      }, 0);
-    });
+    await delay(0);
     const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
     const blockEl = document.querySelector('.test__component>div');
     expect(blockEl.querySelector('.test-anchor')).toBeTruthy();
@@ -462,10 +525,9 @@ describe('载入提示组件运行测试', () => {
     expect(loadingEl.clientHeight).toEqual(blockEl.clientHeight);
     // expect(loadingHintEl.style.pointerEvents).toEqual('')
   });
-  it('组件关闭模式(返回<超时,Promise,非阻塞)', async (done) => {
+  it('组件,超时,Promise,返回<超时', async (done) => {
     componentFixture.autoDetectChanges(true);
     const start = Date.now();
-
     componentInstance.loadingWithPromiseCloseWithComponentWithTimeoutAfter().then((val) => {
       expect(val).toBe(1000);
       expect(Date.now() - start).toBeGreaterThanOrEqual(500);
@@ -476,14 +538,10 @@ describe('载入提示组件运行测试', () => {
           btn = document.querySelector('.close__button');
           expect(btn).toBeFalsy();
           done();
-        }, 200);
+        }, 100);
       }, 0);
     });
-    await new Promise((res) => {
-      setTimeout(() => {
-        res();
-      }, 0);
-    });
+    await delay(0);
     const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
     const blockEl = document.querySelector('.test__component>div');
     expect(blockEl.querySelector('.test-anchor')).toBeTruthy();
@@ -494,7 +552,7 @@ describe('载入提示组件运行测试', () => {
     expect(loadingEl.clientHeight).toEqual(blockEl.clientHeight);
     // expect(loadingHintEl.style.pointerEvents).toEqual('')
   });
-  it('组件关闭模式(返回>超时,Promise,阻塞)', async (done) => {
+  it('组件,超时,Promise,返回>超时,阻塞)', async (done) => {
     componentFixture.autoDetectChanges(true);
     const start = Date.now();
 
@@ -503,19 +561,11 @@ describe('载入提示组件运行测试', () => {
       expect(Date.now() - start).toBeGreaterThanOrEqual(500);
       setTimeout(() => {
         const btn: HTMLButtonElement = document.querySelector('.close__button');
-        // expect(btn).toBeTruthy();
-        // setTimeout(() => {
-        // btn = document.querySelector('.close__button');
         expect(btn).toBeFalsy();
         done();
-        // }, 0);
       }, 0);
     });
-    await new Promise((res) => {
-      setTimeout(() => {
-        res();
-      }, 0);
-    });
+    await delay(0);
     const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
     const blockEl = document.querySelector('.test__component>div');
     expect(blockEl.querySelector('.test-anchor')).toBeTruthy();
@@ -524,23 +574,19 @@ describe('载入提示组件运行测试', () => {
     expect(blockEl).toBeTruthy();
     expect(loadingEl.clientWidth).toEqual(blockEl.clientWidth);
     expect(loadingEl.clientHeight).toEqual(blockEl.clientHeight);
-    // expect(loadingHintEl.style.pointerEvents).toEqual('')
   });
-  it('组件关闭模式(阻塞,手动,Promise)', async (done) => {
+  it('组件,Promise,阻塞', async (done) => {
     componentFixture.autoDetectChanges(true);
     const start = Date.now();
 
     componentInstance.loadingWithPromiseCloseWithComponentBlock().then((val) => {
       expect(val).toBe(1000);
       expect(Date.now() - start).toBeGreaterThanOrEqual(500);
+      expect(Date.now() - start).toBeLessThan(600);
       const btn = document.querySelector('.close__button');
-      expect(btn).toBeTruthy();
+      expect(btn).toBeFalsy();
     });
-    await new Promise((res) => {
-      setTimeout(() => {
-        res();
-      }, 0);
-    });
+    await delay(0);
     const blockedEl: HTMLElement = document.querySelector('.test__component>div');
     const el = blockedEl.querySelector('.loading__text');
     console.log(el);
@@ -561,5 +607,131 @@ describe('载入提示组件运行测试', () => {
       }, 0);
     }, 550);
     // expect(loadingHintEl.style.pointerEvents).toEqual('')
+  });
+  it('默认,Promise', async (done) => {
+    componentFixture.autoDetectChanges(true);
+    const start = Date.now();
+    componentInstance.loadingWithDefault(1000).then((val) => {
+      componentClose(1000, val, start, true);
+      done();
+    });
+    await delay(0);
+    componentLoading();
+  });
+  it('默认>超时,Promise', async (done) => {
+    componentFixture.autoDetectChanges(true);
+    const start = Date.now();
+    componentInstance.loadingWithDefaultWithTimeout(1000).then((val) => {
+      componentClose(1000, val, start, true);
+      done();
+    });
+    await delay(0);
+    componentLoading();
+    await delay(600);
+    const btn = document.querySelector('.loading__text');
+
+    expect(btn).toBeFalsy('应该找不到关闭组件');
+  });
+  it('默认>超时,Promise,阻塞(默认+阻塞无意义)', async (done) => {
+    componentFixture.autoDetectChanges(true);
+    const start = Date.now();
+    componentInstance.loadingWithDefaultWithTimeoutWithBlock(1000).then((val) => {
+      componentClose(1000, val, start, true);
+      done();
+    });
+    await delay(0);
+    componentLoading();
+  });
+  it('默认,延时,Promise', async (done) => {
+    componentFixture.autoDetectChanges(true);
+    const start = Date.now();
+    componentInstance.loadingWithDefaultWithTimeoutWithDelay(1000).then((val) => {
+      expect(val).toBe(1000);
+      expect(Date.now() - start).toBeGreaterThanOrEqual(1100);
+      const div = document.querySelector('.loading__text');
+      expect(div).toBeFalsy();
+      done();
+    });
+    await delay(0);
+    componentLoading();
+  });
+  it('指定持续<返回,Promise', async (done) => {
+    componentFixture.autoDetectChanges(true);
+    const start = Date.now();
+    componentInstance.loadingWithDurationBefore(1000).then((val) => {
+      componentClose(1000, val, start, true);
+      done();
+    });
+    await delay(0);
+    componentLoading();
+  });
+  it('指定持续>返回,Promise', async (done) => {
+    componentFixture.autoDetectChanges(true);
+    const start = Date.now();
+    componentInstance.loadingWithDurationAfter(1000).then(async (val) => {
+      componentClose(1000, val, start, false);
+      await delay(100);
+      const div = document.querySelector('.loading__text');
+      expect(div).toBeFalsy();
+
+      done();
+    });
+    await delay(0);
+    componentLoading();
+  });
+  it('指定持续>返回,Promise,阻塞', async (done) => {
+    componentFixture.autoDetectChanges(true);
+    const start = Date.now();
+    componentInstance.loadingWithDurationAfterWithBlock(1000).then(async (val) => {
+      expect(val).toBe(1000);
+      expect(Date.now() - start).toBeGreaterThanOrEqual(1100);
+      const div = document.querySelector('.loading__text');
+      expect(div).toBeFalsy();
+      done();
+    });
+    await delay(0);
+    componentLoading();
+  });
+  it('指定持续>返回,Promise,阻塞,延时', async (done) => {
+    componentFixture.autoDetectChanges(true);
+    const start = Date.now();
+    componentInstance.loadingWithDurationAfterWithBlockWithDelay(1000).then(async (val) => {
+      expect(val).toBe(1000);
+      expect(Date.now() - start).toBeGreaterThanOrEqual(1200);
+      const div = document.querySelector('.loading__text');
+      expect(div).toBeFalsy();
+      done();
+    });
+    await delay(0);
+    componentLoading();
+  });
+  it('指定持续>返回,Promise,延时', async (done) => {
+    componentFixture.autoDetectChanges(true);
+    const start = Date.now();
+    componentInstance.loadingWithDurationAfterWithDelay(1000).then(async (val) => {
+      expect(val).toBe(1000);
+      expect(Date.now() - start).toBeGreaterThanOrEqual(1050);
+      expect(Date.now() - start).toBeLessThanOrEqual(1149);
+      const div = document.querySelector('.loading__text');
+      expect(div).toBeTruthy();
+      done();
+    });
+    await delay(0);
+    componentLoading();
+  });
+  it('指定持续-返回=延时,Promise,', async (done) => {
+    componentFixture.autoDetectChanges(true);
+    const start = Date.now();
+    componentInstance.loadingWithDurationAfterWithDelay2(1000).then(async (val) => {
+      expect(val).toBe(1000);
+      expect(Date.now() - start).toBeGreaterThanOrEqual(1150);
+      expect(Date.now() - start).toBeLessThanOrEqual(1249);
+      console.log(Date.now() - start);
+      const div = document.querySelector('.loading__text');
+      expect(div).toBeFalsy();
+      done();
+    });
+    await delay(0);
+    componentLoading();
   });
 });

@@ -1,5 +1,5 @@
-export * from './load-hint.service';
+export * from './loading-hint.service';
 export * from './loading-hint.decorator';
-export * from './load-component.module';
+export * from './loading-hint.module';
 export * from './token';
 export * from './type';
