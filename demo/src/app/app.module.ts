@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { CyiaHttpModule } from 'cyia-ngx-common';
+import { CyiaHttpModule, RepositoryModule } from 'cyia-ngx-common';
 // import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from '@angular/material';
@@ -22,7 +22,8 @@ import { LoadComponent } from './load/load.component';
     MatSnackBarModule,
     LoadModule,
     LoadingTestModule,
-    CyiaLoadingHintModule
+    CyiaLoadingHintModule,
+    RepositoryModule,
   ],
   providers: [
     {
@@ -30,10 +31,10 @@ import { LoadComponent } from './load/load.component';
       useValue: {
         component: LoadComponent,
         blockReturn: true,
-        uninstallMod: CyiaLoadingHintUninstall.component
-      }
-    }
+        uninstallMod: CyiaLoadingHintUninstall.component,
+      },
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -1,15 +1,11 @@
 /**
- *
+ * 合并选项
  */
-export function mergeOptions(...list: any[]): any {
-  const options = {};
-  list.forEach((item) => {
-    if (!item || typeof item !== 'object') { return; }
-    for (const key in item) {
-      if (item.hasOwnProperty(key)) {
-        options[key] = item[key] === undefined ? options[key] : item[key];
-      }
-    }
-  });
-  return options;
+export function mergeOptions<T= any>(...list: T[]): any {
+  return list.reduce((pre, current) => {
+    return {
+      ...pre,
+      ...current,
+    };
+  }, {});
 }

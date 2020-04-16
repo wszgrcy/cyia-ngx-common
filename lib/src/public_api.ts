@@ -8,3 +8,7 @@ export * from './http';
 export * from './decorator/click-control.decorator';
 export * from './decorator/entity';
 export * from './util/import-script';
+export * from './repository/repository.module';
+export * from './repository/decorator/class-data-source';
+export * from './repository/decorator/property-data-source';
+export * from './repository/repository.service';
