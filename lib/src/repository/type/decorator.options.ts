@@ -12,6 +12,7 @@ export class PropertyDataSourceOptions<T = any> {
   source?: (httpClient: HttpClient, injector: Injector, parentResult: Exclude<any, Observable<any>>) => Observable<any>;
   /**级联 */
   cascade ? = false;
+  inherit ? = false;
   /**如果返回数据是结构化实体需要
    * 定义实体且只有实体,查找实体的source,不使用自身的source
    */
@@ -35,6 +36,8 @@ export class PropertyDataSourceOptions<T = any> {
 export class PropertyDataSourceOptionsPrivate extends PropertyDataSourceOptions {
   key: string;
   parentEntity: Type<any>;
+  /**是否已经继承过 */
+  hasInherit = false;
 }
 export interface ClassDataSourceOptions {
   source: (httpClient: HttpClient, injector: Injector, ...args) => Observable<any>;

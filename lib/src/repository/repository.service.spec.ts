@@ -163,7 +163,7 @@ class ItemSelectParams {
   })
   injector: Injector;
 }
-describe('仓库服务(基础)', () => {
+fdescribe('仓库服务(基础)', () => {
   let repository: CyiaRepositoryService;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
