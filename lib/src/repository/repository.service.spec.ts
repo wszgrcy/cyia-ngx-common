@@ -1,9 +1,9 @@
 import { async, TestBed } from '@angular/core/testing';
-import { RepositoryModule } from './repository.module';
+import { CyiaRepositoryModule } from './repository.module';
 import { ClassDataSource } from './decorator/class-data-source';
 import { of } from 'rxjs';
 import { PropertyDataSource } from './decorator/property-data-source';
-import { RepositoryService } from './repository.service';
+import { CyiaRepositoryService } from './repository.service';
 import { HttpClient } from '@angular/common/http';
 import { Injector } from '@angular/core';
 @ClassDataSource({
@@ -88,7 +88,6 @@ class Level1List {
   @PropertyDataSource({
     entity: Level2List,
     itemSelect: (item, key, j, result: Level2List) => {
-      console.log(item, key, result);
       return of(result[j]);
     },
     cascade: true,
@@ -121,23 +120,65 @@ class Level1UseSourceParams {
   })
   result;
 }
+@ClassDataSource({
+  source: (a, b, result) => {
+    return of(result);
+  },
+})
+class ItemSelectParams {
+  @PropertyDataSource({
+    source: () => of(undefined),
+    itemSelect: (item, key) => {
+      return of(key);
+    },
+  })
+  key: string;
+
+  @PropertyDataSource({
+    source: () => of(undefined),
+    itemSelect: (item, key, index) => {
+      return of(index);
+    },
+  })
+  index: number;
+  @PropertyDataSource({
+    source: () => of(['result1', 'result2']),
+    itemSelect: (item, key, index, result) => {
+      return of(result[index]);
+    },
+  })
+  result;
+  @PropertyDataSource({
+    source: () => of(undefined),
+    itemSelect: (item, key, index, result, http) => {
+      return of(http);
+    },
+  })
+  http: HttpClient;
+  @PropertyDataSource({
+    source: () => of(undefined),
+    itemSelect: (item, key, index, result, http, injector) => {
+      return of(injector);
+    },
+  })
+  injector: Injector;
+}
 fdescribe('仓库服务(基础)', () => {
-  let repository: RepositoryService;
+  let repository: CyiaRepositoryService;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RepositoryModule],
+      imports: [CyiaRepositoryModule],
     });
   }));
   beforeEach(() => {
-    repository = TestBed.get(RepositoryService);
+    repository = TestBed.get(CyiaRepositoryService);
   });
   it('服务初始化', () => {
     expect(repository).toBeTruthy();
     expect(repository.findMany).toBeTruthy();
   });
-  it('结构化基础', async (done) => {
+  it('返回为item&结构化基础', async (done) => {
     repository.findOne(Level1Item).subscribe((item) => {
-      console.log(item);
       expect(item instanceof Level1Item);
       expect(item.name).toBe('level1');
       expect(item.linkLevel2 instanceof Level2Item).toBeTruthy();
@@ -145,40 +186,44 @@ fdescribe('仓库服务(基础)', () => {
       done();
     });
   });
-  it('级联', async (done) => {
+  it('返回为list&&结构化基础', async (done) => {
+    repository.findMany(Level1List).subscribe((res) => {
+      expect(res instanceof Array).toBe(true);
+      expect(res.length).toBeTruthy();
+      res.forEach((item, i) => {
+        expect(res[i] instanceof Level1List).toBeTruthy();
+        expect(res[i].name).toBe(`level1-${i + 1}`);
+        expect(res[i].linkLevel2List instanceof Level2List).toBeTruthy();
+        expect(res[i].linkLevel2List.name).toBe(`level2-${i + 1}`);
+      });
+      done();
+    });
+  });
+
+  it('item级联', async (done) => {
     repository.findOne(Level1EascadeItem).subscribe((item) => {
-      console.log(item);
       expect(item instanceof Level1EascadeItem);
       expect(item.name).toBe('level1');
       expect(item.linkLevel2 instanceof Level2Item).toBeTruthy();
       expect(item.linkLevel2.linkLevel3).toBeTruthy();
       expect(item.linkLevel2.linkLevel3 instanceof Level3Item).toBeTruthy();
+      expect(item.linkLevel2.linkLevel3.name === 'level3').toBeTruthy();
       done();
     });
   });
-  it('返回为列表', async (done) => {
-    repository.findMany(Level1List).subscribe((res) => {
-      expect(res instanceof Array).toBe(true);
-      expect(res.length).toBeTruthy();
-      expect(res[0] instanceof Level1List).toBe(true);
-      expect(res[0].name).toBe('level1-1');
-      done();
-    });
-  });
-  it('列表结构化', async (done) => {
-    repository.findMany(Level1List).subscribe((res) => {
-      expect(res[0].linkLevel2List.name).toBe('level2-1');
-      expect(res[1].linkLevel2List.name).toBe('level2-2');
-      done();
-    });
-  });
-  it('列表级联', async (done) => {
+  it('list级联', async (done) => {
     repository.findMany(Level1List).subscribe((list) => {
-      expect(list[0].linkLevel2List.level3name).toBe('level3-1');
+      list.forEach((item, i) => {
+        expect(item.name).toBe(`level1-${i + 1}`);
+        expect(item instanceof Level1List).toBeTruthy();
+        expect(item.linkLevel2List).toBeTruthy();
+        expect(item.linkLevel2List instanceof Level2List).toBeTruthy();
+        expect(item.linkLevel2List.level3name).toBe(`level3-${i + 1}`);
+      });
       done();
     });
   });
-  it('请求参数&传入参数', async (done) => {
+  it('请求参数&属性数据源(item)source参数', async (done) => {
     const str = { name: 'params' };
     repository.findOne(Level1UseSourceParams, str).subscribe((res) => {
       expect(res.name).toBe(str.name);
@@ -186,8 +231,45 @@ fdescribe('仓库服务(基础)', () => {
       expect(res.httpClient === http).toBeTruthy();
       const injector = TestBed.get(Injector);
       expect(res.injector === injector).toBeTruthy();
-      console.log('结果', res.result);
       expect(res.result === res).toBeTruthy();
+      done();
+    });
+  });
+  it('请求参数&属性数据源(list)source参数', async (done) => {
+    const str = [{ name: 'name1' }, { name: 'name2' }];
+    repository.findMany(Level1UseSourceParams, str).subscribe((res) => {
+      res.forEach((item, i) => {
+        expect(item.name).toBe(str[i].name, 'name');
+        const http = TestBed.get(HttpClient);
+        expect(item.httpClient === http).toBeTruthy('http');
+        const injector = TestBed.get(Injector);
+        expect(item.injector === injector).toBeTruthy('injector');
+        // console.log('result', item, item.result);
+        expect(item.result === res).toBeTruthy('result');
+        done();
+      });
+    });
+  });
+  it('属性数据源(item)itemSelect参数', async (done) => {
+    repository.findOne(ItemSelectParams, {}).subscribe((item) => {
+      expect(item.http === TestBed.get(HttpClient)).toBeTruthy('http');
+      expect(item.injector === TestBed.get(Injector)).toBeTruthy('injector');
+      expect(item.key === 'key').toBeTruthy('key');
+      expect(item.result === `result1`).toBeTruthy('result');
+
+      done();
+    });
+  });
+  it('属性数据源(list)itemSelect参数', async (done) => {
+    repository.findMany(ItemSelectParams, [{}, {}]).subscribe((list) => {
+      console.log('列表', list);
+      list.forEach((item, i) => {
+        expect(item.http === TestBed.get(HttpClient)).toBeTruthy('http');
+        expect(item.injector === TestBed.get(Injector)).toBeTruthy('injector');
+        expect(item.key === 'key').toBeTruthy('key');
+        expect(item.result === `result${i + 1}`).toBeTruthy('result');
+        expect(item.index === i).toBeTruthy('index');
+      });
       done();
     });
   });

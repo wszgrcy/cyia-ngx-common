@@ -6,8 +6,6 @@ import { _deepCloneObject } from '../object/deepassign';
 import { Observable, of } from 'rxjs';
 import { take, map, tap, switchMap } from 'rxjs/operators';
 import { RegisterEntityOption } from '../type/options/register-entity.options';
-import { throwIf } from '../util/throw-if';
-import { stronglyTyped } from '../util/strongly-typed';
 import { RelationType } from '../type/relation.type';
 import { RelationOption, RelationMatchingMode } from '../type/options/relations.options';
 import { EntityConfig } from '../type/entity.config';
@@ -16,7 +14,7 @@ import {
   RELATION_SYMBOL,
   PRIMARY_COLUMN_SYMBOL,
   REPOSITORY_SYMBOL,
-  ENTITY_COLUMN_SYMBOL
+  ENTITY_COLUMN_SYMBOL,
 } from '../symbol/entity.symbol';
 import { Source } from '../type/options/entity.options';
 import { transform2Array } from '../util/transform2array';
@@ -41,6 +39,9 @@ import { DataSource } from './data-source/data-source';
 /**
  * doc 对于body,直接替换,不搞其他方法,因为不同原因太过复杂,不考虑
  */
+/**
+ * @deprecated
+ */
 @Injectable()
 export class CyiaHttpService {
   constructor(
@@ -52,7 +53,7 @@ export class CyiaHttpService {
   /**
    * 获得实体的一些配置
    *
-   *
+   * @deprecated
    * @template T
    * @memberof CyiaHttpService
    */
@@ -61,13 +62,13 @@ export class CyiaHttpService {
       entity: Reflect.getMetadata(ENTITY_SYMBOL, entity),
       relations: Reflect.getMetadata(RELATION_SYMBOL, entity) || [],
       primaryKey: Reflect.getMetadata(PRIMARY_COLUMN_SYMBOL, entity),
-      entityColumns: Reflect.getMetadata(ENTITY_COLUMN_SYMBOL, entity) || []
+      entityColumns: Reflect.getMetadata(ENTITY_COLUMN_SYMBOL, entity) || [],
     };
   }
   /**
    * 保存纯数据
    * 只有实体是手动添加(normal)或请求(request)才会保存
-   *
+   * @deprecated
    * @template T
    * @memberof CyiaHttpService
    */
@@ -86,7 +87,7 @@ export class CyiaHttpService {
   }
   /**
    * normal模式下使用,手动添加实例
-   *
+   * @deprecated
    * @memberof CyiaHttpService
    */
   static addToRepository(data) {
@@ -101,6 +102,7 @@ export class CyiaHttpService {
    * @param  httpRequestConfig
    * @returns
    * @memberof CyiaHttp
+   * @deprecated
    */
   // @CloneParam<CyiaHttpService>()
   request(httpRequestConfig: HttpRequestItem): Observable<any> {
@@ -132,6 +134,7 @@ export class CyiaHttpService {
    * @param middle
    * @param [suffix='']
    * @memberof CyiaHttpService
+   * @deprecated
    */
   private mergeUrl(prefix: HttpUrl, middle: HttpUrl, suffix: HttpUrl = '') {
     const prefixEnd = /\/$/.test(prefix);
@@ -163,6 +166,7 @@ export class CyiaHttpService {
    * url路径合并
    * doc 如果有http/https前缀,那么在这个之前的都会被覆盖掉
    * @memberof CyiaHttpService
+   * @deprecated
    */
   mergeUrlList(...list: string[]) {
     return list
@@ -191,6 +195,7 @@ export class CyiaHttpService {
    * @param entity 定义的实体
    * @param fn 获得数据的函数
    * @returns
+   * @deprecated
    */
 
   getEntity<T>(entity: Type<T>): (param?: HttpRequestConfig | any[]) => Observable<T> {
@@ -207,10 +212,15 @@ export class CyiaHttpService {
     };
     // return this._getEntity(entity, (entityConfig, param) => this.getData(entityConfig.entity)(param));
   }
+  /**
+   * @deprecated
+   */
   getEntityList<T>(entity: Type<T>): (param: HttpRequestConfig | any[]) => Observable<T[]> {
     return this.getEntity(entity) as any;
   }
-
+  /**
+   * @deprecated
+   */
   getRepository(entity: Type<any>, dataSource: DataSource) {
     const repository = new Repository(entity, this.http, this.urlprefix);
     repository.setDataSource(dataSource);

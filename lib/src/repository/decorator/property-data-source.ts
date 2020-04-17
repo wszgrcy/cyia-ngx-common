@@ -1,7 +1,6 @@
 import { PropertyDataSourceOptions, PropertyDataSourceOptionsPrivate } from '../type/decorator.options';
-import { ObjectInstance, ClassObject } from '../../type/object';
 import { EntityConfigRepository } from '../entity-config.repository';
-import { mergeOptions } from 'lib/src/util/merge-options';
+import { mergeOptions } from 'cyia-ngx-common/util';
 
 export function PropertyDataSource(options: PropertyDataSourceOptions) {
   return function (target: any, key: string) {

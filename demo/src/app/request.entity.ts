@@ -1,4 +1,4 @@
-import { ClassDataSource, PropertyDataSource } from 'cyia-ngx-common';
+import { ClassDataSource, PropertyDataSource } from 'cyia-ngx-common/repository';
 import { of } from 'rxjs';
 @ClassDataSource({
   source: () => {

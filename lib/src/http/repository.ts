@@ -4,9 +4,9 @@ import { EntityConfigRepository } from './entity-config-repository';
 import { FindOptions, HttpRequestConfig } from './http.define';
 import { EntityConfig } from '../type/entity.config';
 import { Observable, from, of } from 'rxjs';
-import { throwIf } from '../util/throw-if';
+import { throwIf } from 'cyia-ngx-common/util';
 import { switchMap, map, take, tap } from 'rxjs/operators';
-import { stronglyTyped } from '../util/strongly-typed';
+import { stronglyTyped } from 'cyia-ngx-common/util';
 import { Source } from '../type';
 import { mergeOptions } from '../util/merge-options';
 import { transform2Array } from '../util/transform2array';
@@ -90,10 +90,7 @@ export class Repository<T> {
         /**结构化返回的数据 */
         const structRepository = new Repository(entityColumn.targetEntityFn(), this.http, this.urlPrefix);
         structRepository.setDataSource(new DataSourceByStruct(entityColumnRaw));
-        const result = await structRepository
-          .find()
-          .pipe(take(1))
-          .toPromise();
+        const result = await structRepository.find().pipe(take(1)).toPromise();
         dataList[j][entityColumn.propertyName] = result;
       }
     }

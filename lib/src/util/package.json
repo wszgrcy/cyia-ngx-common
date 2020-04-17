@@ -1,0 +1,9 @@
+{
+  "ngPackage": {
+    "deleteDestPath": true,
+    "lib": {
+      "entryFile": "index.ts"
+
+    }
+  }
+}

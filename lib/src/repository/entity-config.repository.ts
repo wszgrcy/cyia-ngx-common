@@ -4,7 +4,7 @@ import {
   ClassDataSourceOptions,
   ClassDataSourceOptionsPrivate,
 } from './type/decorator.options';
-import { throwIf } from '../util/throw-if';
+import { throwIf } from 'cyia-ngx-common/util';
 /**实体配置仓库,保存装饰器相关配置 */
 export class EntityConfigRepository {
   static map = new Map();

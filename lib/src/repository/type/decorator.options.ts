@@ -2,21 +2,30 @@ import { Type, Injector } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
-export class PropertyDataSourceOptions {
+export class PropertyDataSourceOptions<T = any> {
+  /**所有的属性数据来源 */
   source?: (httpClient: HttpClient, injector: Injector, parentResult: Exclude<any, Observable<any>>) => Observable<any>;
   /**级联 */
   cascade ? = false;
   /**如果返回数据是结构化实体需要
    * 定义实体且只有实体,查找实体的source,不使用自身的source
    */
-  entity?: Type<any>;
-  /**如果返回数据是列表需要实现 */
-  itemSelect?: (item: any, key: string, index: number, result: Exclude<any, Observable<any>>) => Observable<any> = (
-    item,
-    key,
-    index,
-    result
-  ) => of(result)
+  entity?: Type<T>;
+  /**分发到各item中使用 */
+  itemSelect?: (
+    /**自身类型 */
+    item: T,
+    /**当前键名 */
+    key: string,
+    /**在列表中的索引位置,单一为0 */
+    index: number,
+    /**source中返回的结果 */
+    result: Exclude<any, Observable<any>>,
+    /**HttpClient注入 */
+    httpClient: HttpClient,
+    /**Injector注入 */
+    injector: Injector
+  ) => Observable<any> = (item, key, index, result) => of(result)
 }
 export class PropertyDataSourceOptionsPrivate extends PropertyDataSourceOptions {
   key: string;

@@ -1,6 +1,8 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "baseUrl": "./",
+    "sourceRoot": "./",
     "outDir": "../out-tsc/lib",
     "target": "es2015",
     "module": "esnext",
@@ -18,7 +20,15 @@
       "esnext"
     ],
     "paths": {
-      "cyia-ng-common/loading-hint":["./src/loading-hint"]
+      "cyia-ng-common/loading-hint": [
+        "./src/loading-hint"
+      ],
+      "cyia-ng-common/repository": [
+        "./src/repository"
+      ],
+      "cyia-ng-common/util": [
+        "./src/util"
+      ]
     }
   },
   "angularCompilerOptions": {
@@ -33,5 +43,9 @@
   "exclude": [
     "src/test.ts",
     "**/*.spec.ts"
-  ]
+  ],
+  "files": [
+    "./src/index.ts",
+  ],
+  "include": []
 }

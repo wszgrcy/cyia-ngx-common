@@ -1,9 +1,9 @@
 import { async, TestBed } from '@angular/core/testing';
-import { RepositoryModule } from './repository.module';
+import { CyiaRepositoryModule } from './repository.module';
 import { ClassDataSource } from './decorator/class-data-source';
 import { of } from 'rxjs';
 import { PropertyDataSource } from './decorator/property-data-source';
-import { RepositoryService } from './repository.service';
+import { CyiaRepositoryService } from './repository.service';
 import { StronglyTyped } from './decorator/extend/strongly-typed';
 
 class Level1Object {
@@ -21,16 +21,16 @@ class Level1Item {
   object: Level1Object;
 }
 fdescribe('仓库服务(拓展)', () => {
-  let repository: RepositoryService;
+  let repository: CyiaRepositoryService;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [RepositoryModule],
+      imports: [CyiaRepositoryModule],
     });
   }));
   beforeEach(() => {
-    repository = TestBed.get(RepositoryService);
+    repository = TestBed.get(CyiaRepositoryService);
   });
-  it('仅强类型化', async (done) => {
+  it('子对象强类型化', async (done) => {
     repository.findMany(Level1Item).subscribe((item) => {
       console.log('强类型', item);
       expect(item[0].object instanceof Level1Object).toBeTruthy();

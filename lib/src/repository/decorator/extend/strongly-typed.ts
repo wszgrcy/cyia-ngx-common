@@ -1,8 +1,7 @@
 import { PropertyDataSource } from '../property-data-source';
 import { Type } from '@angular/core';
 import { of } from 'rxjs';
-import { stronglyTyped } from '../../../util/strongly-typed';
-
+import { stronglyTyped } from 'cyia-ngx-common/util';
 export function StronglyTyped<T>(entity: Type<T>) {
   return PropertyDataSource({
     entity: entity,

@@ -7,7 +7,7 @@ import { FindResult } from './find-result';
 import { PropertyDataSourceOptionsPrivate } from './type/decorator.options';
 
 @Injectable()
-export class RepositoryService {
+export class CyiaRepositoryService {
   constructor(private httpClient: HttpClient, private injector: Injector) {}
   private find<T>(entity: Type<T>, escade: boolean, ...params: any[]): Observable<any> {
     const findResult = new FindResult(entity);
@@ -18,7 +18,7 @@ export class RepositoryService {
         findResult.setSingle(!(res instanceof Array));
         findResult.setResult(res);
       }),
-      switchMap((res) => {
+      switchMap(() => {
         if (!escade) {
           return of([]);
         }
@@ -38,13 +38,15 @@ export class RepositoryService {
           [].concat(
             ...propertyList.map(({ key, itemSelect }, i) =>
               findResult.getResult().map((item, j) => {
-                return itemSelect(item, key, j, list[i]).pipe(map((value) => (item[key] = value)));
+                return itemSelect(item, key, j, list[i], this.httpClient, this.injector).pipe(
+                  tap((value) => (item[key] = value))
+                );
               })
             )
           )
         );
       }),
-      map((list) => {
+      map(() => {
         return findResult.getRawResult();
       })
     );
