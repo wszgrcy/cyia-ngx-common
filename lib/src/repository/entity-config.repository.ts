@@ -5,6 +5,7 @@ import {
   ClassDataSourceOptionsPrivate,
 } from './type/decorator.options';
 import { throwIf } from 'cyia-ngx-common/util';
+import { switchMap, tap } from 'rxjs/operators';
 /**实体配置仓库,保存装饰器相关配置 */
 export class EntityConfigRepository {
   static map = new Map();
@@ -17,7 +18,19 @@ export class EntityConfigRepository {
   }
   static setPropertySource(key: Type<any>, config: PropertyDataSourceOptionsPrivate) {
     const list = EntityConfigRepository.getPropertySource(key);
-    list.push(config);
+    const preItem = list.find((item) => item.key === config.key);
+    // doc 将多个itemSelect合并为一个,链式处理,source只保留第一个的,其他的不管
+    if (preItem) {
+      const preItemSelect = preItem.itemSelect;
+      preItem.itemSelect = (item, key, index, result, httpClient, injector) =>
+        preItemSelect(item, key, index, result, httpClient, injector).pipe(
+          tap((result) => (item[key] = result)),
+          switchMap(() => config.itemSelect(item, key, index, result, httpClient, injector))
+        );
+      preItem.cascade = preItem.cascade || config.cascade;
+    } else {
+      list.push(config);
+    }
     EntityConfigRepository.propertySourceMap.set(key, list);
   }
   static getPropertySource(key: Type<any>) {

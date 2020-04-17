@@ -163,7 +163,7 @@ class ItemSelectParams {
   })
   injector: Injector;
 }
-fdescribe('仓库服务(基础)', () => {
+describe('仓库服务(基础)', () => {
   let repository: CyiaRepositoryService;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -244,7 +244,6 @@ fdescribe('仓库服务(基础)', () => {
         expect(item.httpClient === http).toBeTruthy('http');
         const injector = TestBed.get(Injector);
         expect(item.injector === injector).toBeTruthy('injector');
-        // console.log('result', item, item.result);
         expect(item.result === res).toBeTruthy('result');
         done();
       });
@@ -262,7 +261,6 @@ fdescribe('仓库服务(基础)', () => {
   });
   it('属性数据源(list)itemSelect参数', async (done) => {
     repository.findMany(ItemSelectParams, [{}, {}]).subscribe((list) => {
-      console.log('列表', list);
       list.forEach((item, i) => {
         expect(item.http === TestBed.get(HttpClient)).toBeTruthy('http');
         expect(item.injector === TestBed.get(Injector)).toBeTruthy('injector');

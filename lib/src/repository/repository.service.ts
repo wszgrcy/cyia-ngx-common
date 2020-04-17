@@ -12,6 +12,7 @@ export class CyiaRepositoryService {
   private find<T>(entity: Type<T>, escade: boolean, ...params: any[]): Observable<any> {
     const findResult = new FindResult(entity);
     const config = EntityConfigRepository.getClassDataSource(entity);
+    /**属性来源列表 */
     const propertyList = EntityConfigRepository.getPropertySource(entity);
     return config.source(this.httpClient, this.injector, ...params).pipe(
       tap((res) => {

@@ -2,8 +2,13 @@ import { Type, Injector } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
+export class PropertyDataSourceStandaloneOptions<T = any> {
+  source: PropertyDataSourceOptions['itemSelect'];
+  cascade?: boolean;
+  entity?: Type<T>;
+}
 export class PropertyDataSourceOptions<T = any> {
-  /**所有的属性数据来源 */
+  /**所有的属性数据来源,多个时,只取第一个,即最靠近属性的一个 */
   source?: (httpClient: HttpClient, injector: Injector, parentResult: Exclude<any, Observable<any>>) => Observable<any>;
   /**级联 */
   cascade ? = false;
