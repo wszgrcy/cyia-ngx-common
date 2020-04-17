@@ -39,9 +39,10 @@ export class PropertyDataSourceOptionsPrivate extends PropertyDataSourceOptions 
   /**是否已经继承过 */
   hasInherit = false;
 }
-export interface ClassDataSourceOptions {
+export class ClassDataSourceOptions {
   source: (httpClient: HttpClient, injector: Injector, ...args) => Observable<any>;
+  inherit ? = false;
 }
-export interface ClassDataSourceOptionsPrivate extends ClassDataSourceOptions {
+export class ClassDataSourceOptionsPrivate extends ClassDataSourceOptions {
   entity: Type<any>;
 }

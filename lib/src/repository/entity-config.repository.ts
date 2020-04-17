@@ -41,6 +41,13 @@ export class EntityConfigRepository {
   }
 
   static setClassDataSource(key: Type<any>, config: ClassDataSourceOptionsPrivate) {
+    let parentConfig: ClassDataSourceOptionsPrivate;
+    try {
+      parentConfig = EntityConfigRepository.getClassDataSource(Object.getPrototypeOf(key));
+    } catch (error) {}
+    if (config.inherit && parentConfig) {
+      config.source = parentConfig.source;
+    }
     EntityConfigRepository.classDataSourceMap.set(key, config);
   }
   static getClassDataSource(key: Type<any>) {
@@ -58,7 +65,7 @@ export class EntityConfigRepository {
     return (item, key, index, result, httpClient, injector) => {
       return previousItemSelect(item, key, index, result, httpClient, injector).pipe(
         tap((result) => (item[key] = result)),
-        switchMap(() => currentItemSelect(item, key, index, result, httpClient, injector)),
+        switchMap(() => currentItemSelect(item, key, index, result, httpClient, injector))
       );
     };
   }

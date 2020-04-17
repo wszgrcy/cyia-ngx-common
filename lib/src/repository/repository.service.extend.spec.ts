@@ -9,7 +9,8 @@ import { PropertyDefaultValue } from './decorator/extend/property-default-value'
 import { PropertyDataSourceStandalone } from './decorator';
 import { PropertyFormatValue } from './decorator/extend/property-format-value';
 import { Level1 } from 'demo/src/app/request.entity';
-import { PropertyInherit } from './decorator/extend/inherit';
+import { PropertyInherit } from './decorator/extend/property-inherit';
+import { ClassInherit } from './decorator/extend/class-inherit';
 
 class Level1Object {
   name: string;
@@ -88,6 +89,14 @@ class Child extends Parent {
   @PropertyInherit()
   name: string;
 }
+@ClassDataSource({ source: () => of({ name: 'parent' }) })
+class ParentClass {
+  name: string;
+}
+@ClassInherit()
+class ChildClass extends ParentClass {
+  name: string;
+}
 fdescribe('仓库服务(拓展)', () => {
   let repository: CyiaRepositoryService;
   beforeEach(async(() => {
@@ -143,9 +152,15 @@ fdescribe('仓库服务(拓展)', () => {
       done();
     });
   });
-  it('类继承', async (done) => {
+  it('类属性装饰器继承', async (done) => {
     repository.findOne(Child).subscribe((item) => {
       expect(item.name).toEqual('childparent');
+    });
+    done();
+  });
+  it('类装饰器继承', async (done) => {
+    repository.findOne(ChildClass).subscribe((item) => {
+      expect(item.name).toEqual('parent');
     });
     done();
   });
