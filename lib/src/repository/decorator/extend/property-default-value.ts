@@ -5,6 +5,16 @@ import { PropertyDefaultValueOptions } from '../../type/decorator.extend.options
 import { PropertyDataSource } from '../property-data-source';
 import { of } from 'rxjs';
 
+/**
+ *@docs-decorator
+ *
+ * @export
+ * @template T
+ * @param  value
+ * @param  [options]
+ * @returns
+ */
+
 export function PropertyDefaultValue<T = any>(value: T, options?: PropertyDefaultValueOptions) {
   return PropertyDataSource({
     source: () => of(undefined),

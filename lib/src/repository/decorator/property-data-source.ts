@@ -2,6 +2,14 @@ import { PropertyDataSourceOptions, PropertyDataSourceOptionsPrivate } from '../
 import { EntityConfigRepository } from '../entity-config.repository';
 import { mergeOptions } from 'cyia-ngx-common/util';
 
+/**
+ * @description
+ * @docs-decorator
+ *
+ * @export
+ * @param options
+ * @returns
+ */
 export function PropertyDataSource(options: PropertyDataSourceOptions) {
   return function (target: any, key: string) {
     // 属性数据源应该和类数据源一样

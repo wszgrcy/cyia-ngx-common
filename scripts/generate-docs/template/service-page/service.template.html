@@ -1,0 +1,23 @@
+<article>
+  <header>服务</header>
+  <div>{{doc.name}}</div>
+  <table>
+    <thead>
+      <tr>
+        <td>方法</td>
+        <td>返回类型</td>
+        <td>描述</td>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for item in doc.methodList %}
+      <tr>
+        <td>{{item.name}}</td>
+        <td>{{item.returnType}}</td>
+        <td>{{item.description}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</article>

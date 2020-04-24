@@ -37,11 +37,13 @@ export class PropertyDataSourceOptionsPrivate extends PropertyDataSourceOptions 
   key: string;
   parentEntity: Type<any>;
   /**是否已经继承过 */
-  hasInherit = false;
+  hasInherit ? = false;
 }
 export class ClassDataSourceOptions {
+  /**数据来源 */
   source: (httpClient: HttpClient, injector: Injector, ...args) => Observable<any>;
-  inherit ? = false;
+  /**是否继承父级,true时直接使用父级source */
+  inherit?: boolean = false;
 }
 export class ClassDataSourceOptionsPrivate extends ClassDataSourceOptions {
   entity: Type<any>;

@@ -6,6 +6,12 @@ import { map, tap, switchMap, take } from 'rxjs/operators';
 import { FindResult } from './find-result';
 import { PropertyDataSourceOptionsPrivate } from './type/decorator.options';
 
+/**
+ * @docs-service
+ * @description 仓库服务,访问实体,返回数据
+ * @export
+ * @class CyiaRepositoryService
+ */
 @Injectable()
 export class CyiaRepositoryService {
   constructor(private httpClient: HttpClient, private injector: Injector) {}
@@ -52,9 +58,23 @@ export class CyiaRepositoryService {
       })
     );
   }
+  /**
+   * @description 查找一个数据
+   * @template T
+   * @param entity 类数据源装饰器装饰的实体
+   * @param params source传入参数(可传入多个)
+   * @returns
+   */
   findOne<T>(entity: Type<T>, ...params: any[]): Observable<T> {
     return this.find(entity, true, ...params);
   }
+    /**
+   * @description 查找多个数据
+   * @template T
+   * @param entity 类数据源装饰器装饰的实体
+   * @param params source传入参数(可传入多个)
+   * @returns
+   */
   findMany<T>(entity: Type<T>, ...params: any[]): Observable<T[]> {
     return this.find(entity, true, ...params);
   }

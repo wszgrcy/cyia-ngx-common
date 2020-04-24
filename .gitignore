@@ -41,3 +41,4 @@ lib/node_modules/@types/mockjs/package.json
 lib/node_modules/@types/mockjs/README.md
 lib/node_modules/@types/mockjs/LICENSE
 lib/node_modules/@types/mockjs/index.d.ts
+/docs-build

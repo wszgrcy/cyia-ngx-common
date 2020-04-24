@@ -13,7 +13,8 @@
     "build:lib": "ng build lib --prod",
     "postbuild:lib": "copy README.md .\\dist\\cyia-ngx-common",
     "update": "ng update --all --force",
-    "version": "ng version"
+    "version": "ng version",
+    "docs": "ts-node --project ./scripts/generate-docs/tsconfig.json ./scripts/generate-docs/index.ts"
   },
   "private": true,
   "dependencies": {
@@ -29,9 +30,9 @@
     "@angular/platform-browser-dynamic": "8.2.0",
     "@angular/router": "8.2.0",
     "core-js": "3.1.4",
+    "reflect-metadata": "0.1.13",
     "rxjs": "6.5.2",
-    "zone.js": "0.10.1",
-    "reflect-metadata": "0.1.13"
+    "zone.js": "0.10.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.802.0",
@@ -41,8 +42,11 @@
     "@angular/language-service": "8.2.0",
     "@types/jasmine": "3.3.16",
     "@types/jasminewd2": "2.0.6",
+    "@types/mockjs": "^1.0.2",
     "@types/node": "12.6.9",
     "codelyzer": "5.1.0",
+    "dgeni": "^0.4.12",
+    "dgeni-packages": "^0.28.3",
     "jasmine-core": "3.4.0",
     "jasmine-spec-reporter": "4.2.1",
     "karma": "4.2.0",
@@ -57,7 +61,6 @@
     "tsickle": "0.36.0",
     "tslib": "1.10.0",
     "tslint": "5.18.0",
-    "typescript": "^3.2.0",
-    "@types/mockjs": "^1.0.2"
+    "typescript": "^3.2.0"
   }
 }
