@@ -2,6 +2,7 @@ import { DocParameter } from './parameter';
 import { ApiDoc } from 'dgeni-packages/typescript/api-doc-types/ApiDoc';
 import { FileInfo } from 'dgeni-packages/typescript/services/TsParser/FileInfo';
 import ts from 'typescript';
+import { DECORATOR_DOC_TYPE } from '../const/doc-type';
 export class BaseDoc implements ApiDoc {
   docType: string;
   name: string;
@@ -20,4 +21,6 @@ export class BaseDoc implements ApiDoc {
 export class DocFunction extends BaseDoc {
   docParameters: DocParameter[];
 }
-export class DocDecorator extends DocFunction {}
+export class DocDecorator extends DocFunction {
+  readonly docType = DECORATOR_DOC_TYPE;
+}

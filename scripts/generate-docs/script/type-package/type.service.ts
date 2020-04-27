@@ -9,6 +9,7 @@ export class TypeService {
   private orgtypeDocList = [];
   constructor() {}
   setType(docs = []) {
+    // todo 修改类型识别判断
     this.orgtypeDocList = docs.filter((item) => item.docType === 'class' || item.docType === 'interface');
     this.orgtypeDocList.forEach((doc: any, i) => {
       this.addType(doc);

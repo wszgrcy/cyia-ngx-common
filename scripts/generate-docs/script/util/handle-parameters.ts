@@ -5,8 +5,8 @@ import { TypeService } from '../type-package/type.service';
 export function handleParameters(typeService) {
   return new HandleParameters(typeService);
 }
-/**处理函数,方法的
- * todo 注册服务,从服务中获得typeService
+/**处理函数,方法,装饰器等参数
+ *
  */
 export class HandleParameters {
   handle(docs: FunctionExportDoc) {
@@ -38,8 +38,10 @@ export class HandleParameters {
   }) {
     const docParameter = new DocParameter(parameterDoc.name);
     docParameter.description = (param && param.description) || parameterDoc.description;
+    docParameter.isRestParam = parameterDoc.isRestParam;
     docParameter.defaultValue = parameter.replace(/^.*\=/, '').trim();
-    docParameter.optional = !!~parameter.indexOf('?');
+    docParameter.isOptional = docParameter.isRestParam || parameterDoc.isOptional;
+    docParameter.parameter = parameter;
     docParameter.type =
       parameter
         .replace(/^.*\:/, '')

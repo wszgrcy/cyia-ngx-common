@@ -1,10 +1,12 @@
 <article>
   <header>服务</header>
   <div>{{doc.name}}</div>
+  <div>{{doc.description}}</div>
   <table>
     <thead>
       <tr>
         <td>方法</td>
+        <td>输入参数</td>
         <td>返回类型</td>
         <td>描述</td>
       </tr>
@@ -14,6 +16,11 @@
       {% for item in doc.methodList %}
       <tr>
         <td>{{item.name}}</td>
+        <td>
+          {% for docParameter in item.docParameters %}
+          {{docParameter.parameter}}
+          {% endfor %}
+        </td>
         <td>{{item.returnType}}</td>
         <td>{{item.description}}</td>
       </tr>

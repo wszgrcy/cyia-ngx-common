@@ -8,13 +8,11 @@ const SOURCECODE_PATH = path.resolve(__dirname, '../../../lib/src');
 /**文档导出目录 */
 const DOCSOUT_PATH = path.resolve(__dirname, '../../../docs-build');
 
-import {
-  ExportSpecifiedDocsProcessorFactory,
-} from './processor/export-specified-docs.processor';
+import { ExportSpecifiedDocsProcessorFactory } from './processor/export-specified-docs.processor';
 import { DecoratorPackage } from './decorator-package';
-import { ServicePackage } from './service-package';
+import { ModulePackage } from './module-package';
 /**允许导出文档类型 */
-export default new Package('cyia-ngx-common', [DecoratorPackage, ServicePackage])
+export default new Package('cyia-ngx-common', [DecoratorPackage, ModulePackage])
   .processor(ExportSpecifiedDocsProcessorFactory)
   .config(function (readFilesProcessor) {
     // doc 虽然被禁用了,但是输出的时候要用
@@ -38,6 +36,7 @@ export default new Package('cyia-ngx-common', [DecoratorPackage, ServicePackage]
       './repository/decorator/index.ts',
       './repository/type/**/*',
       './repository/repository.service.ts',
+      './repository/repository.module.ts',
     ];
     // readTypeScriptModules.ignoreExportsMatching = [/index\.ts/, '__esModule']
     // readTypeScriptModules.sortClassMembers = true

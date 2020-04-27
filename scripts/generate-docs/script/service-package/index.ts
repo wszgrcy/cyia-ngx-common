@@ -6,6 +6,7 @@ import { SERVICE_TAG } from '../const/comment-tag';
 import { TEMPLATE_PATH } from '../const/path';
 import * as path from 'path';
 import { SERVICE_DOC_TYPE } from '../const/doc-type';
+import { AFTER_HANDLE } from '../const/run-time';
 export const ServicePackage = new Package('service-package', [HandlePackage])
   .factory(serviceService)
   .processor(ServiceProcessorFactory)
@@ -14,7 +15,7 @@ export const ServicePackage = new Package('service-package', [HandlePackage])
   })
   .config(function (templateFinder) {
     templateFinder.templateFolders.unshift(path.resolve(TEMPLATE_PATH, 'service-page'));
-    templateFinder.templatePatterns.unshift('service.template.html');
+    templateFinder.templatePatterns.unshift('<%= doc.docType %>.template.html');
   })
   .config(function (computePathsProcessor) {
     const list: any[] = computePathsProcessor.pathTemplates || [];
