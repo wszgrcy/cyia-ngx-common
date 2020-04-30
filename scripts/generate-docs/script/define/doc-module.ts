@@ -7,5 +7,8 @@ export class DocModule {
   name: string;
   description: string;
   // propertyList:
+  importLib: string;
+  templatename: string;
+  markdownPath: string;
   readonly docType: string = MODULE_DOC_TYPE;
 }

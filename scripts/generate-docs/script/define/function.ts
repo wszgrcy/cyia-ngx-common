@@ -19,7 +19,10 @@ export class BaseDoc implements ApiDoc {
   description: string;
 }
 export class DocFunction extends BaseDoc {
+  importLib: string;
+
   docParameters: DocParameter[];
+  templatename: string;
 }
 export class DocDecorator extends DocFunction {
   readonly docType = DECORATOR_DOC_TYPE;

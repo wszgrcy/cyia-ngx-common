@@ -8,5 +8,7 @@ export class DocService {
   description: string;
   methodList: DocMethod[];
   // propertyList:
+  importLib: string;
+  templatename: string;
   readonly docType: string = SERVICE_DOC_TYPE;
 }

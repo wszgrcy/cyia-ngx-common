@@ -7,19 +7,22 @@ import { ParameterContainer } from 'dgeni-packages/typescript/api-doc-types/Para
 import { FunctionExportDoc } from 'dgeni-packages/typescript/api-doc-types/FunctionExportDoc';
 import { DocDecorator } from '../define/function';
 import { DocModule } from '../define/doc-module';
+import { TSconfigService } from './tsconfig.service';
 
-export function docsDataService() {
-  return new DocsDataService();
+export function docsDataService(tsconfigService) {
+  return new DocsDataService(tsconfigService);
 }
 export class DocsDataService {
-  constructor() {}
+  constructor(private tsconfigService: TSconfigService) {}
   private docTypeMap = new Map<string, DocType>();
   /**原始类型的文档列表 */
   private orgtypeDocList = [];
 
-  docServiceMap = new Map<string, DocService>();
-  docDecoratorMap = new Map<string, DocDecorator>();
-  docModuleMap = new Map<string, DocModule>();
+  private docServiceMap = new Map<string, DocService>();
+  private docDecoratorMap = new Map<string, DocDecorator>();
+  private docModuleMap = new Map<string, DocModule>();
+
+  /**由于类型的特殊性,需要全部传入递归实现 */
   setDocTypes(docs = []) {
     // todo 修改类型识别判断
     this.orgtypeDocList = docs.filter((item) => item.docType === 'class' || item.docType === 'interface');
@@ -65,12 +68,15 @@ export class DocsDataService {
   getDocType(name: string) {
     return this.docTypeMap.get(name);
   }
+  /**ng服务 */
   addDocService(item) {
     const docService: DocService = new DocService();
     docService.id = item.id;
     docService.aliases = item.aliases;
     docService.name = item.name;
     docService.description = item.description;
+    docService.importLib = this.tsconfigService.getDocPackage(item);
+    docService.templatename = 'service';
     docService.methodList = item.members
       .filter((member) => member instanceof MethodMemberDoc)
       .map((member) => {
@@ -126,6 +132,7 @@ export class DocsDataService {
     docParameter.typeLink = this.getDocType(docParameter.type);
     return docParameter;
   }
+  /**装饰器 */
   addDocDecorator(item) {
     const docDecorator: DocDecorator = new DocDecorator();
     docDecorator.id = item.id;
@@ -133,15 +140,19 @@ export class DocsDataService {
     docDecorator.description = item.description;
     docDecorator.aliases = item.aliases;
     docDecorator.docParameters = this.handle(item);
+    docDecorator.importLib = this.tsconfigService.getDocPackage(item);
+    docDecorator.templatename = 'decorator';
     this.docDecoratorMap.set(item.name, docDecorator);
   }
-
+  /**ng模块 */
   addDocModule(item) {
     const docModule: DocModule = new DocModule();
     docModule.id = item.id;
     docModule.name = item.name;
     docModule.description = item.description;
     docModule.aliases = item.aliases;
+    docModule.importLib = this.tsconfigService.getDocPackage(item);
+    docModule.templatename = 'overview';
     this.docModuleMap.set(item.name, docModule);
   }
   getDocServices() {
@@ -154,6 +165,10 @@ export class DocsDataService {
     return [...this.docModuleMap.values()];
   }
   getAll(): any[] {
-    return [].concat(this.getDocDecorators(), this.getDocModules(), this.getDocServices());
+    return [].concat(
+      // this.getDocDecorators(),
+      this.getDocModules()
+      // this.getDocServices()
+    );
   }
 }
