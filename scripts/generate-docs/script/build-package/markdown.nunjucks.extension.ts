@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+import { default as md } from 'markdown-it';
+import * as hljs from 'highlight.js';
 export class MarkdownNunjucksExtension {
   tags = ['markdown'];
   parse(parser: any, nodes: any) {
@@ -13,9 +16,18 @@ export class MarkdownNunjucksExtension {
     return new nodes.CallExtension(this, 'render', args, [textContent]);
   }
 
-  render(_context: any, /**参数 */ markdownPath: string, /**内容函数 */ contentFn: () => string) {
+  render(_context: any, /**参数 */ item: any, /**内容函数 */ contentFn: () => string) {
     // return highlightCodeBlock(contentFn(), language);
-    const content = contentFn();
-    console.log(_context, markdownPath, contentFn);
+    const file = fs.readFileSync(item.markdownPath);
+    const markdownIt = new md({
+      html: true,
+      highlight: (str, lang) => {
+        // console.log(str, lang);
+        const obj = hljs.highlight(lang, str);
+        return obj.value;
+      },
+    });
+
+    return markdownIt.render(file.toString());
   }
 }

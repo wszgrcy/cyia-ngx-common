@@ -6,6 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 /**
  * @description
  * @docs-module
+ * @docs-overview ./repository.md
  * @export
  * @class CyiaRepositoryModule
  */

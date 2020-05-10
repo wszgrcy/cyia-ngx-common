@@ -10,6 +10,7 @@ export function exportSpecifiedDocsProcessor(docsDataService) {
 /**
  * @description 导出指定的文档
  * @class ExportSpecifiedDocsProcessor
+ * @deprecated 应该是用合并代替全部导出
  */
 class ExportSpecifiedDocsProcessor implements Processor {
   name = 'exportSpecifiedDocsProcessor';

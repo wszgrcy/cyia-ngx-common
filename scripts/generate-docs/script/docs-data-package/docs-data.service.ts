@@ -8,7 +8,8 @@ import { FunctionExportDoc } from 'dgeni-packages/typescript/api-doc-types/Funct
 import { DocDecorator } from '../define/function';
 import { DocModule } from '../define/doc-module';
 import { TSconfigService } from './tsconfig.service';
-
+import { OVERVIEW_TAG } from '../const/comment-tag';
+import * as path from 'path';
 export function docsDataService(tsconfigService) {
   return new DocsDataService(tsconfigService);
 }
@@ -153,6 +154,13 @@ export class DocsDataService {
     docModule.aliases = item.aliases;
     docModule.importLib = this.tsconfigService.getDocPackage(item);
     docModule.templatename = 'overview';
+    const tag = item.tags.tags.find((item) => item.tagName === OVERVIEW_TAG);
+    if (tag) {
+      docModule.markdownPath = path.resolve(item.basePath, item.originalModule, '../', tag.description);
+    }
+    docModule.decoratorParameters = item.decorators.find((item) => item.name === 'NgModule').argumentInfo;
+    docModule.NgModule = docModule.decoratorParameters[0];
+    docModule.folder = item.originalModule.split('/').slice(-2)[0];
     this.docModuleMap.set(item.name, docModule);
   }
   getDocServices() {
@@ -165,10 +173,6 @@ export class DocsDataService {
     return [...this.docModuleMap.values()];
   }
   getAll(): any[] {
-    return [].concat(
-      // this.getDocDecorators(),
-      this.getDocModules()
-      // this.getDocServices()
-    );
+    return [].concat(this.getDocDecorators(), this.getDocModules(), this.getDocServices());
   }
 }

@@ -1,7 +1,4 @@
-{% macro overview(doc) %}
-{% include "../common/use-common.template.html" %}
-{% endmacro %}
-{{overview(doc)}}
-{% markdown doc %}
-ceshi
-{% end_markdown %}
+{% macro overview(doc) %} {% include "../common/use-common.template.html" %}
+<div class="docs-article">
+  {% endmacro %} {{overview(doc)}} {% markdown doc %} {% end_markdown %}
+</div>
