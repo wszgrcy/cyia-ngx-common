@@ -2,8 +2,8 @@ import { PropertyDataSourceOptions, ClassDataSourceOptions } from '../type/decor
 import { EntityConfigRepository } from '../entity-config.repository';
 import { Type } from '@angular/core';
 /**
- * 类数据来源
- * 定义装饰类从哪里取得数据
+ *
+ * @description 类数据来源,定义装饰类从哪里取得数据
  * @docs-decorator
  * @export
  * @param  options 相关参数

@@ -3,16 +3,20 @@ import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 export class PropertyDataSourceStandaloneOptions<T = any> {
+  /**数据来源 */
   source: PropertyDataSourceOptions['itemSelect'];
+  /**级联标志 */
   cascade?: boolean;
+  /**实体化类 */
   entity?: Type<T>;
 }
 export class PropertyDataSourceOptions<T = any> {
   /**所有的属性数据来源,多个时,只取第一个,即最靠近属性的一个 */
   source?: (httpClient: HttpClient, injector: Injector, parentResult: Exclude<any, Observable<any>>) => Observable<any>;
-  /**级联 */
-  cascade ? = false;
-  inherit ? = false;
+  /**级联标志 */
+  cascade?: boolean = false;
+  /**是否继承 */
+  inherit?: boolean = false;
   /**如果返回数据是结构化实体需要
    * 定义实体且只有实体,查找实体的source,不使用自身的source
    */

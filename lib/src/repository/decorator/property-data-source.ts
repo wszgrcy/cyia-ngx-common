@@ -3,7 +3,7 @@ import { EntityConfigRepository } from '../entity-config.repository';
 import { mergeOptions } from 'cyia-ngx-common/util';
 
 /**
- * @description
+ * @description 属性数据源,定义属性从哪里取得数据(如果该属性没有或需要修改)
  * @docs-decorator
  *
  * @export

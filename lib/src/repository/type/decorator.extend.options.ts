@@ -11,4 +11,6 @@ export class PropertyDefaultValueOptions {
   isEmptyString?: boolean = false;
   /**是否==false */
   equalToFalse?: boolean = false;
+  /**自定义是否使用默认值的函数 */
+  callback?: (value) => boolean;
 }

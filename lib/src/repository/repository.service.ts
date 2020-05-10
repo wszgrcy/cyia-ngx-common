@@ -15,7 +15,7 @@ import { PropertyDataSourceOptionsPrivate } from './type/decorator.options';
 @Injectable()
 export class CyiaRepositoryService {
   constructor(private httpClient: HttpClient, private injector: Injector) {}
-  private find<T>(entity: Type<T>, escade: boolean, ...params: any[]): Observable<any> {
+  private find<T>(entity: Type<T>, /**级联标志*/ escade: boolean, ...params: any[]): Observable<any> {
     const findResult = new FindResult(entity);
     const config = EntityConfigRepository.getClassDataSource(entity);
     /**属性来源列表 */
@@ -68,7 +68,7 @@ export class CyiaRepositoryService {
   findOne<T>(entity: Type<T>, ...params: any[]): Observable<T> {
     return this.find(entity, true, ...params);
   }
-    /**
+  /**
    * @description 查找多个数据
    * @template T
    * @param entity 类数据源装饰器装饰的实体
@@ -79,7 +79,7 @@ export class CyiaRepositoryService {
     return this.find(entity, true, ...params);
   }
   /**查询属性的数据 */
-  private findSubData(item: PropertyDataSourceOptionsPrivate, parentResult) {
+  private findSubData(item: PropertyDataSourceOptionsPrivate, /**父级数据*/ parentResult) {
     if (item.entity) {
       return this.find(item.entity, item.cascade, parentResult);
     }

@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 
 /**
  *@docs-decorator
- *
+ * @description 格式化改属性
  * @export
  * @param  format
  * @returns

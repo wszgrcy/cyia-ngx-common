@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 
 /**
  *@docs-decorator
- *
+ * @description 类继承,用于继承上一个类的数据来源
  * @export
  * @returns
  */

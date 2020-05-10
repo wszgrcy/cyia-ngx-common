@@ -5,7 +5,7 @@ import { stronglyTyped } from 'cyia-ngx-common/util';
 
 /**
  *@docs-decorator
- *
+ * @description 强类型化,使用返回的属性生成传入类的实例
  * @export
  * @template T
  * @param  entity

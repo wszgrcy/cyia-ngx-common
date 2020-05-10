@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 
 /**
  *@docs-decorator
- *
+ * @description 设置属性在某种情况下的的默认值
  * @export
  * @template T
  * @param  value
@@ -37,6 +37,9 @@ export function PropertyDefaultValue<T = any>(value: T, options?: PropertyDefaul
         return of(value);
       }
       if (options.equalToFalse && !currentValue) {
+        return of(value);
+      }
+      if (options.callback && options.callback(currentValue)) {
         return of(value);
       }
       return of(currentValue);

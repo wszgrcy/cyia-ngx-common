@@ -18,7 +18,7 @@ export class FindResult<T> {
     }
     this._empty = !this.result.length;
   }
-  /**处理数据时使用 */
+  /**处理数据时使用,无论是否为单一,都是列表形式 */
   getResult() {
     return this.result;
   }
