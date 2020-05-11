@@ -10,7 +10,7 @@ import { PropertyDataSourceOptionsPrivate } from './type/decorator.options';
  * @docs-service
  * @description 仓库服务,访问实体,返回数据
  * @export
- * @class CyiaRepositoryService
+ *
  */
 @Injectable()
 export class CyiaRepositoryService {

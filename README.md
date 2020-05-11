@@ -3,7 +3,8 @@
 - 无
 
 # 更新日志
-
+## 2.2.1
+- 增加了自动化生成使用文档和代码注释(简易,正在制作)
 ## 2.2.0
 
 - 废弃`CyiaHttpModule`使用,改为`CyiaRepositoryModule`

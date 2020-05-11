@@ -1,12 +1,5 @@
-{% macro docParameters(docParameters) %}
-{% include "./parameter-list.html" %}
-{% endmacro %}
-{% macro typeLink(typeLink) %}
-{% include "../type-page/type.template.html" %}
-{% endmacro %}
-<article>
-
-  <header>装饰器</header>
+{% macro docParameters(docParameters) %} {% include "./parameter-list.html" %} {% endmacro %} {% macro typeLink(typeLink) %} {% include "../type-page/type.template.html" %} {% endmacro %}
+<div>
   <h1>{{ doc.name }}</h1>
   <section>
     {{ doc.description }}
@@ -15,8 +8,6 @@
     {{docParameters(doc.docParameters)}}
   </section>
   <section>
-    {% for docParameter in doc.docParameters %}
-    {{typeLink(docParameter.typeLink)}}
-    {% endfor %}
+    {% for docParameter in doc.docParameters %} {{typeLink(docParameter.typeLink)}} {% endfor %}
   </section>
-</article>
+</div>

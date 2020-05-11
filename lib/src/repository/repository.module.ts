@@ -8,7 +8,7 @@ import { HttpClientModule } from '@angular/common/http';
  * @docs-module
  * @docs-overview ./repository.md
  * @export
- * @class CyiaRepositoryModule
+ *
  */
 @NgModule({
   declarations: [],
