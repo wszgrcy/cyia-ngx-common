@@ -78,6 +78,10 @@ export class DocsDataService {
     return returnType;
   }
   getDocType(name: string) {
+    if (name.includes('=')) {
+      return undefined;
+    }
+    name = name.replace(/<.+>/, '').replace(/\[.*\]/, '');
     return this.docTypeMap.get(name);
   }
   /**ng服务 */
@@ -105,16 +109,18 @@ export class DocsDataService {
   handle(docs: FunctionExportDoc) {
     return docs.parameterDocs
       .map((item) => {
+        console.log('参数', item);
+        const checker = item.typeChecker;
+        const symbol = item.symbol;
+        const type = checker.typeToString(
+          checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration),
+          undefined,
+          ts.TypeFormatFlags.None
+        );
+        console.log(type);
         return {
           parameterDoc: item,
-          parameter: docs.parameters.find(
-            (parameter) =>
-              parameter
-                .replace(/^\.{3}/, '')
-                .split(':')[0]
-                .split('?')[0]
-                .trim() === item.name
-          ),
+          parameter: type,
           /**注释 */
           param:
             docs['params'] &&
@@ -138,12 +144,8 @@ export class DocsDataService {
     docParameter.defaultValue = parameter.replace(/^.*\=/, '').trim();
     docParameter.isOptional = docParameter.isRestParam || parameterDoc.isOptional;
     docParameter.parameter = parameter;
-    docParameter.type =
-      parameter
-        .replace(/^.*\:/, '')
-        .replace(/\=.*$/, '')
-        .replace(/\<.*\>$/, '')
-        .trim() || '';
+    docParameter.type = parameter;
+
     docParameter.typeLink = this.getDocType(docParameter.type);
     return docParameter;
   }
