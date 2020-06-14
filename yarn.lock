@@ -3640,7 +3640,7 @@ header-case@^1.0.0:
     no-case "^2.2.0"
     upper-case "^1.1.3"
 
-highlight.js@^10.0.2:
+highlight.js@10.0.2:
   version "10.0.2"
   resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-10.0.2.tgz#d2c732544f8f68bceaf0cefb4b0575bce8eddbee"
   integrity sha512-2gMT2MHU6/2OjAlnaOE2LFdr9dwviDN3Q2lSw7Ois3/5uTtahbgYTkr4EPoY828ps+2eQWiixPTF8+phU6Ofkg==

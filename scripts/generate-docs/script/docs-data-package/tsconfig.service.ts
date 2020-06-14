@@ -8,13 +8,14 @@ import * as glob from 'glob';
 export function tsconfigService() {
   return new TSconfigService();
 }
+/**用来查找包对应的路径 */
 export class TSconfigService {
   private compilerOptions: CompilerOptions;
+  /**保存路径对应的包引用 */
   private pathMap = new Map<string, string>();
-
+  /**读库的配置文件 */
   async read(tsconfigpath: string = 'tsconfig.lib.json') {
     const res = ts.readConfigFile(path.resolve(LIB_PATH, tsconfigpath), (str) => {
-      console.log(str);
       return fs.readFileSync(str).toString();
     });
     const config = ts.parseJsonConfigFileContent(res.config, ts.sys, LIB_PATH);

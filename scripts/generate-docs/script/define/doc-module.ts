@@ -7,6 +7,7 @@ export class DocModule {
   name: string;
   description: string;
   // propertyList:
+  /**引用库 */
   importLib: string;
   templatename: string;
   /**使用markdown来描述 */

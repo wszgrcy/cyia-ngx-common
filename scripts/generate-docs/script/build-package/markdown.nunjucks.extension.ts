@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { default as md } from 'markdown-it';
-import * as hljs from 'highlight.js';
+import hljs from 'highlight.js';
 export class MarkdownNunjucksExtension {
   tags = ['markdown'];
   parse(parser: any, nodes: any) {

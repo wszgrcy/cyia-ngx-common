@@ -1,9 +1,10 @@
 import { DocParameter } from './parameter';
 import { ApiDoc } from 'dgeni-packages/typescript/api-doc-types/ApiDoc';
 import { FileInfo } from 'dgeni-packages/typescript/services/TsParser/FileInfo';
-import ts from 'typescript';
+import * as ts from 'typescript';
 import { DECORATOR_DOC_TYPE } from '../const/doc-type';
-export class BaseDoc implements ApiDoc {
+
+export class BaseDoc {
   docType: string;
   name: string;
   id: string;
@@ -11,8 +12,8 @@ export class BaseDoc implements ApiDoc {
   path: string;
   outputPath: string;
   content: string;
-  symbol: ts.Symbol;
-  declaration: ts.Declaration;
+  // symbol: ts.Symbol;
+  // declaration: ts.Declaration;
   fileInfo: FileInfo;
   startingLine: number;
   endingLine: number;

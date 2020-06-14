@@ -1,5 +1,5 @@
 import { Package } from 'dgeni';
-import { DocsDataPackage } from '../docs-data-package';
+import { DOCS_DATA_PACKAGE } from '../docs-data-package';
 import { TEMPLATE_PATH } from '../const/path';
 import * as path from 'path';
 import { SERVICE_DOC_TYPE, MODULE_DOC_TYPE, DECORATOR_DOC_TYPE, API_DOC_TYPE } from '../const/doc-type';
@@ -8,7 +8,7 @@ import { DocModule } from '../define/doc-module';
 import { MarkdownNunjucksExtension } from './markdown.nunjucks.extension';
 import { mergeApiDocsProcess } from './merge-api-docs.processor';
 /**输出文件 */
-export const BUILD_PACKAGE = new Package('build-package', [DocsDataPackage])
+export const BUILD_PACKAGE = new Package('build-package', [DOCS_DATA_PACKAGE])
   // .processor(exportSpecifiedDocsProcessor)
   .processor(mergeApiDocsProcess)
   .config(function (templateFinder) {
@@ -46,4 +46,5 @@ export const BUILD_PACKAGE = new Package('build-package', [DocsDataPackage])
   })
   .config(function (templateEngine) {
     templateEngine.tags.push(new MarkdownNunjucksExtension());
+    templateEngine.config.autoescape = true;
   });

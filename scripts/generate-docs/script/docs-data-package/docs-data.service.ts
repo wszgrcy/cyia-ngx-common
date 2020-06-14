@@ -5,11 +5,13 @@ import { DocMethod } from '../define/doc-method';
 import { DocParameter } from '../define/parameter';
 import { ParameterContainer } from 'dgeni-packages/typescript/api-doc-types/ParameterContainer';
 import { FunctionExportDoc } from 'dgeni-packages/typescript/api-doc-types/FunctionExportDoc';
+import { PropertyMemberDoc } from 'dgeni-packages/typescript/api-doc-types/PropertyMemberDoc';
 import { DocDecorator } from '../define/function';
 import { DocModule } from '../define/doc-module';
 import { TSconfigService } from './tsconfig.service';
 import { OVERVIEW_TAG } from '../const/comment-tag';
 import * as path from 'path';
+import * as ts from 'typescript';
 export function docsDataService(tsconfigService) {
   return new DocsDataService(tsconfigService);
 }
@@ -31,6 +33,7 @@ export class DocsDataService {
       this.addDocType(doc);
     });
   }
+  /**当作普通的类或接口添加 */
   private addDocType(doc) {
     if (this.docTypeMap.has(doc.name)) {
       return;
@@ -38,18 +41,26 @@ export class DocsDataService {
     const docType = new DocType();
     docType.name = doc.name;
     docType.description = doc.description;
-    doc.members.forEach((member) => {
-      // console.log(member.declaration.initializer.text);
-      docType.propertyList.push({
-        name: member.name,
-        description: member.description,
-        type: member.type,
-        // default: member.declaration.initializer.text,
-      });
+
+    docType.propertyList = doc.members.map((member: PropertyMemberDoc) => {
+      // console.log(member);
+      const checker = member.typeChecker;
+      const symbol = member.symbol;
+      const type = checker.typeToString(
+        checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration),
+        undefined,
+        ts.TypeFormatFlags.None
+      );
       const extraType = this.findDocType(member.type);
       if (extraType) {
         docType.extraDocTypeList.push(extraType);
       }
+      return {
+        name: member.name,
+        description: (member as any).description,
+        type: type,
+        // default: member.declaration.initializer.text,
+      };
     });
     this.docTypeMap.set(doc.name, docType);
   }
@@ -93,20 +104,23 @@ export class DocsDataService {
   /**处理方法,函数(装饰器)的参数 */
   handle(docs: FunctionExportDoc) {
     return docs.parameterDocs
-      .map((item) => ({
-        parameterDoc: item,
-        parameter: docs.parameters.find(
-          (parameter) =>
-            parameter
-              .replace(/^\.{3}/, '')
-              .split(':')[0]
-              .split('?')[0]
-              .trim() === item.name
-        ),
-        /**注释 */
-        param:
-          docs['params'] && (docs['params'] as ParameterContainer['params']).find((param) => param.name === item.name),
-      }))
+      .map((item) => {
+        return {
+          parameterDoc: item,
+          parameter: docs.parameters.find(
+            (parameter) =>
+              parameter
+                .replace(/^\.{3}/, '')
+                .split(':')[0]
+                .split('?')[0]
+                .trim() === item.name
+          ),
+          /**注释 */
+          param:
+            docs['params'] &&
+            (docs['params'] as ParameterContainer['params']).find((param) => param.name === item.name),
+        };
+      })
       .map((item) => this.handleParameter(item));
   }
   private handleParameter({
@@ -133,7 +147,7 @@ export class DocsDataService {
     docParameter.typeLink = this.getDocType(docParameter.type);
     return docParameter;
   }
-  /**装饰器 */
+  /**ts装饰器 */
   addDocDecorator(item) {
     const docDecorator: DocDecorator = new DocDecorator();
     docDecorator.id = item.id;
@@ -154,6 +168,7 @@ export class DocsDataService {
     docModule.aliases = item.aliases;
     docModule.importLib = this.tsconfigService.getDocPackage(item);
     docModule.templatename = 'overview';
+    /**概述文档标签 */
     const tag = item.tags.tags.find((item) => item.tagName === OVERVIEW_TAG);
     if (tag) {
       docModule.markdownPath = path.resolve(item.basePath, item.originalModule, '../', tag.description);

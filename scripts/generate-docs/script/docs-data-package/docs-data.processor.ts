@@ -11,7 +11,7 @@ class DocsDataProcessor implements Processor {
   name = 'docsDataProcessor';
   $runBefore = [HANDING_DOCS_DATA];
   constructor(private docsDataService: DocsDataService, private tsconfigService: TSconfigService) {}
-  async $process(docs: any) {
+  async $process(docs: any[]) {
     await this.tsconfigService.read();
     this.docsDataService.setDocTypes(docs);
     for (const doc of docs) {
