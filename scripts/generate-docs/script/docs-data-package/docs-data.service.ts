@@ -109,7 +109,6 @@ export class DocsDataService {
   handle(docs: FunctionExportDoc) {
     return docs.parameterDocs
       .map((item) => {
-        console.log('参数', item);
         const checker = item.typeChecker;
         const symbol = item.symbol;
         const type = checker.typeToString(
@@ -117,7 +116,6 @@ export class DocsDataService {
           undefined,
           ts.TypeFormatFlags.None
         );
-        console.log(type);
         return {
           parameterDoc: item,
           parameter: type,

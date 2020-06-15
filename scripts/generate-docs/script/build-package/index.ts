@@ -46,5 +46,5 @@ export const BUILD_PACKAGE = new Package('build-package', [DOCS_DATA_PACKAGE])
   })
   .config(function (templateEngine) {
     templateEngine.tags.push(new MarkdownNunjucksExtension());
-    templateEngine.config.autoescape = true;
+    templateEngine.config.autoescape = false;
   });
