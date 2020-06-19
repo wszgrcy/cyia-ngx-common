@@ -5,7 +5,7 @@ import { of } from 'rxjs';
 import { PropertyDataSource } from './decorator/property-data-source';
 import { CyiaRepositoryService } from './repository.service';
 import { HttpClient } from '@angular/common/http';
-import { Injector } from '@angular/core';
+import { Injector, InjectionToken } from '@angular/core';
 @ClassDataSource({
   source: () => {
     return of({ name: 'level3' });
@@ -163,15 +163,17 @@ class ItemSelectParams {
   })
   injector: Injector;
 }
+const testtoken = new InjectionToken('token');
 fdescribe('仓库服务(基础)', () => {
   let repository: CyiaRepositoryService;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [CyiaRepositoryModule],
+      providers: [{ provide: testtoken, useValue: '测试用' }],
     });
   }));
   beforeEach(() => {
-    repository = TestBed.get(CyiaRepositoryService);
+    repository = TestBed.inject(CyiaRepositoryService);
   });
   it('服务初始化', () => {
     expect(repository).toBeTruthy();
@@ -227,10 +229,9 @@ fdescribe('仓库服务(基础)', () => {
     const str = { name: 'params' };
     repository.findOne(Level1UseSourceParams, str).subscribe((res) => {
       expect(res.name).toBe(str.name);
-      const http = TestBed.get(HttpClient);
+      const http = TestBed.inject(HttpClient);
       expect(res.httpClient === http).toBeTruthy();
-      const injector = TestBed.get(Injector);
-      expect(res.injector === injector).toBeTruthy();
+      expect(isInjector(res.injector, TestBed.inject(Injector))).toBeTruthy();
       expect(res.result === res).toBeTruthy();
       done();
     });
@@ -240,10 +241,9 @@ fdescribe('仓库服务(基础)', () => {
     repository.findMany(Level1UseSourceParams, str).subscribe((res) => {
       res.forEach((item, i) => {
         expect(item.name).toBe(str[i].name, 'name');
-        const http = TestBed.get(HttpClient);
+        const http = TestBed.inject(HttpClient);
         expect(item.httpClient === http).toBeTruthy('http');
-        const injector = TestBed.get(Injector);
-        expect(item.injector === injector).toBeTruthy('injector');
+        expect(isInjector(item.injector, TestBed.inject(Injector))).toBeTruthy('injector');
         expect(item.result === res).toBeTruthy('result');
         done();
       });
@@ -251,8 +251,9 @@ fdescribe('仓库服务(基础)', () => {
   });
   it('属性数据源(item)itemSelect参数', async (done) => {
     repository.findOne(ItemSelectParams, {}).subscribe((item) => {
-      expect(item.http === TestBed.get(HttpClient)).toBeTruthy('http');
-      expect(item.injector === TestBed.get(Injector)).toBeTruthy('injector');
+      expect(item.http === TestBed.inject(HttpClient)).toBeTruthy('http');
+
+      expect(isInjector(item.injector, TestBed.inject(Injector))).toBeTruthy('injector');
       expect(item.key === 'key').toBeTruthy('key');
       expect(item.result === `result1`).toBeTruthy('result');
 
@@ -262,8 +263,8 @@ fdescribe('仓库服务(基础)', () => {
   it('属性数据源(list)itemSelect参数', async (done) => {
     repository.findMany(ItemSelectParams, [{}, {}]).subscribe((list) => {
       list.forEach((item, i) => {
-        expect(item.http === TestBed.get(HttpClient)).toBeTruthy('http');
-        expect(item.injector === TestBed.get(Injector)).toBeTruthy('injector');
+        expect(item.http === TestBed.inject(HttpClient)).toBeTruthy('http');
+        expect(isInjector(item.injector, TestBed.inject(Injector))).toBeTruthy('injector');
         expect(item.key === 'key').toBeTruthy('key');
         expect(item.result === `result${i + 1}`).toBeTruthy('result');
         expect(item.index === i).toBeTruthy('index');
@@ -272,3 +273,6 @@ fdescribe('仓库服务(基础)', () => {
     });
   });
 });
+function isInjector(a: Injector, b: Injector) {
+  return a && b && a.get(testtoken) === b.get(testtoken);
+}

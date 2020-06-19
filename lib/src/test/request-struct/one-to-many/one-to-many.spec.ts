@@ -20,7 +20,7 @@ import './one-to-many.mock';
 //     TestBed.configureTestingModule({
 //       imports: [TestHttpModule]
 //     });
-//     service = TestBed.get(CyiaHttpService);
+//     service = TestBed.inject(CyiaHttpService);
 //     request = requestFactory(service);
 //     requestList = requestFactory(service, true);
 //   });

@@ -21,7 +21,7 @@ describe('原始请求测试', () => {
     TestBed.configureTestingModule({
       imports: [TestHttpModule]
     });
-    service = TestBed.get(CyiaHttpService);
+    service = TestBed.inject(CyiaHttpService);
   });
 
   it('请求参数(application/x-www-form-urlencoded)', async done => {

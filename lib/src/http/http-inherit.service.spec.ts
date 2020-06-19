@@ -18,7 +18,7 @@ describe('类继承属性测试', () => {
     TestBed.configureTestingModule({
       imports: [TestHttpModule]
     });
-    service = TestBed.get(CyiaHttpService);
+    service = TestBed.inject(CyiaHttpService);
   });
 
   it('继承', done => {

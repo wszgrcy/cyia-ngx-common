@@ -305,7 +305,7 @@ describe('载入提示组件装饰器配置测试', () => {
         }
       ]
     });
-    service = TestBed.get(LoadingHintService);
+    service = TestBed.inject(LoadingHintService);
   });
   function testConfigAndResult(testConfig, testResult) {
     return new Promise((res, rej) => {
@@ -464,8 +464,8 @@ describe('载入提示组件运行测试', () => {
       // providers: [LoadingHintService],
       imports: [TestModule]
     }).compileComponents();
-    service = TestBed.get(LoadingHintService);
-    // component = TestBed.get(TestComponent)
+    service = TestBed.inject(LoadingHintService);
+    // component = TestBed.inject(TestComponent)
   }));
   beforeEach(() => {
     componentFixture = TestBed.createComponent(TestComponent);

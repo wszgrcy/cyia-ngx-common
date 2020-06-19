@@ -31,7 +31,7 @@ describe('服务测试', () => {
     TestBed.configureTestingModule({
       imports: [TestHttpModule]
     });
-    service = TestBed.get(CyiaHttpService);
+    service = TestBed.inject(CyiaHttpService);
   });
   /**一对一,返回的为单对象 */
   async function one21Single() {

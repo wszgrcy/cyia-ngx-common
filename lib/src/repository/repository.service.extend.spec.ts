@@ -105,7 +105,7 @@ fdescribe('仓库服务(拓展)', () => {
     });
   }));
   beforeEach(() => {
-    repository = TestBed.get(CyiaRepositoryService);
+    repository = TestBed.inject(CyiaRepositoryService);
   });
   it('子对象强类型化', async (done) => {
     repository.findMany(Level1Item).subscribe((item) => {

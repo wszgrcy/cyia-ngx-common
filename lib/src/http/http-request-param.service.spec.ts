@@ -26,9 +26,9 @@ describe('请求参数测试', () => {
     TestBed.configureTestingModule({
       imports: [TestHttpModule]
     });
-    service = TestBed.get(CyiaHttpService);
-    http = TestBed.get(HttpClient);
-    httpTestingController = TestBed.get(HttpTestingController);
+    service = TestBed.inject(CyiaHttpService);
+    http = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
   });
 
   it('请求参数(单一)', async done => {
