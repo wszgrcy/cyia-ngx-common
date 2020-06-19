@@ -13,6 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "aot": true,
             "outputPath": "dist/cyia-ngx-common-demo",
             "index": "demo/src/index.html",
             "main": "demo/src/main.ts",
@@ -29,6 +30,12 @@
           },
           "configurations": {
             "production": {
+              "budgets": [
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb"
+                }
+              ],
               "fileReplacements": [
                 {
                   "replace": "demo/src/environments/environment.ts",
@@ -137,7 +144,8 @@
           },
           "configurations": {
             "production": {
-              "project": "lib/src/ng-package.prod.json"
+              "project": "lib/src/ng-package.prod.json",
+              "tsConfig": "lib/tsconfig.lib.prod.json"
             }
           }
         },
@@ -165,5 +173,8 @@
       }
     }
   },
-  "defaultProject": "cyia-ngx-common"
+  "defaultProject": "cyia-ngx-common",
+  "cli": {
+    "analytics": false
+  }
 }

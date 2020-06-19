@@ -6,7 +6,7 @@ import {
   Injector,
   ApplicationRef,
   ComponentRef,
-  Optional
+  Optional,
 } from '@angular/core';
 import { Subject, timer, of, from, fromEvent, partition, BehaviorSubject, Observable, merge } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
@@ -40,6 +40,7 @@ export class LoadingHintService {
   public static uninstallMap = new Map<Symbol, Subject<any>>();
   /**进程组件 */
   public static progressMap = new Map<Symbol, Subject<any>>();
+  /**保存恢复加载组件之前状态的函数 */
   public static restoreStatusMap = new Map<Symbol, Function>();
   public static configMap = new Map<Symbol, InstallConfig>();
   inited = false;
@@ -204,13 +205,15 @@ export class LoadingHintService {
     const position = blockedElement.style.position;
     const fn = () => {
       blockedElement.style.position = position;
+      loadingHintElement.parentElement.removeChild(loadingHintElement);
     };
     LoadingHintService.restoreStatusMap.set(key, fn);
 
     loadingHintElement = this.document.createElement('div');
     blockedElement.appendChild(loadingHintElement);
     blockedElement.style.position = 'relative';
-    const componentRef = componentFactory.create(this.injector, undefined, loadingHintElement);
+    const componentRef = componentFactory.create(this.injector, undefined, undefined);
+    loadingHintElement.appendChild(componentRef.location.nativeElement);
     // doc 赋值卸载时函数, 手动操作时使用
     componentRef.instance[CYIA_LOADING_HINT_CLOSE_FN] = () => {
       this.manualUninstallComponent(key);
@@ -222,7 +225,6 @@ export class LoadingHintService {
     // doc 完成事件, 手动操作时使用
     componentRef.instance[CYIA_LOADING_HINT_RESULT$] = new Subject();
 
-    loadingHintElement = componentRef.location.nativeElement;
     loadingHintElement.style.position = 'absolute';
     loadingHintElement.style.top = `0`;
     loadingHintElement.style.left = `0`;

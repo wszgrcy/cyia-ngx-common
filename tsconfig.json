@@ -5,7 +5,7 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
-    "module": "es2015",
+    "module": "esnext",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -19,11 +19,11 @@
     ],
     "paths": {
       "cyia-ngx-common": [
-        "dist/cyia-ngx-common",
+        // "dist/cyia-ngx-common",
         "./lib/src"
       ],
       "cyia-ngx-common/*": [
-        "dist/cyia-ngx-common/*",
+        // "dist/cyia-ngx-common/*",
         "lib/src/*" //调试调用
       ],
       // "lib/*": [

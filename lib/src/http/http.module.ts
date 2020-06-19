@@ -11,7 +11,7 @@ import { REQUEST_LIST } from './http.token';
 })
 export class CyiaHttpModule {
   // static forRoot(config?: CyiaHttpModuleConfig): ModuleWithProviders
-  static forRoot(requestList?: RequestItem[]): ModuleWithProviders {
+  static forRoot(requestList?: RequestItem[]): ModuleWithProviders<CyiaHttpModule> {
     return {
       ngModule: CyiaHttpModule,
       providers: [{ provide: REQUEST_LIST, useValue: requestList }, CyiaHttpService]
