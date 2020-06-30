@@ -25,7 +25,7 @@ import { One21P2Entity, One21P3Entity, Many2OneP2Entity } from '../test/testclas
   providers: [CyiaHttpService]
 })
 class TestHttpModule {}
-describe('服务测试', () => {
+xdescribe('服务测试', () => {
   let service: CyiaHttpService;
   beforeEach(() => {
     TestBed.configureTestingModule({

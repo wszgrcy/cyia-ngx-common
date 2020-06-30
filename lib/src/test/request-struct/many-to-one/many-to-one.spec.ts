@@ -13,7 +13,7 @@ import { ItemHasMTOItemEntity, MTORelation, ListHasMTOItemEntity, MTOListRelatio
   providers: [CyiaHttpService]
 })
 class TestHttpModule {}
-describe('多对一标准测试', () => {
+xdescribe('多对一标准测试', () => {
   let service: CyiaHttpService;
   let request: <T>(type: Type<T>) => Promise<T>;
   let requestList: <T>(type: Type<T>) => Promise<T[]>;

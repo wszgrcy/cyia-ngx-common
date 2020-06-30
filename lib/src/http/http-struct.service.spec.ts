@@ -26,7 +26,7 @@ import '../test/mock-struct';
   providers: [CyiaHttpService]
 })
 class TestHttpModule {}
-describe('[实体请求]结构测试', () => {
+xdescribe('[实体请求]结构测试', () => {
   let service: CyiaHttpService;
   beforeEach(() => {
     TestBed.configureTestingModule({

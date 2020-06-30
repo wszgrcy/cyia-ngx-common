@@ -10,7 +10,7 @@ import { mergeOptions } from 'cyia-ngx-common/util';
  * @param options
  * @returns
  */
-export function PropertyDataSource(options: PropertyDataSourceOptions) {
+export function PropertyDataSource<RESULT = any>(options: PropertyDataSourceOptions<RESULT>) {
   return function (target: any, key: string) {
     // 属性数据源应该和类数据源一样
     if (options.entity && options.source) {

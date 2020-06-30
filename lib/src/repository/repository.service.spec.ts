@@ -85,9 +85,9 @@ class Level1EascadeItem {
 })
 class Level1List {
   name: string;
-  @PropertyDataSource({
+  @PropertyDataSource<Level2List[]>({
     entity: Level2List,
-    itemSelect: (item, key, j, result: Level2List) => {
+    itemSelect: (item, key, j, result) => {
       return of(result[j]);
     },
     cascade: true,
@@ -164,7 +164,7 @@ class ItemSelectParams {
   injector: Injector;
 }
 const testtoken = new InjectionToken('token');
-fdescribe('仓库服务(基础)', () => {
+describe('仓库服务(基础)', () => {
   let repository: CyiaRepositoryService;
   beforeEach(async(() => {
     TestBed.configureTestingModule({

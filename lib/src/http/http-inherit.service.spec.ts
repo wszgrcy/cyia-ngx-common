@@ -12,7 +12,7 @@ import { One21P2Entity } from '../test/testclass/base.class';
   providers: [CyiaHttpService]
 })
 class TestHttpModule {}
-describe('类继承属性测试', () => {
+xdescribe('类继承属性测试', () => {
   let service: CyiaHttpService;
   beforeEach(() => {
     TestBed.configureTestingModule({

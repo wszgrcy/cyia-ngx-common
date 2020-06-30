@@ -97,7 +97,7 @@ class ParentClass {
 class ChildClass extends ParentClass {
   name: string;
 }
-fdescribe('仓库服务(拓展)', () => {
+describe('仓库服务(拓展)', () => {
   let repository: CyiaRepositoryService;
   beforeEach(async(() => {
     TestBed.configureTestingModule({
