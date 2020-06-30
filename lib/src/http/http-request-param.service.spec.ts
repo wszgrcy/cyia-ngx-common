@@ -17,7 +17,7 @@ import '../test/mock-one-to-one';
   providers: [CyiaHttpService]
 })
 class TestHttpModule {}
-describe('请求参数测试', () => {
+xdescribe('请求参数测试', () => {
   let service: CyiaHttpService;
   let http: HttpClient;
   let httpTestingController: HttpTestingController;

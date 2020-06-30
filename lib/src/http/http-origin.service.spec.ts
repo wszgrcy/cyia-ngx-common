@@ -15,7 +15,7 @@ import { OneTOneChainEntity, OneTOneChainP2Entity, OneTOneChainP3Entity } from '
   providers: [CyiaHttpService]
 })
 class TestHttpModule {}
-describe('原始请求测试', () => {
+xdescribe('原始请求测试', () => {
   let service: CyiaHttpService;
   beforeEach(() => {
     TestBed.configureTestingModule({

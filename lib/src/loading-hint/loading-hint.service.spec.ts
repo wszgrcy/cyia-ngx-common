@@ -6,7 +6,7 @@ import {
   Component,
   ViewChild,
   ChangeDetectorRef,
-  OnInit
+  OnInit,
 } from '@angular/core';
 import { LoadingHint } from './loading-hint.decorator';
 import { TestBed, async, ComponentFixture } from '@angular/core/testing';
@@ -17,7 +17,6 @@ import { CYIA_LOADING_HINT_RESULT$, CYIA_LOADING_HINT_CLOSE_FN } from './const';
 import { CyiaLoadingHintModule } from './loading-hint.module';
 import { CommonModule } from '@angular/common';
 import { delay } from '../test/util/async';
-import { del } from 'selenium-webdriver/http';
 
 @Component({
   template: `
@@ -25,11 +24,11 @@ import { del } from 'selenium-webdriver/http';
     <button class="close__button" (click)="close()" *ngIf="complete">完成</button>
   `,
   host: {
-    class: 'loading__hint'
-  }
+    class: 'cyia-loading-hint-component',
+  },
 })
 class LoadingTestComponent implements OnInit {
-  // @HostBinding('class') loadingClass = 'loading__hint';
+  // @HostBinding('class') loadingClass = 'cyia-loading-hint-component';
   complete = false;
   constructor(private cd: ChangeDetectorRef) {
     // this.cd.detectChanges();
@@ -52,8 +51,8 @@ class LoadingTestComponent implements OnInit {
     </div>
   `,
   host: {
-    class: 'test__component'
-  }
+    class: 'test__component',
+  },
 })
 class TestComponent {
   @ViewChild('promiseTemplateRef', { static: true, read: ViewContainerRef }) promiseContainerRef: ViewContainerRef;
@@ -76,7 +75,7 @@ class TestComponent {
     container: (type: TestComponent) => type.promiseContainerRef,
     component: LoadingTestComponent,
     timeout: 600,
-    uninstallMod: CyiaLoadingHintUninstall.default
+    uninstallMod: CyiaLoadingHintUninstall.default,
   })
   loadingWithPromiseCloseWithTimeout() {
     return new Promise((res) => {
@@ -88,7 +87,7 @@ class TestComponent {
   @LoadingHint({
     container: (type: TestComponent) => type.promiseContainerRef,
     component: LoadingTestComponent,
-    uninstallMod: CyiaLoadingHintUninstall.component
+    uninstallMod: CyiaLoadingHintUninstall.component,
   })
   loadingWithPromiseCloseWithComponent() {
     return new Promise((res) => {
@@ -101,7 +100,7 @@ class TestComponent {
     container: (type: TestComponent) => type.promiseContainerRef,
     component: LoadingTestComponent,
     uninstallMod: CyiaLoadingHintUninstall.component,
-    timeout: 300
+    timeout: 300,
   })
   loadingWithPromiseCloseWithComponentWithTimeoutbefore() {
     return new Promise((res) => {
@@ -114,7 +113,7 @@ class TestComponent {
     container: (type: TestComponent) => type.promiseContainerRef,
     component: LoadingTestComponent,
     uninstallMod: CyiaLoadingHintUninstall.component,
-    timeout: 600
+    timeout: 600,
   })
   loadingWithPromiseCloseWithComponentWithTimeoutAfter() {
     return new Promise((res) => {
@@ -128,7 +127,7 @@ class TestComponent {
     component: LoadingTestComponent,
     uninstallMod: CyiaLoadingHintUninstall.component,
     timeout: 300,
-    blockReturn: true
+    blockReturn: true,
   })
   loadingWithPromiseCloseWithComponentWithTimeoutWithBlockReturn() {
     return new Promise((res) => {
@@ -141,7 +140,7 @@ class TestComponent {
     container: (type: TestComponent) => type.promiseContainerRef,
     component: LoadingTestComponent,
     uninstallMod: CyiaLoadingHintUninstall.component,
-    blockReturn: true
+    blockReturn: true,
   })
   loadingWithPromiseCloseWithComponentBlock() {
     return new Promise((res) => {
@@ -152,7 +151,7 @@ class TestComponent {
   }
   @LoadingHint({
     container: (type: TestComponent) => type.promiseContainerRef,
-    component: LoadingTestComponent
+    component: LoadingTestComponent,
   })
   loadingWithDefault(number: number) {
     return delay(number);
@@ -160,7 +159,7 @@ class TestComponent {
   @LoadingHint({
     container: (type: TestComponent) => type.promiseContainerRef,
     component: LoadingTestComponent,
-    timeout: 500
+    timeout: 500,
   })
   loadingWithDefaultWithTimeout(number: number) {
     return delay(number);
@@ -169,7 +168,7 @@ class TestComponent {
     container: (type: TestComponent) => type.promiseContainerRef,
     component: LoadingTestComponent,
     timeout: 1100,
-    blockReturn: true
+    blockReturn: true,
   })
   loadingWithDefaultWithTimeoutWithBlock(number: number) {
     return delay(number);
@@ -177,7 +176,7 @@ class TestComponent {
   @LoadingHint({
     container: (type: TestComponent) => type.promiseContainerRef,
     component: LoadingTestComponent,
-    delay: 100
+    delay: 100,
   })
   loadingWithDefaultWithTimeoutWithDelay(number: number) {
     return delay(number);
@@ -187,7 +186,7 @@ class TestComponent {
     component: LoadingTestComponent,
     uninstallMod: CyiaLoadingHintUninstall.duration,
 
-    duration: 500
+    duration: 500,
   })
   loadingWithDurationBefore(number: number) {
     return delay(number);
@@ -196,7 +195,7 @@ class TestComponent {
     container: (type: TestComponent) => type.promiseContainerRef,
     component: LoadingTestComponent,
     uninstallMod: CyiaLoadingHintUninstall.duration,
-    duration: 1100
+    duration: 1100,
   })
   loadingWithDurationAfter(number: number) {
     return delay(number);
@@ -206,7 +205,7 @@ class TestComponent {
     component: LoadingTestComponent,
     uninstallMod: CyiaLoadingHintUninstall.duration,
     duration: 1100,
-    blockReturn: true
+    blockReturn: true,
   })
   loadingWithDurationAfterWithBlock(number: number) {
     return delay(number);
@@ -217,7 +216,7 @@ class TestComponent {
     uninstallMod: CyiaLoadingHintUninstall.duration,
     duration: 1100,
     delay: 100,
-    blockReturn: true
+    blockReturn: true,
   })
   loadingWithDurationAfterWithBlockWithDelay(number: number) {
     return delay(number);
@@ -227,7 +226,7 @@ class TestComponent {
     component: LoadingTestComponent,
     uninstallMod: CyiaLoadingHintUninstall.duration,
     duration: 1100,
-    delay: 50
+    delay: 50,
   })
   loadingWithDurationAfterWithDelay(number: number) {
     return delay(number);
@@ -237,7 +236,7 @@ class TestComponent {
     component: LoadingTestComponent,
     uninstallMod: CyiaLoadingHintUninstall.duration,
     duration: 1100,
-    delay: 150
+    delay: 150,
   })
   loadingWithDurationAfterWithDelay2(number: number) {
     return delay(number);
@@ -247,7 +246,7 @@ class TestComponent {
   imports: [CyiaLoadingHintModule, CommonModule],
   // providers: [LoadingHintService],
   declarations: [TestComponent, LoadingTestComponent],
-  entryComponents: [LoadingTestComponent]
+  entryComponents: [LoadingTestComponent],
 })
 class TestModule {
   // constructor() {
@@ -301,9 +300,9 @@ describe('载入提示组件装饰器配置测试', () => {
         LoadingHintService,
         {
           provide: TOKEN,
-          useValue: { component: component }
-        }
-      ]
+          useValue: { component: component },
+        },
+      ],
     });
     service = TestBed.inject(LoadingHintService);
   });
@@ -312,7 +311,6 @@ describe('载入提示组件装饰器配置测试', () => {
       const orgInstall = LoadingHintService.install;
       const orgUnInstall = LoadingHintService.uninstall;
       LoadingHintService.install = (key, config) => {
-        console.log('传入配置', config, '测试配置', testConfig);
         for (const x in config) {
           if (config.hasOwnProperty(x) && config[x] !== undefined) {
             expect(config[x]).toBe(testConfig[x]);
@@ -327,7 +325,6 @@ describe('载入提示组件装饰器配置测试', () => {
 
       LoadingHintService.uninstall = (key, result) => {
         // const config = LoadingHintService.configMap.get(key);
-        // console.log('配置', config);
 
         // for (const x in config) {
         //   if (config.hasOwnProperty(x) && config[x] !== undefined) {
@@ -424,7 +421,7 @@ describe('载入提示组件装饰器配置测试', () => {
         component: component,
         uninstallMod: CyiaLoadingHintUninstall.default,
         timeout: 500,
-        delay: 0
+        delay: 0,
       },
       1000
     ).then(() => {
@@ -438,9 +435,9 @@ describe('载入提示组件运行测试', () => {
   function componentLoading() {
     const blockedEl: HTMLElement = document.querySelector('.test__component>div');
     const el = blockedEl.querySelector('.loading__text');
-    expect(el).toBeTruthy();
-    const loadingEl = document.querySelector('.test__component .test-anchor+.loading__hint');
-    expect(loadingEl).toBeTruthy();
+    expect(el).toBeTruthy('载入文字未找到');
+    const loadingEl = document.querySelector('.test__component .test-anchor+.cyia-loading-hint-component');
+    expect(loadingEl).toBeTruthy('载入元素未找到');
     expect(blockedEl.clientWidth).toEqual(loadingEl.clientWidth);
     expect(blockedEl.clientHeight).toEqual(loadingEl.clientHeight);
   }
@@ -462,7 +459,7 @@ describe('载入提示组件运行测试', () => {
     TestBed.configureTestingModule({
       // declarations: [TestComponent, LoadingTestComponent],
       // providers: [LoadingHintService],
-      imports: [TestModule]
+      imports: [TestModule],
     }).compileComponents();
     service = TestBed.inject(LoadingHintService);
     // component = TestBed.inject(TestComponent)
@@ -491,7 +488,7 @@ describe('载入提示组件运行测试', () => {
       }, 0);
     });
     await delay(0);
-    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
+    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.cyia-loading-hint-component');
     const blockEl = document.querySelector('.test__component>div');
     expect(blockEl.querySelector('.test-anchor')).toBeTruthy();
     const el = blockEl.querySelector('.loading__text');
@@ -515,12 +512,13 @@ describe('载入提示组件运行测试', () => {
       }, 0);
     });
     await delay(0);
-    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
+    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.cyia-loading-hint-component');
     const blockEl = document.querySelector('.test__component>div');
     expect(blockEl.querySelector('.test-anchor')).toBeTruthy();
     const el = blockEl.querySelector('.loading__text');
     expect(el).toBeTruthy();
     expect(blockEl).toBeTruthy();
+    expect(loadingEl).toBeTruthy();
     expect(loadingEl.clientWidth).toEqual(blockEl.clientWidth);
     expect(loadingEl.clientHeight).toEqual(blockEl.clientHeight);
     // expect(loadingHintEl.style.pointerEvents).toEqual('')
@@ -542,7 +540,7 @@ describe('载入提示组件运行测试', () => {
       }, 0);
     });
     await delay(0);
-    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
+    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.cyia-loading-hint-component');
     const blockEl = document.querySelector('.test__component>div');
     expect(blockEl.querySelector('.test-anchor')).toBeTruthy();
     const el = blockEl.querySelector('.loading__text');
@@ -566,7 +564,7 @@ describe('载入提示组件运行测试', () => {
       }, 0);
     });
     await delay(0);
-    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.loading__hint');
+    const loadingEl: HTMLElement = document.querySelector('.test__component .test-anchor+.cyia-loading-hint-component');
     const blockEl = document.querySelector('.test__component>div');
     expect(blockEl.querySelector('.test-anchor')).toBeTruthy();
     const el = blockEl.querySelector('.loading__text');
@@ -589,9 +587,8 @@ describe('载入提示组件运行测试', () => {
     await delay(0);
     const blockedEl: HTMLElement = document.querySelector('.test__component>div');
     const el = blockedEl.querySelector('.loading__text');
-    console.log(el);
     expect(el).toBeTruthy();
-    const loadingEl = document.querySelector('.test__component .test-anchor+.loading__hint');
+    const loadingEl = document.querySelector('.test__component .test-anchor+.cyia-loading-hint-component');
     expect(loadingEl).toBeTruthy();
     expect(blockedEl.clientWidth).toEqual(loadingEl.clientWidth);
     expect(blockedEl.clientHeight).toEqual(loadingEl.clientHeight);
@@ -629,7 +626,7 @@ describe('载入提示组件运行测试', () => {
     componentLoading();
     await delay(600);
     const btn = document.querySelector('.loading__text');
-
+    console.log(btn);
     expect(btn).toBeFalsy('应该找不到关闭组件');
   });
   it('默认>超时,Promise,阻塞(默认+阻塞无意义)', async (done) => {
@@ -726,7 +723,6 @@ describe('载入提示组件运行测试', () => {
       expect(val).toBe(1000);
       expect(Date.now() - start).toBeGreaterThanOrEqual(1150);
       expect(Date.now() - start).toBeLessThanOrEqual(1249);
-      console.log(Date.now() - start);
       const div = document.querySelector('.loading__text');
       expect(div).toBeFalsy();
       done();
