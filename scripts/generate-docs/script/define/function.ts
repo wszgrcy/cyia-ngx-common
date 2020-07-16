@@ -3,8 +3,9 @@ import { ApiDoc } from 'dgeni-packages/typescript/api-doc-types/ApiDoc';
 import { FileInfo } from 'dgeni-packages/typescript/services/TsParser/FileInfo';
 import * as ts from 'typescript';
 import { DECORATOR_DOC_TYPE } from '../const/doc-type';
+import { DocBase } from './base';
 
-export class BaseDoc {
+export class BaseDoc extends DocBase{
   docType: string;
   name: string;
   id: string;

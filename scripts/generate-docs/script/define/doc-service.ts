@@ -1,7 +1,8 @@
 import { DocMethod } from './doc-method';
 import { SERVICE_DOC_TYPE } from '../const/doc-type';
+import { DocBase } from './base';
 
-export class DocService {
+export class DocService extends DocBase{
   id: string;
   aliases?: string[];
   name: string;

@@ -1,7 +1,7 @@
 import { DocMethod } from './doc-method';
 import { MODULE_DOC_TYPE } from '../const/doc-type';
-
-export class DocModule {
+import { DocBase } from './base';
+export class DocModule extends DocBase {
   id: string;
   aliases?: string[];
   name: string;
