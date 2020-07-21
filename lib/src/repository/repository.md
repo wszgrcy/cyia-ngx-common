@@ -20,3 +20,4 @@ repository.findMany(Test).subscribe((res) => {
   //doc 返回Test类实例数组 [{ name: 'hello' }]
 });
 ```
+

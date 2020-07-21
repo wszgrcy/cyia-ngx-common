@@ -17,8 +17,15 @@ export class MergeApiDocsProcess implements Processor {
   $process(docs): any[] {
     const services: DocService[] = this.docsDataService.getDocServices().map((item) => {
       item.toJson = [
-        { selector: 'service-name', content: item.name },
-        { selector: 'service-description', content: item.description },
+        {
+          selector: 'doc-anchor',
+          // content: item.name,
+          property: {
+            tag: 'h3',
+            content: item.name,
+          },
+        },
+        { selector: 'p', content: item.description },
 
         { selector: 'method-table', property: item.methodList },
       ];
@@ -26,8 +33,15 @@ export class MergeApiDocsProcess implements Processor {
     });
     const decorators: DocDecorator[] = this.docsDataService.getDocDecorators().map((item) => {
       item.toJson = [
-        { selector: 'decorator-name', content: item.name },
-        { selector: 'decorator-description', content: item.description },
+        {
+          selector: 'doc-anchor',
+          // content: item.name,
+          property: {
+            tag: 'h3',
+            content: item.name,
+          },
+        },
+        { selector: 'p', content: item.description },
         { selector: 'property-table', property: item.docParameters },
       ];
       return item;
@@ -39,8 +53,20 @@ export class MergeApiDocsProcess implements Processor {
         return {
           ...module,
           toJson: [
-            this.getTabsElement(module.folder, 'overview'),
-            { selector: 'overview-markdown', property: fs.readFileSync(module.markdownPath).toString() },
+            {
+              selector: 'flex-layout',
+              property: { flexList: ['1 1 0', '0 0 130px'] },
+              children: [
+                {
+                  selector: 'doc-content',
+                  children: [
+                    this.getTabsElement(module.folder, 'overview'),
+                    { selector: 'overview-markdown', property: fs.readFileSync(module.markdownPath).toString() },
+                  ],
+                },
+                { selector: 'doc-catalog', property: { selector: 'doc-content' } },
+              ],
+            },
           ],
         };
       }),
@@ -54,9 +80,39 @@ export class MergeApiDocsProcess implements Processor {
           folder: item.folder,
           docType: API_DOC_TYPE,
           templatename: 'api',
-          toJson: ([this.getTabsElement(item.folder, 'api'), { selector: 'h2', content: '服务' }] as DocBase['toJson'])
-            .concat(...servicesFilter.map(({ toJson }) => toJson))
-            .concat(...decoratorsFilter.map(({ toJson }) => toJson)),
+          toJson: [
+            {
+              selector: 'flex-layout',
+              property: { flexList: ['1 1 0', '0 0 130px'] },
+              children: [
+                {
+                  selector: 'doc-content',
+                  children: ([
+                    this.getTabsElement(item.folder, 'api'),
+                    {
+                      selector: 'doc-anchor',
+                      property: {
+                        tag: 'h2',
+                        content: '服务',
+                      },
+                    },
+                  ] as DocBase['toJson'])
+                    .concat(...servicesFilter.map(({ toJson }) => toJson))
+                    .concat([
+                      {
+                        selector: 'doc-anchor',
+                        property: {
+                          tag: 'h2',
+                          content: '装饰器',
+                        },
+                      },
+                    ])
+                    .concat(...decoratorsFilter.map(({ toJson }) => toJson)),
+                },
+                { selector: 'doc-catalog', property: { selector: 'doc-content' } },
+              ],
+            },
+          ],
         };
       }) as DocBase[]),
       navigation,
