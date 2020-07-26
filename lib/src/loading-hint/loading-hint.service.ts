@@ -21,6 +21,14 @@ import { CYIA_LOADING_HINT_CLOSE_FN, CYIA_LOADING_HINT_RESULT$, CYIA_LOADING_HIN
  *
  * 当操作多个时,可以选择策略:后面的覆盖前面的,最先的一个,或者全部完成,或者自定义策略
  */
+/**
+ *
+ *
+ * @author cyia
+ * @date 2020-07-21
+ * @export
+ * @class LoadingHintService
+ */
 @Injectable()
 export class LoadingHintService {
   constructor(

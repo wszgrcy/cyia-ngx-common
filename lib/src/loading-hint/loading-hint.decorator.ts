@@ -4,6 +4,15 @@ import { tap, map, switchMap } from 'rxjs/operators';
 import { CyiaLoadHintConfig, CyiaLoadHintOption, LoadingHintViewContainer, InstallConfig } from './type';
 import { DEFAULT_INSTALL_CONFIG } from './const';
 import { of } from 'rxjs';
+/**
+ * @docs-decorator
+ * @description 载入提示装饰器
+ * @author cyia
+ * @date 2020-07-21
+ * @export
+ * @template T
+ * @param option
+ */
 export function LoadingHint<T = any>(option: CyiaLoadHintOption);
 export function LoadingHint<T = any>(
   container: 'root' | ((type: T) => ViewContainerRef),
