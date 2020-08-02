@@ -3,7 +3,7 @@ import { EntityOptions, RelationEntityOptions, Source } from '../../type/options
 import { ENTITY_SYMBOL, REPOSITORY_SYMBOL } from '../../symbol/entity.symbol';
 import { Type } from '@angular/core';
 import { HttpRequestConfig } from '../../http/http.define';
-import { mergeOptions } from '../../util/merge-options';
+import { mergeOptions } from 'cyia-ngx-common/util';
 
 /**
  * todo childentity

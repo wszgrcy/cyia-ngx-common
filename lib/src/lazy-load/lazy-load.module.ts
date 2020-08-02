@@ -11,6 +11,15 @@ import { LazyLoadFormControlDirective } from './lazy-load-form-control.directive
   providers: [LazyLoadService],
 })
 export class LazyLoadModule {
+  /**
+   *
+   *
+   * @author cyia
+   * @date 2020-08-02
+   * @static
+   * @param list 懒加载模块配置,为Map构造时传入的属性
+   * @returns
+   */
   static forRoot(
     list: [string, (injector: Injector, compiler: Compiler) => Promise<any>][]
   ): ModuleWithProviders<LazyLoadModule> {

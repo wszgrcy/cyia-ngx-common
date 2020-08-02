@@ -2,9 +2,18 @@ import { ElementRef, forwardRef, Directive } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { fromEvent, Subject } from 'rxjs';
 import { take, filter, map } from 'rxjs/operators';
+/**指定某些动态组件生成表单控件选择器,用于静默的增加对自定义表单控件的支持 */
 export function selectorGenerate(str: string) {
   return `${str}[ngModel]:not([formControlName]):not(formControl),${str}[formControlName]:not([ngModel]):not(formControl),${str}[formControl]:not([ngModel]):not([formControlName])`;
 }
+/**
+ * 懒加载自定义表单控件指令,可以继承重新编写selector
+ *
+ * @author cyia
+ * @date 2020-08-02
+ * @export
+ * @class LazyLoadFormControlDirective
+ */
 @Directive({
   selector: '[lazyLoadFormControl]',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: forwardRef(() => LazyLoadFormControlDirective) }],
@@ -20,7 +29,6 @@ export class LazyLoadFormControlDirective implements ControlValueAccessor {
   private value = [];
   constructor(protected elementRef: ElementRef<HTMLElement>) {
     this.waitComponentLoaded().then((component) => {
-      console.log('准备加载');
       this.instance = component;
       this.onChange$.next(this.onChange);
       this.onTouched$.next(this.onTouched);

@@ -19,12 +19,12 @@
     ],
     "paths": {
       "cyia-ngx-common": [
-        // "dist/cyia-ngx-common",
-        "./lib/src"
+        "dist/cyia-ngx-common",
+        // "./lib/src"
       ],
       "cyia-ngx-common/*": [
-        // "dist/cyia-ngx-common/*",
-        "lib/src/*" //调试调用
+        "dist/cyia-ngx-common/*",
+        // "lib/src/*" //调试调用
       ],
       // "lib/*": [
       //   "dist/lib/*"

@@ -3,7 +3,7 @@ import { HttpRequestConfig } from '../http.define';
 import { take, tap } from 'rxjs/operators';
 import { mergeUrl } from '../../util/merge-url';
 import { EntityOptions } from '../../type';
-import { mergeOptions } from '../../util/merge-options';
+
 import { DataSource } from './data-source';
 import { of } from 'rxjs';
 import { Repository } from '../repository';

@@ -7,4 +7,3 @@ export * from './object';
 export * from './http';
 export * from './decorator/click-control.decorator';
 export * from './decorator/entity';
-export * from './util/import-script';

@@ -8,7 +8,7 @@ import { throwIf } from 'cyia-ngx-common/util';
 import { switchMap, map, take, tap } from 'rxjs/operators';
 import { stronglyTyped } from 'cyia-ngx-common/util';
 import { Source } from '../type';
-import { mergeOptions } from '../util/merge-options';
+
 import { transform2Array } from '../util/transform2array';
 import { REPOSITORY_SYMBOL } from '../symbol/entity.symbol';
 import { RelationType } from '../type/relation.type';

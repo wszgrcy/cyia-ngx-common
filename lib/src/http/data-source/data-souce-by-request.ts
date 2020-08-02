@@ -3,7 +3,7 @@ import { HttpRequestConfig } from '../http.define';
 import { take, tap } from 'rxjs/operators';
 import { mergeUrl } from '../../util/merge-url';
 import { EntityOptions, Source } from '../../type';
-import { mergeOptions } from '../../util/merge-options';
+import { mergeOptions } from 'cyia-ngx-common/util';
 import { DataSource } from './data-source';
 
 export class DataSourceByRequest extends DataSource {
