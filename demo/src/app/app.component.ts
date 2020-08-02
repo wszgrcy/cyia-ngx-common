@@ -10,10 +10,14 @@ import { RequestOne } from './request.entity';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
+  value = '';
   constructor(private reposity: CyiaRepositoryService) {}
   ngOnInit(): void {
     this.reposity.findOne(RequestOne).subscribe((item) => {
       console.log(item);
     });
+  }
+  ngModelChange(e) {
+    console.log('双向绑定', e);
   }
 }

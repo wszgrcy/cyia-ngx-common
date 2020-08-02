@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { AppComponent } from './app.component';
 // import { CyiaHttpModule } from 'cyia-ngx-common';
@@ -12,6 +12,8 @@ import { CyiaLoadingHintModule, CyiaLoadingHintUninstall } from 'cyia-ngx-common
 import { LOAD_HINT_TOKEN } from './token';
 import { LoadComponent } from './load/load.component';
 import { CyiaRepositoryModule } from 'cyia-ngx-common/repository';
+import { LazyLoadModule, createWebComponent } from 'cyia-ngx-common/lazy-load';
+import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -24,6 +26,16 @@ import { CyiaRepositoryModule } from 'cyia-ngx-common/repository';
     LoadingTestModule,
     CyiaLoadingHintModule,
     CyiaRepositoryModule,
+    FormsModule,
+    LazyLoadModule.forRoot([
+      [
+        'lazy-load',
+        (injector, compiler) =>
+          import('./lazy-load/lazy-load.module').then((e) =>
+            createWebComponent(injector, compiler, e.LazyLoadModule, 'lazy-load')
+          ),
+      ],
+    ]),
   ],
   providers: [
     {
@@ -36,5 +48,6 @@ import { CyiaRepositoryModule } from 'cyia-ngx-common/repository';
     },
   ],
   bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule {}

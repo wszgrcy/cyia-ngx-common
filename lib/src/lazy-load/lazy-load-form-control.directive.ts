@@ -1,12 +1,15 @@
-import { ElementRef } from '@angular/core';
-import { ControlValueAccessor } from '@angular/forms';
+import { ElementRef, forwardRef, Directive } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { fromEvent, Subject } from 'rxjs';
 import { take, filter, map } from 'rxjs/operators';
 export function selectorGenerate(str: string) {
   return `${str}[ngModel]:not([formControlName]):not(formControl),${str}[formControlName]:not([ngModel]):not(formControl),${str}[formControl]:not([ngModel]):not([formControlName])`;
 }
-
-export class LazyLoadFormControlBase implements ControlValueAccessor {
+@Directive({
+  selector: '[lazyLoadFormControl]',
+  providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: forwardRef(() => LazyLoadFormControlDirective) }],
+})
+export class LazyLoadFormControlDirective implements ControlValueAccessor {
   private onChange: (arg) => void;
   private onTouched: (arg) => void;
   private instance: ControlValueAccessor;
@@ -15,8 +18,9 @@ export class LazyLoadFormControlBase implements ControlValueAccessor {
   private onTouched$ = new Subject<(arg) => void>();
 
   private value = [];
-  constructor(private elementRef: ElementRef<HTMLElement>) {
+  constructor(protected elementRef: ElementRef<HTMLElement>) {
     this.waitComponentLoaded().then((component) => {
+      console.log('准备加载');
       this.instance = component;
       this.onChange$.next(this.onChange);
       this.onTouched$.next(this.onTouched);

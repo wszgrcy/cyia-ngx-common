@@ -11,7 +11,6 @@ export class LazyLoadDirective implements OnChanges {
     private viewContainerRef: ViewContainerRef,
     private lazyLoadService: LazyLoadService
   ) {
-    console.log('指令');
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (this.lazyLoad && changes.lazyLoad) {

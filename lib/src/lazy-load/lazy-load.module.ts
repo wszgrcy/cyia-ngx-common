@@ -2,11 +2,12 @@ import { NgModule, ModuleWithProviders, Injector, Compiler } from '@angular/core
 import { LazyLoadService } from './lazy-load.service';
 import { LAZY_LOAD_MAP } from './lazy-load-map.token';
 import { LazyLoadDirective } from './lazy-load.directive';
+import { LazyLoadFormControlDirective } from './lazy-load-form-control.directive';
 
 @NgModule({
-  declarations: [LazyLoadDirective],
+  declarations: [LazyLoadDirective, LazyLoadFormControlDirective],
   imports: [],
-  exports: [LazyLoadDirective],
+  exports: [LazyLoadDirective, LazyLoadFormControlDirective],
   providers: [LazyLoadService],
 })
 export class LazyLoadModule {
