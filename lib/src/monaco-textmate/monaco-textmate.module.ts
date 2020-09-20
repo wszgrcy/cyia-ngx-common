@@ -1,13 +1,13 @@
 import { NgModule, ModuleWithProviders } from '@angular/core';
-import { MonacoTextmateService } from './monaco-textmate.service';
+import { CyiaMonacoTextmateService } from './monaco-textmate.service';
 import { TEXTMATE_PATH_CONFIG, TextmatePathConfig } from './vscode.define';
 import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   imports: [HttpClientModule],
-  providers: [MonacoTextmateService],
+  providers: [CyiaMonacoTextmateService],
 })
-export class MonacoTextmateModule {
+export class CyiaMonacoTextmateModule {
   static forRoot(
     config: TextmatePathConfig = {
       vscodeOnigurumaPath: 'assets/vscode-oniguruma/onig.wasm',
@@ -15,9 +15,9 @@ export class MonacoTextmateModule {
       textmateThemeListPath: 'assets/monaco/theme-list.json',
       textmateConfigurationListPath: 'assets/monaco/textmate-configuration-list.json',
     }
-  ): ModuleWithProviders<MonacoTextmateModule> {
+  ): ModuleWithProviders<CyiaMonacoTextmateModule> {
     return {
-      ngModule: MonacoTextmateModule,
+      ngModule: CyiaMonacoTextmateModule,
       providers: [{ provide: TEXTMATE_PATH_CONFIG, useValue: config }],
     };
   }

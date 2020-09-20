@@ -11,7 +11,7 @@ import { VscodeTextmateConfiguration } from './vscode-textmate.configuration';
 import { LanguageInfo, TEXTMATE_PATH_CONFIG, TextmatePathConfig } from './vscode.define';
 
 @Injectable()
-export class MonacoTextmateService extends RequestBase {
+export class CyiaMonacoTextmateService extends RequestBase {
   private grammar: VscodeTextmateGrammar;
   private configuration: VscodeTextmateConfiguration;
   private theme: VscodeTheme;

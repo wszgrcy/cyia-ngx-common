@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { MonacoTextmateService, Monaco } from 'cyia-ngx-common/monaco-textmate';
+import { CyiaMonacoTextmateService, Monaco } from 'cyia-ngx-common/monaco-textmate';
 import * as monaco from 'monaco-editor';
 @Component({
   selector: 'app-monaco-textmate-test',
@@ -12,7 +12,7 @@ export class MonacoTextmateTestComponent implements OnInit {
   instance: Monaco;
   themeList = [];
   selectedTheme: string;
-  constructor(private service: MonacoTextmateService) {}
+  constructor(private service: CyiaMonacoTextmateService) {}
 
   ngOnInit() {
     this.service.setMonaco(monaco);
