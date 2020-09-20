@@ -14,6 +14,7 @@ import { LoadComponent } from './load/load.component';
 import { CyiaRepositoryModule } from 'cyia-ngx-common/repository';
 import { LazyLoadModule, createWebComponent } from 'cyia-ngx-common/lazy-load';
 import { FormsModule } from '@angular/forms';
+import { MonacoTextmateTestModule } from './monaco-textmate-test/monaco-textmate-test.module';
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -27,6 +28,7 @@ import { FormsModule } from '@angular/forms';
     CyiaLoadingHintModule,
     CyiaRepositoryModule,
     FormsModule,
+    MonacoTextmateTestModule,
     LazyLoadModule.forRoot([
       [
         'lazy-load',

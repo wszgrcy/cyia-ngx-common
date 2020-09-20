@@ -28,6 +28,9 @@
       ],
       "cyia-ng-common/util": [
         "./src/util"
+      ],
+      "cyia-ng-common/monaco-textmate":[
+        "./src/monaco-textmate"
       ]
     }
   },
