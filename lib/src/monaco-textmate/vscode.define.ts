@@ -38,8 +38,12 @@ interface Colors {
 
 export const TEXTMATE_PATH_CONFIG = new InjectionToken('TextmatePathConfig');
 export interface TextmatePathConfig {
+  /** 编译扫描器asm */
   vscodeOnigurumaPath: string;
+  /** 语法语言对象 */
   textmateGrammarMapPath: string;
+  /** 主题列表 */
   textmateThemeListPath: string;
+  /** 配置语言列表 */
   textmateConfigurationListPath: string;
 }

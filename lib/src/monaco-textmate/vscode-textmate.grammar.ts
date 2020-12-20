@@ -27,23 +27,24 @@ export class VscodeTextmateGrammar extends RequestBase {
   public async loadGrammar(): Promise<void> {
     this.textmateGrammarJson = (await this.requstJson(this.textmateGrammarMapPath)) as any;
     for (const scopeName in this.textmateGrammarJson) {
-      if (Object.prototype.hasOwnProperty.call(this.textmateGrammarJson, scopeName)) {
-        const grammar = this.textmateGrammarJson[scopeName];
-        if (grammar.injectTo) {
-          for (const injectScopeName of grammar.injectTo) {
-            let injections: string[];
-            if (!this.scopeName2Injections.has(injectScopeName)) {
-              injections = [];
-            } else {
-              injections = this.scopeName2Injections.get(injectScopeName);
-            }
-            injections.push(scopeName);
-            this.scopeName2Injections.set(injectScopeName, injections);
-          }
-        }
-
-        this.language2scopeName.set(this.textmateGrammarJson[scopeName].language, scopeName);
+      if (!Object.prototype.hasOwnProperty.call(this.textmateGrammarJson, scopeName)) {
+        continue;
       }
+      const grammar = this.textmateGrammarJson[scopeName];
+      if (grammar.injectTo) {
+        for (const injectScopeName of grammar.injectTo) {
+          let injections: string[];
+          if (!this.scopeName2Injections.has(injectScopeName)) {
+            injections = [];
+          } else {
+            injections = this.scopeName2Injections.get(injectScopeName);
+          }
+          injections.push(scopeName);
+          this.scopeName2Injections.set(injectScopeName, injections);
+        }
+      }
+
+      this.language2scopeName.set(this.textmateGrammarJson[scopeName].language, scopeName);
     }
   }
   public getIRawGrammar(scopeName: string): Promise<IRawGrammar> {
@@ -54,7 +55,9 @@ export class VscodeTextmateGrammar extends RequestBase {
           .then((json) => {
             return json[scopeName];
           })
-          .then((config) => this.requestText(config.path).then((data) => parseRawGrammar(data, `.${extname(config.path)}`)))
+          .then((config) =>
+            this.requestText(config.path).then((data) => parseRawGrammar(data, `.${extname(config.path)}`))
+          )
       );
     }
     return this.iRawGrammarMap.get(scopeName);
@@ -71,7 +74,10 @@ export class VscodeTextmateGrammar extends RequestBase {
     return this.createEncodedTokensProvider(scopeName, encodedLanguageId);
   }
 
-  private async createEncodedTokensProvider(scopeName: string, encodedLanguageId: number): Promise<monaco.languages.EncodedTokensProvider> {
+  private async createEncodedTokensProvider(
+    scopeName: string,
+    encodedLanguageId: number
+  ): Promise<monaco.languages.EncodedTokensProvider> {
     const grammar = await this.getGrammar(scopeName, encodedLanguageId);
     return {
       getInitialState(): StackElement {
@@ -90,13 +96,15 @@ export class VscodeTextmateGrammar extends RequestBase {
     if (!this.scopeNameToGrammar.has(scopeName)) {
       this.scopeNameToGrammar.set(
         scopeName,
-        this.registry.loadGrammarWithConfiguration(scopeName, encodedLanguageId, {}).then((grammar: IGrammar | null) => {
-          if (grammar) {
-            return grammar;
-          } else {
-            throw Error(`failed to load grammar for ${scopeName}`);
-          }
-        })
+        this.registry
+          .loadGrammarWithConfiguration(scopeName, encodedLanguageId, {})
+          .then((grammar: IGrammar | null) => {
+            if (grammar) {
+              return grammar;
+            } else {
+              throw Error(`failed to load grammar for ${scopeName}`);
+            }
+          })
       );
     }
     return this.scopeNameToGrammar.get(scopeName);

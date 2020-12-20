@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import * as monaco from 'monaco-editor';
 export class VscodeTextmateConfiguration extends RequestBase {
   private textmateConfigurationListPromise: Promise<monaco.languages.ILanguageExtensionPoint[]>;
-  constructor(http: HttpClient, private textmateConfigurationListPath: string) {
+  constructor(http: HttpClient, private readonly textmateConfigurationListPath: string) {
     super(http);
   }
   public getTextmateConfigurationList() {
