@@ -115,4 +115,22 @@ export class CyiaMonacoTextmateService extends RequestBase {
       });
     }
   }
+  /** 手动注册语言 */
+  async manualRegisterLanguage(languageId: string) {
+    const languages: monaco.languages.ILanguageExtensionPoint[] = await this.configuration.getTextmateConfigurationList();
+    const extensionPoint = languages.find((item) => item.id === languageId);
+    if (!extensionPoint) {
+      throw new Error(`no language ${languageId} define`);
+    }
+    this.monaco.languages.register(extensionPoint);
+    const { tokensProvider, configuration } = await this.fetchLanguageInfo(languageId);
+
+    if (tokensProvider != null) {
+      this.monaco.languages.setTokensProvider(languageId, tokensProvider);
+    }
+
+    if (configuration != null) {
+      this.monaco.languages.setLanguageConfiguration(languageId, configuration);
+    }
+  }
 }
