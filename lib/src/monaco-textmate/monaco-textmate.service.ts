@@ -118,19 +118,21 @@ export class CyiaMonacoTextmateService extends RequestBase {
   /** 手动注册语言 */
   async manualRegisterLanguage(languageId: string) {
     const languages: monaco.languages.ILanguageExtensionPoint[] = await this.configuration.getTextmateConfigurationList();
-    const extensionPoint = languages.find((item) => item.id === languageId);
+    const extensionPoint = languages.find(
+      (item) => item.id === languageId || (item.aliases || []).includes(languageId)
+    );
     if (!extensionPoint) {
       throw new Error(`no language ${languageId} define`);
     }
     this.monaco.languages.register(extensionPoint);
-    const { tokensProvider, configuration } = await this.fetchLanguageInfo(languageId);
+    const { tokensProvider, configuration } = await this.fetchLanguageInfo(extensionPoint.id);
 
     if (tokensProvider != null) {
-      this.monaco.languages.setTokensProvider(languageId, tokensProvider);
+      this.monaco.languages.setTokensProvider(extensionPoint.id, tokensProvider);
     }
 
     if (configuration != null) {
-      this.monaco.languages.setLanguageConfiguration(languageId, configuration);
+      this.monaco.languages.setLanguageConfiguration(extensionPoint.id, configuration);
     }
   }
 }

@@ -22,7 +22,7 @@ export class MonacoTextmateTestComponent implements OnInit {
       this.selectedTheme = themeList[1];
       let name = await this.service.defineTheme(this.selectedTheme);
       monaco.editor.setTheme(name);
-      await this.service.manualRegisterLanguage('typescript');
+      await this.service.manualRegisterLanguage('ts');
       this.containerElement?.nativeElement.classList.add('monaco-editor');
       this.containerElement.nativeElement.innerHTML = 'let a=6;';
       this.containerElement?.nativeElement.setAttribute('data-lang', 'typescript');
