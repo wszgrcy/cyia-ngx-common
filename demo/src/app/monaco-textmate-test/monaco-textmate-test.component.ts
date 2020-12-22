@@ -16,7 +16,7 @@ export class MonacoTextmateTestComponent implements OnInit {
 
   ngOnInit() {
     this.service.setMonaco(monaco);
-    this.service.init().then(async () => {
+    this.service.init(false).then(async () => {
       let themeList = await this.service.getThemeList();
       this.themeList = themeList;
       this.selectedTheme = themeList[1];

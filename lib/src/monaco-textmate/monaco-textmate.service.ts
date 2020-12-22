@@ -37,10 +37,12 @@ export class CyiaMonacoTextmateService extends RequestBase {
 
   private registry: Registry;
   private monaco: typeof monaco;
-  async init() {
+  async init(autoRegistry = true) {
     await Promise.all([this.grammar.loadGrammar()]);
     this.register(this.loadWasm());
-    return this.registerLanguages();
+    if (autoRegistry) {
+      return this.registerLanguages();
+    }
   }
 
   private async loadWasm(): Promise<IOnigLib> {
@@ -96,7 +98,7 @@ export class CyiaMonacoTextmateService extends RequestBase {
     });
     return name;
   }
-
+  /** 自动注册语言 */
   private async registerLanguages(): Promise<void> {
     const languages: monaco.languages.ILanguageExtensionPoint[] = await this.configuration.getTextmateConfigurationList();
     for (const extensionPoint of languages) {
