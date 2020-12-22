@@ -9,6 +9,7 @@ import { VscodeTheme, builtTheme } from './vscode-theme';
 import { VscodeTextmateGrammar } from './vscode-textmate.grammar';
 import { VscodeTextmateConfiguration } from './vscode-textmate.configuration';
 import { LanguageInfo, TEXTMATE_PATH_CONFIG, TextmatePathConfig } from './vscode.define';
+import { async } from '@angular/core/testing';
 
 @Injectable()
 export class CyiaMonacoTextmateService extends RequestBase {
@@ -136,5 +137,13 @@ export class CyiaMonacoTextmateService extends RequestBase {
     if (configuration != null) {
       this.monaco.languages.setLanguageConfiguration(extensionPoint.id, configuration);
     }
+  }
+  async getLanguageId(languageIdOrType: string) {
+    const languages: monaco.languages.ILanguageExtensionPoint[] = await this.configuration.getTextmateConfigurationList();
+
+    const extensionPoint = languages.find(
+      (item) => item.id === languageIdOrType || (item.aliases || []).includes(languageIdOrType)
+    );
+    return extensionPoint.id;
   }
 }
