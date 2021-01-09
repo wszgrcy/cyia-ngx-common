@@ -11,13 +11,19 @@
       "path": "./demo/src/tsconfig.app.json"
     },
     {
-      "path": "./demo/tsconfig.spec.json"
+      "path": "./demo/src/tsconfig.spec.json"
     },
     {
       "path": "./lib/tsconfig.lib.json"
     },
     {
       "path": "./lib/tsconfig.spec.json"
+    },
+    {
+      "path": "./examples/tsconfig.app.json"
+    },
+    {
+      "path": "./examples/tsconfig.spec.json"
     }
   ]
 }

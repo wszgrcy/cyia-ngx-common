@@ -16,9 +16,7 @@
             "customWebpackConfig": {
               "path": "./webpack.config.ts"
             },
-            "allowedCommonJsDependencies": [
-              "monaco-editor"
-            ],
+            "allowedCommonJsDependencies": ["monaco-editor"],
             "aot": true,
             "outputPath": "dist/cyia-ngx-common-demo",
             "index": "demo/src/index.html",
@@ -34,10 +32,7 @@
                 "output": "assets/vscode-oniguruma"
               }
             ],
-            "styles": [
-              "demo/src/styles.css",
-              "./node_modules/monaco-editor/min/vs/editor/editor.main.css"
-            ],
+            "styles": ["demo/src/styles.css", "./node_modules/monaco-editor/min/vs/editor/editor.main.css"],
             "scripts": []
           },
           "configurations": {
@@ -91,26 +86,16 @@
             "polyfills": "demo/src/polyfills.ts",
             "tsConfig": "demo/src/tsconfig.spec.json",
             "karmaConfig": "demo/src/karma.conf.js",
-            "styles": [
-              "demo/src/styles.css"
-            ],
+            "styles": ["demo/src/styles.css"],
             "scripts": [],
-            "assets": [
-              "demo/src/favicon.ico",
-              "demo/src/assets"
-            ]
+            "assets": ["demo/src/favicon.ico", "demo/src/assets"]
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": [
-              "src/tsconfig.app.json",
-              "src/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["src/tsconfig.app.json", "src/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -135,9 +120,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": "e2e/tsconfig.e2e.json",
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "exclude": ["**/node_modules/**"]
           }
         }
       }
@@ -173,13 +156,116 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "fix": true,
-            "tsConfig": [
-              "lib/tsconfig.lib.json",
-              "lib/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
+            "tsConfig": ["lib/tsconfig.lib.json", "lib/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**"]
+          }
+        }
+      }
+    },
+    "examples": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "examples",
+      "sourceRoot": "examples/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-builders/custom-webpack:browser",
+          "options": {
+            "customWebpackConfig": {
+              "path": "./webpack.examples.config.ts"
+            },
+            "outputPath": "dist/examples",
+            "index": "examples/src/index.html",
+            "main": "examples/src/main.ts",
+            "polyfills": "examples/src/polyfills.ts",
+            "tsConfig": "examples/tsconfig.app.json",
+            "aot": true,
+            "assets": ["examples/src/favicon.ico", "examples/src/assets"],
+            "styles": ["examples/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "examples/src/environments/environment.ts",
+                  "with": "examples/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "none",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "examples:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "examples:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "examples:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "examples/src/test.ts",
+            "polyfills": "examples/src/polyfills.ts",
+            "tsConfig": "examples/tsconfig.spec.json",
+            "karmaConfig": "examples/karma.conf.js",
+            "assets": ["examples/src/favicon.ico", "examples/src/assets"],
+            "styles": ["examples/src/styles.scss"],
+            "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["examples/tsconfig.app.json", "examples/tsconfig.spec.json", "examples/e2e/tsconfig.json"],
+            "exclude": ["**/node_modules/**"]
+          }
+        },
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "examples/e2e/protractor.conf.js",
+            "devServerTarget": "examples:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "examples:serve:production"
+            }
           }
         }
       }

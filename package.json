@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "start:examples": "ng serve examples --port 4203",
+    "build:examples": "ng build examples --prod",
     "start": "ng serve --port 4202 ",
     "build": "ng build --prod",
     "test": "ng test",
