@@ -3,7 +3,7 @@ import { CyiaRepositoryService } from 'cyia-ngx-common/repository';
 import { PackageEntity } from './data.entity';
 
 @Component({
-  selector: 'app-example',
+  selector: 'app-repository-1',
   templateUrl: './repository-1.component.html',
   styleUrls: ['./repository-1.component.scss'],
 })
