@@ -1,0 +1,15 @@
+{
+  "projectName": "lib",
+  "exampleProjectName": "examples",
+  "generateDocFileList": [
+    "./repository/decorator/index.ts",
+    "./repository/type/**/*",
+    "./repository/repository.service.ts",
+    "./repository/repository.module.ts",
+    "./loading-hint/loading-hint.module.ts",
+    "./loading-hint/loading-hint.decorator.ts",
+    "./loading-hint/loading-hint.service.ts",
+    "./loading-hint/type.ts"
+  ],
+  "packageJson": "lib/src/package.json"
+}
