@@ -11,5 +11,6 @@
     "./loading-hint/loading-hint.service.ts",
     "./loading-hint/type.ts"
   ],
-  "packageJson": "lib/src/package.json"
+  "packageJson": "lib/src/package.json",
+  "angularJson": "./angular.json"
 }
