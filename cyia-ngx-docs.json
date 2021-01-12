@@ -12,5 +12,7 @@
     "./loading-hint/type.ts"
   ],
   "packageJson": "lib/src/package.json",
-  "angularJson": "./angular.json"
+  "angularJson": "./angular.json",
+  "exampleScript": "./dist/examples",
+  "exampleCode": "./examples/src/app"
 }
