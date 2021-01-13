@@ -9,8 +9,12 @@ import { VscodeTheme, builtTheme } from './vscode-theme';
 import { VscodeTextmateGrammar } from './vscode-textmate.grammar';
 import { VscodeTextmateConfiguration } from './vscode-textmate.configuration';
 import { LanguageInfo, TEXTMATE_PATH_CONFIG, TextmatePathConfig } from './vscode.define';
-import { async } from '@angular/core/testing';
-
+/**
+ * @docs-service
+ * @description monaco-editor使用textmate方式解析代码的服务
+ * @export
+ *
+ */
 @Injectable()
 export class CyiaMonacoTextmateService extends RequestBase {
   private grammar: VscodeTextmateGrammar;
@@ -38,6 +42,7 @@ export class CyiaMonacoTextmateService extends RequestBase {
 
   private registry: Registry;
   private monaco: typeof monaco;
+  /** 2.初始化相关逻辑,需要在初始化后,才能执行monaco的一些操作 */
   async init(autoRegistry = true) {
     await Promise.all([this.grammar.loadGrammar()]);
     this.register(this.loadWasm());
@@ -68,11 +73,12 @@ export class CyiaMonacoTextmateService extends RequestBase {
     });
     this.grammar.setRegisty(this.registry);
   }
-
+  /** 1.传入`monaco`模块 */
   public setMonaco(monaco) {
     this.monaco = monaco;
     this.grammar.setMonaco(monaco);
   }
+  /** 获得主题列表 */
   getThemeList() {
     return this.theme.getThemeList();
   }
@@ -84,6 +90,12 @@ export class CyiaMonacoTextmateService extends RequestBase {
     ]);
     return { tokensProvider, configuration };
   }
+  /**
+   * @description 定义主题,代替 `monaco.editor.defineTheme`
+   * @param name 从`getThemeList`方法中返回的名字
+   *
+   *
+   */
   async defineTheme(name: string): Promise<string> {
     const theme = await this.theme.load(name);
     this.registry.setTheme(theme);
@@ -138,6 +150,7 @@ export class CyiaMonacoTextmateService extends RequestBase {
       this.monaco.languages.setLanguageConfiguration(extensionPoint.id, configuration);
     }
   }
+  /** 通过语言别名或者id,获得语言的id */
   async getLanguageId(languageIdOrType: string) {
     const languages: monaco.languages.ILanguageExtensionPoint[] = await this.configuration.getTextmateConfigurationList();
 

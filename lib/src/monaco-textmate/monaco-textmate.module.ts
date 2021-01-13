@@ -2,7 +2,11 @@ import { NgModule, ModuleWithProviders } from '@angular/core';
 import { CyiaMonacoTextmateService } from './monaco-textmate.service';
 import { TEXTMATE_PATH_CONFIG, TextmatePathConfig } from './vscode.define';
 import { HttpClientModule } from '@angular/common/http';
-
+/**
+ * @docs-module
+ * @docs-overview overview.md
+ * @docs-example example.md
+ */
 @NgModule({
   imports: [HttpClientModule],
   providers: [CyiaMonacoTextmateService],
