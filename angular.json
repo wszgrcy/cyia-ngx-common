@@ -185,7 +185,15 @@
             "polyfills": "examples/src/polyfills.ts",
             "tsConfig": "examples/tsconfig.app.json",
             "aot": true,
-            "assets": ["examples/src/favicon.ico", "examples/src/assets"],
+            "assets": [
+              "examples/src/favicon.ico",
+              "examples/src/assets",
+              {
+                "glob": "*.wasm",
+                "input": "node_modules/vscode-oniguruma/release",
+                "output": "assets/vscode-oniguruma"
+              }
+            ],
             "styles": ["examples/src/styles.scss"],
             "scripts": []
           },
