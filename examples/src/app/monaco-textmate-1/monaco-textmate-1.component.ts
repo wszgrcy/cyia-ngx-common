@@ -7,7 +7,7 @@ import { Monaco, CyiaMonacoTextmateService } from 'cyia-ngx-common/monaco-textma
   templateUrl: './monaco-textmate-1.component.html',
   styleUrls: ['./monaco-textmate-1.component.css'],
 })
-export class MonacoTextmate1Component implements OnInit {
+export class MonacoTextmate1Component {
   @ViewChild('container', { static: true })
   containerElement?: ElementRef<HTMLElement>;
   instance: Monaco;
@@ -28,18 +28,6 @@ export class MonacoTextmate1Component implements OnInit {
       this.containerElement.nativeElement.innerHTML = 'let a=6;';
       this.containerElement?.nativeElement.setAttribute('data-lang', 'typescript');
       monaco.editor.colorizeElement(this.containerElement.nativeElement, { tabSize: 4, theme: name });
-      // monaco.editor.colorize('let a=6;', 'typescript', { tabSize: 4 }).then((list) => {
-      //   console.log('返回类型', list);
-      // });
-      // monaco.editor.create(this.containerElement?.nativeElement, {
-      //   theme: name,
-      //   value: `let a=61;`,
-      //   language: 'typescript',
-      //   minimap: {
-      //     enabled: false,
-      //   },
-      //   automaticLayout: true,
-      // });
     });
   }
 
