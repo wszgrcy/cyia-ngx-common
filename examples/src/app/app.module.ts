@@ -25,6 +25,7 @@ export class AppModule implements DoBootstrap {
     const ref = componentFac.create(moduleRef.injector);
     this.applicationRef.attachView(ref.hostView);
     element.appendChild(ref.location.nativeElement);
+    ref.changeDetectorRef.detectChanges();
     destroy$.pipe(take(1)).subscribe(() => {
       ref.destroy();
     });

@@ -179,6 +179,7 @@
             "customWebpackConfig": {
               "path": "./webpack.examples.config.ts"
             },
+            "deployUrl": "/assets/examples/scripts/",
             "outputPath": "dist/examples",
             "index": "examples/src/index.html",
             "main": "examples/src/main.ts",
@@ -194,7 +195,7 @@
                 "output": "assets/vscode-oniguruma"
               }
             ],
-            "styles": ["examples/src/styles.scss"],
+            "styles": ["examples/src/styles.scss", "./node_modules/monaco-editor/min/vs/editor/editor.main.css"],
             "scripts": []
           },
           "configurations": {

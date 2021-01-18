@@ -9,7 +9,7 @@ import { environment } from '../../environments/environment';
     CommonModule,
     CyiaMonacoTextmateModule.forRoot({
       vscodeOnigurumaPath: environment.assetsPrefix + 'vscode-oniguruma/onig.wasm',
-      textmateGrammarMapPath: environment.assetsPrefix + 'textmate-grammar-map.json',
+      textmateGrammarMapPath: environment.assetsPrefix + 'monaco/textmate-grammar-map.json',
       textmateThemeListPath: environment.assetsPrefix + 'monaco/theme-list.json',
       textmateConfigurationListPath: environment.assetsPrefix + 'monaco/textmate-configuration-list.json',
     }),
