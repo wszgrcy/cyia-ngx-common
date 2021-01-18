@@ -179,7 +179,7 @@
             "customWebpackConfig": {
               "path": "./webpack.examples.config.ts"
             },
-            "deployUrl": "/assets/examples/scripts/",
+            "deployUrl": "assets/examples/scripts/",
             "outputPath": "dist/examples",
             "index": "examples/src/index.html",
             "main": "examples/src/main.ts",
