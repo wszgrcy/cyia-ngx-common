@@ -3,28 +3,38 @@ import * as path from 'path';
 import { EmittedFiles, getEmittedFiles } from '@angular-devkit/build-webpack/src/utils';
 import { FileInfo } from '@angular-devkit/build-angular/src/angular-cli-files/utilities/index-file/augment-index-html';
 import { RawSource } from 'webpack-sources';
+import { SyncWaterfallHook, AsyncSeriesWaterfallHook } from 'tapable';
 type ExtensionFilter = '.js' | '.css';
 
 export class NgxBootstrapAssetsPlugin {
+  constructor(private options: { output: string } = { output: 'bootstrap.json' }) {}
+  hooks = {
+    originAssets: new SyncWaterfallHook(['files']),
+    beforeAppend: new SyncWaterfallHook(['bootstrapFiles']),
+    beforeEmit: new SyncWaterfallHook(['bootstrapJson']),
+  };
   apply(compiler: webpack.Compiler) {
     compiler.hooks.shouldEmit.tap('NgxBootstrapAssetsPlugin', (compilation) => {
       let files = getEmittedFiles(compilation);
-      let bootStrapFiles = filterAndMapBuildFiles(files, ['.css', '.js']);
-      let bootStrapJson: { scripts?: { src: string }[]; stylesheets?: { href: string }[] } = {
+      files = this.hooks.originAssets.call(files);
+      let bootstrapFiles = filterAndMapBuildFiles(files, ['.css', '.js']);
+      bootstrapFiles = this.hooks.beforeAppend.call(bootstrapFiles);
+      let bootstrapJson: { scripts?: { src: string }[]; stylesheets?: { href: string }[] } = {
         scripts: [],
         stylesheets: [],
       };
-      for (const { extension, file, name } of bootStrapFiles) {
+      for (const { extension, file, name } of bootstrapFiles) {
         switch (extension) {
           case '.js':
-            bootStrapJson.scripts.push({ src: file });
+            bootstrapJson.scripts.push({ src: file });
             break;
           case '.css':
-            bootStrapJson.stylesheets.push({ href: file });
+            bootstrapJson.stylesheets.push({ href: file });
             break;
         }
       }
-      compilation.assets['bootstrap.json'] = new RawSource(JSON.stringify(bootStrapJson, undefined, 4));
+      bootstrapJson = this.hooks.beforeEmit.call(bootstrapJson);
+      compilation.assets[this.options.output] = new RawSource(JSON.stringify(bootstrapJson, undefined, 4));
     });
   }
 }

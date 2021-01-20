@@ -24,6 +24,10 @@ export default (config, options, targetOptions) => {
       return !isMonaco && !!file.match(originalTest);
     };
   });
-  config.plugins.push(new NgxBootstrapAssetsPlugin());
+  let plugin = new NgxBootstrapAssetsPlugin();
+  config.plugins.push(plugin);
+  plugin.hooks.originAssets.tap('remove-polyfill', (list: any[]) => {
+    return list.filter((item) => !(item.name || '').includes('polyfills'));
+  });
   return config;
 };
