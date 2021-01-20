@@ -1,3 +1,5 @@
+import { NgxBootstrapAssetsPlugin } from './webpack-ngx-bootstrp-assets-plugin';
+
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 export default (config, options, targetOptions) => {
@@ -22,5 +24,6 @@ export default (config, options, targetOptions) => {
       return !isMonaco && !!file.match(originalTest);
     };
   });
+  config.plugins.push(new NgxBootstrapAssetsPlugin());
   return config;
 };

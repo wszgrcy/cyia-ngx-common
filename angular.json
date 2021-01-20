@@ -207,7 +207,7 @@
                 }
               ],
               "optimization": true,
-              "outputHashing": "none",
+              "outputHashing": "all",
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
