@@ -3,6 +3,7 @@ import { LoadingHintService } from './loading-hint.service';
 
 /**
  * @docs-module
+ * @docs-example example.md
  * @docs-overview ./loading-hint.md
  * @author cyia
  * @date 2020-07-21

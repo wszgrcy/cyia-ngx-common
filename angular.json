@@ -179,7 +179,6 @@
             "customWebpackConfig": {
               "path": "./webpack.examples.config.ts"
             },
-            "deployUrl": "assets/examples/scripts/",
             "outputPath": "dist/examples",
             "index": "examples/src/index.html",
             "main": "examples/src/main.ts",
@@ -206,6 +205,7 @@
                   "with": "examples/src/environments/environment.prod.ts"
                 }
               ],
+              "deployUrl": "assets/examples/scripts/",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
