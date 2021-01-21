@@ -15,8 +15,7 @@
     "build:lib": "ng build lib --prod",
     "postbuild:lib": "cpx README.md ./dist/cyia-ngx-common",
     "update": "ng update --all --force",
-    "version": "ng version",
-    "docs": "ts-node --project ./scripts/generate-docs/tsconfig.json ./scripts/generate-docs/index.ts"
+    "version": "ng version"
   },
   "private": true,
   "dependencies": {
