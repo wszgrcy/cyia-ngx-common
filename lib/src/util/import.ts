@@ -10,7 +10,7 @@ export function importStyle(path: string, options = { document }): Promise<Impor
       const link = options.document.createElement('link');
       link.type = 'text/css';
       link.href = path;
-
+      link.rel = 'stylesheet';
       link.onload = () =>
         onSuccess({
           result: true,
