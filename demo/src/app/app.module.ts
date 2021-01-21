@@ -11,10 +11,8 @@ import { LoadingTestModule } from './loading-test/loading-test.module';
 import { CyiaLoadingHintModule, CyiaLoadingHintUninstall } from 'cyia-ngx-common/loading-hint';
 import { LOAD_HINT_TOKEN } from './token';
 import { LoadComponent } from './load/load.component';
-import { CyiaRepositoryModule } from 'cyia-ngx-common/repository';
 import { LazyLoadModule, createWebComponent } from 'cyia-ngx-common/lazy-load';
 import { FormsModule } from '@angular/forms';
-import { MonacoTextmateTestModule } from './monaco-textmate-test/monaco-textmate-test.module';
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -26,9 +24,7 @@ import { MonacoTextmateTestModule } from './monaco-textmate-test/monaco-textmate
     LoadModule,
     LoadingTestModule,
     CyiaLoadingHintModule,
-    CyiaRepositoryModule,
     FormsModule,
-    MonacoTextmateTestModule,
     LazyLoadModule.forRoot([
       [
         'lazy-load',
