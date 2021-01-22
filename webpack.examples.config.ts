@@ -1,5 +1,4 @@
-import { NgxBootstrapAssetsPlugin } from './webpack-ngx-bootstrp-assets-plugin';
-
+import { BootstrapAssetsPlugin } from 'webpack-bootstrap-assets-plugin';
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 export default (config, options, targetOptions) => {
@@ -24,7 +23,7 @@ export default (config, options, targetOptions) => {
       return !isMonaco && !!file.match(originalTest);
     };
   });
-  let plugin = new NgxBootstrapAssetsPlugin();
+  let plugin = new BootstrapAssetsPlugin();
   config.plugins.push(plugin);
   plugin.hooks.originAssets.tap('remove-polyfill', (list: any[]) => {
     return list.filter((item) => !(item.name || '').includes('polyfills'));

@@ -11,12 +11,8 @@
       "schematics": {},
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "customWebpackConfig": {
-              "path": "./webpack.config.ts"
-            },
-            "allowedCommonJsDependencies": ["monaco-editor"],
             "aot": true,
             "outputPath": "dist/cyia-ngx-common-demo",
             "index": "demo/src/index.html",
