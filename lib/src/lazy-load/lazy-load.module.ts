@@ -3,7 +3,11 @@ import { LazyLoadService } from './lazy-load.service';
 import { LAZY_LOAD_MAP } from './lazy-load-map.token';
 import { LazyLoadDirective } from './lazy-load.directive';
 import { LazyLoadFormControlDirective } from './lazy-load-form-control.directive';
-
+/**
+ * @docs-module
+ * @docs-example example.md
+ * @docs-overview ./overview.md
+ */
 @NgModule({
   declarations: [LazyLoadDirective, LazyLoadFormControlDirective],
   imports: [],

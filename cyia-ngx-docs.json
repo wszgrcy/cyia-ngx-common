@@ -10,7 +10,8 @@
     "./loading-hint/loading-hint.decorator.ts",
     "./loading-hint/loading-hint.service.ts",
     "./loading-hint/type.ts",
-    "./monaco-textmate/**/*"
+    "./monaco-textmate/**/*",
+    "./lazy-load/**/*"
   ],
   "packageJson": "lib/src/package.json",
   "angularJson": "./angular.json",

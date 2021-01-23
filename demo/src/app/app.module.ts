@@ -11,7 +11,6 @@ import { LoadingTestModule } from './loading-test/loading-test.module';
 import { CyiaLoadingHintModule, CyiaLoadingHintUninstall } from 'cyia-ngx-common/loading-hint';
 import { LOAD_HINT_TOKEN } from './token';
 import { LoadComponent } from './load/load.component';
-import { LazyLoadModule, createWebComponent } from 'cyia-ngx-common/lazy-load';
 import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [AppComponent],
@@ -23,17 +22,7 @@ import { FormsModule } from '@angular/forms';
     MatSnackBarModule,
     LoadModule,
     LoadingTestModule,
-    CyiaLoadingHintModule,
     FormsModule,
-    LazyLoadModule.forRoot([
-      [
-        'lazy-load',
-        (injector, compiler) =>
-          import('./lazy-load/lazy-load.module').then((e) =>
-            createWebComponent(injector, compiler, e.LazyLoadModule, 'lazy-load')
-          ),
-      ],
-    ]),
   ],
   providers: [
     {

@@ -2,7 +2,6 @@ import { BootstrapAssetsPlugin } from 'webpack-bootstrap-assets-plugin';
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 export default (config, options, targetOptions) => {
-  config.optimization.runtimeChunk = undefined;
   config.output.jsonpFunction = 'examplesJsonp';
   config.plugins.push(new MonacoWebpackPlugin({ languages: ['typescript', 'javascript'] }));
 

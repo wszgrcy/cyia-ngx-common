@@ -3,7 +3,7 @@ import { LAZY_LOAD_MAP } from './lazy-load-map.token';
 
 /**
  * 懒加载组件服务,通过模块的forRoot传入相关懒加载模块配置
- *
+ * @docs-service
  * @author cyia
  * @date 2020-08-02
  * @export

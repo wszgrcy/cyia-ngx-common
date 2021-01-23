@@ -5,6 +5,8 @@ import { MonacoTextmate1Module } from './monaco-textmate-1/monaco-textmate-1.mod
 import { LoadingHint1Component } from './loading-hint-1/loading-hint-1.component';
 import { LoadingHint1Module } from './loading-hint-1/loading-hint-1.module';
 import { Type } from '@angular/core';
+import { LazyLoadBaseComponent } from './lazy-load-base/lazy-load-base.component';
+import { LazyLoadBaseModule } from './lazy-load-base/lazy-load-base.module';
 export const EXAMPLE_GROUP: {
   [name: string]: {
     component: Type<any>;
@@ -19,5 +21,9 @@ export const EXAMPLE_GROUP: {
   'loading-hint-1': {
     component: LoadingHint1Component,
     module: LoadingHint1Module,
+  },
+  'lazy-load-base': {
+    component: LazyLoadBaseComponent,
+    module: LazyLoadBaseModule,
   },
 };
