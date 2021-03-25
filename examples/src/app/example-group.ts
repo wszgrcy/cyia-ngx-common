@@ -7,6 +7,8 @@ import { LoadingHint1Module } from './loading-hint-1/loading-hint-1.module';
 import { Type } from '@angular/core';
 import { LazyLoadBaseComponent } from './lazy-load-base/lazy-load-base.component';
 import { LazyLoadBaseModule } from './lazy-load-base/lazy-load-base.module';
+import { Store1Component } from './store-1/store-1.component';
+import { Store1Module } from './store-1/store-1.module';
 export const EXAMPLE_GROUP: {
   [name: string]: {
     component: Type<any>;
@@ -25,5 +27,9 @@ export const EXAMPLE_GROUP: {
   'lazy-load-base': {
     component: LazyLoadBaseComponent,
     module: LazyLoadBaseModule,
+  },
+  'app-store-1': {
+    component: Store1Component,
+    module: Store1Module,
   },
 };
