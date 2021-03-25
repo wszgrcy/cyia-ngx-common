@@ -337,7 +337,7 @@ describe('载入提示组件装饰器配置测试', () => {
         //   }
         // }
         // expect(result).toBe(testResult);
-        res();
+        res(undefined);
         LoadingHintService.install = orgInstall;
         LoadingHintService.uninstall = orgUnInstall;
         return of(1);

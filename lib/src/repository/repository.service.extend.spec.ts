@@ -8,7 +8,6 @@ import { StronglyTyped } from './decorator/extend/strongly-typed';
 import { PropertyDefaultValue } from './decorator/extend/property-default-value';
 import { PropertyDataSourceStandalone } from './decorator';
 import { PropertyFormatValue } from './decorator/extend/property-format-value';
-import { Level1 } from 'demo/src/app/request.entity';
 import { PropertyInherit } from './decorator/extend/property-inherit';
 import { ClassInherit } from './decorator/extend/class-inherit';
 
