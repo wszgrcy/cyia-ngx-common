@@ -1,4 +1,4 @@
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { CyiaRepositoryModule } from './repository.module';
 import { ClassDataSource } from './decorator/class-data-source';
 import { of } from 'rxjs';
@@ -166,12 +166,14 @@ class ItemSelectParams {
 const testtoken = new InjectionToken('token');
 describe('仓库服务(基础)', () => {
   let repository: CyiaRepositoryService;
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [CyiaRepositoryModule],
-      providers: [{ provide: testtoken, useValue: '测试用' }],
-    });
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CyiaRepositoryModule],
+        providers: [{ provide: testtoken, useValue: '测试用' }],
+      });
+    })
+  );
   beforeEach(() => {
     repository = TestBed.inject(CyiaRepositoryService);
   });

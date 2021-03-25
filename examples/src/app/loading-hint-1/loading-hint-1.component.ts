@@ -17,7 +17,7 @@ export class LoadingHint1Component implements OnInit {
   clickThis() {
     return new Promise((res) => {
       setTimeout(() => {
-        res();
+        res(undefined);
       }, 3000);
     });
   }

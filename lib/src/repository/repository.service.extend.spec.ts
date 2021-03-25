@@ -1,4 +1,4 @@
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { CyiaRepositoryModule } from './repository.module';
 import { ClassDataSource } from './decorator/class-data-source';
 import { of } from 'rxjs';
@@ -99,11 +99,13 @@ class ChildClass extends ParentClass {
 }
 describe('仓库服务(拓展)', () => {
   let repository: CyiaRepositoryService;
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [CyiaRepositoryModule],
-    });
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [CyiaRepositoryModule],
+      });
+    })
+  );
   beforeEach(() => {
     repository = TestBed.inject(CyiaRepositoryService);
   });

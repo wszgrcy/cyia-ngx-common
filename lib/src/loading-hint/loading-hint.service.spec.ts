@@ -9,7 +9,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { LoadingHint } from './loading-hint.decorator';
-import { TestBed, async, ComponentFixture } from '@angular/core/testing';
+import { TestBed, ComponentFixture, waitForAsync } from '@angular/core/testing';
 import { LoadingHintService } from './loading-hint.service';
 import { of, Subject } from 'rxjs';
 import { CyiaLoadingHintUninstall, CyiaLoadHintOption } from './type';
@@ -455,15 +455,17 @@ describe('载入提示组件运行测试', () => {
   let service: LoadingHintService;
   let componentFixture: ComponentFixture<TestComponent>;
   let componentInstance: TestComponent;
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      // declarations: [TestComponent, LoadingTestComponent],
-      // providers: [LoadingHintService],
-      imports: [TestModule],
-    }).compileComponents();
-    service = TestBed.inject(LoadingHintService);
-    // component = TestBed.inject(TestComponent)
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        // declarations: [TestComponent, LoadingTestComponent],
+        // providers: [LoadingHintService],
+        imports: [TestModule],
+      }).compileComponents();
+      service = TestBed.inject(LoadingHintService);
+      // component = TestBed.inject(TestComponent)
+    })
+  );
   beforeEach(() => {
     componentFixture = TestBed.createComponent(TestComponent);
     componentInstance = componentFixture.componentInstance;
