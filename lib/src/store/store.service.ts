@@ -75,3 +75,15 @@ export function getReducerMap(types: Type<StoreBase>[]) {
     return pre;
   }, {});
 }
+export function serviceToStore(serviceInstance: any) {
+  const name = serviceInstance.name || (serviceInstance as any).__proto__.constructor.name;
+  const reducer = serviceInstance.createReducer();
+}
+
+export function newCreateReducer(instance) {
+  const type = instance.__proto__.constructor;
+  const storeConfig = CyiaStoreService.storeConfigMap.get(type);
+  const actionConfigList = CyiaStoreService.actionConfigMap.get(type);
+  const reducer = CyiaStoreService.createReducer(actionConfigList, storeConfig, instance.initState, instance);
+  return reducer;
+}

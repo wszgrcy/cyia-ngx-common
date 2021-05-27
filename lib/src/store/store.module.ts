@@ -1,6 +1,8 @@
-import { NgModule } from '@angular/core';
+import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CyiaStoreService } from './store.service';
+import { CyiaStoreService, newCreateReducer } from './store.service';
+import { InjectionToken } from '@angular/core';
+import { StoreModuleForRootOptions } from './store.types';
 
 @NgModule({
   declarations: [],
@@ -8,4 +10,22 @@ import { CyiaStoreService } from './store.service';
   exports: [],
   providers: [CyiaStoreService],
 })
-export class CyiaStoreModule {}
+export class CyiaStoreModule {
+  static forRoot(options: StoreModuleForRootOptions): ModuleWithProviders<any> {
+    return {
+      ngModule: CyiaStoreModule,
+      providers: [
+        {
+          provide: options.token,
+          useFactory: (...args) => {
+            return args.reduce((pre, service) => {
+              pre[service.name || service.__proto__.constructor.name] = newCreateReducer(service);
+              return pre;
+            }, {});
+          },
+          deps: [options.stores],
+        },
+      ],
+    };
+  }
+}

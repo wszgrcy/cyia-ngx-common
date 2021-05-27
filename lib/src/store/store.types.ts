@@ -1,4 +1,4 @@
-import { Type } from '@angular/core';
+import { InjectionToken, Type } from '@angular/core';
 
 export interface GenerateStoreConfig {
   name: string;
@@ -11,4 +11,10 @@ export interface GenerateActionConfig {
 export interface StoreBase<T = any> {
   readonly initState?: T;
   state: T;
+  readonly name?: string;
+}
+
+export interface StoreModuleForRootOptions {
+  token: InjectionToken<any>;
+  stores: any[];
 }
