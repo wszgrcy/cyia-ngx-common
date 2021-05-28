@@ -4,8 +4,15 @@ import { StoreModuleForRootOptions } from './store.types';
 import { Store } from '@ngrx/store';
 import { ROOT_TOKEN } from './store.token';
 import { StoreBase } from './store.base';
-
-@NgModule({})
+import { CommonModule } from '@angular/common';
+export function serviceToStoreFactory(...stores) {
+  const obj = {};
+  for (const store of stores) {
+    createReducer(store)(obj);
+  }
+  return obj;
+}
+@NgModule({ imports: [CommonModule], providers: [], exports: [], declarations: [] })
 export class CyiaStoreModule {
   constructor(store: Store, @Inject(ROOT_TOKEN) serviceList: typeof StoreBase[], injector: Injector) {
     serviceList.forEach((service) => {
@@ -24,11 +31,7 @@ export class CyiaStoreModule {
         },
         {
           provide: options.token,
-          useFactory: (...stores) => {
-            return stores.reduce((pre, service) => {
-              return createReducer(service)(pre);
-            }, {});
-          },
+          useFactory: serviceToStoreFactory,
           deps: [options.stores],
         },
       ],
