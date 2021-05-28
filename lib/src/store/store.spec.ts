@@ -1,53 +1,65 @@
-import { inject, Injectable, InjectionToken, NgModule } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
-import { ActionReducerMap, createAction, createReducer, on, props, Store, StoreModule } from '@ngrx/store';
-const ACTION = createAction('11', props<any>());
+import { Injectable, InjectionToken } from '@angular/core';
+import { TestBed, waitForAsync } from '@angular/core/testing';
+import { ActionReducerMap, StoreModule } from '@ngrx/store';
+import { filter } from 'rxjs/operators';
+import { NgrxAction, NgrxStore } from './decorator';
+import { StoreBase } from './store.base';
+import { CyiaStoreModule } from './store.module';
 @Injectable()
-export class StoreTestService {
-  name = 'test';
-  createReducer(stats, value) {
-    return createReducer(
-      123,
-      on(ACTION, (state, action) => {
-        console.log('执行?');
-        return 222;
-      })
-    );
+@NgrxStore()
+export class StoreTestService extends StoreBase<{
+  pending: boolean;
+  value: any;
+}> {
+  initState = { pending: false, value: null };
+  @NgrxAction()
+  testOne(value) {
+    return { pending: false, ...value };
+  }
+  @NgrxAction()
+  testPromise() {
+    setTimeout(() => {
+      this.testOne({ value: 2, pending: false });
+    }, 100);
+    return {
+      pending: false,
+    };
   }
 }
 export const REDUCER_TOKEN = new InjectionToken<ActionReducerMap<any>>('Registered Reducers');
 
-// @NgModule({
-//   imports: [StoreModule.forRoot(REDUCER_TOKEN)],
-// })
-// export class AppModule {}
 fdescribe('store', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [StoreModule.forRoot(REDUCER_TOKEN)],
-      providers: [
-        StoreTestService,
-        {
-          provide: REDUCER_TOKEN,
-          useFactory: (...args) => {
-            return args.reduce((pre, service) => {
-              console.log('服务', service);
-              pre[service.__proto__.constructor.name || service.name] = service.createReducer();
-              return pre;
-            }, {});
-          },
-          deps: [StoreTestService],
-        },
-      ],
-    });
-  });
-  it('运行', async (done) => {
-    const service = TestBed.inject(Store);
-
-    service.dispatch(ACTION(1));
-    service.select('StoreTestService').subscribe((value) => {
-      expect(value).toBe(222);
+  let service: StoreTestService;
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [
+          StoreModule.forRoot(REDUCER_TOKEN),
+          CyiaStoreModule.forRoot({ token: REDUCER_TOKEN, stores: [StoreTestService] }),
+        ],
+        providers: [],
+      });
+      service = TestBed.inject(StoreTestService);
+    })
+  );
+  fit('运行', async (done) => {
+    service.testOne({ value: 1, name: 324 });
+    service.state$.subscribe((value) => {
+      expect(value.value).toBe(1);
+      expect(service.snapshot.value).toBe(1);
       done();
     });
+  });
+  fit('运行promise', async (done) => {
+    service.testPromise();
+    service.state$
+      .pipe(
+        filter((result) => !result.pending),
+        filter((item) => item.value)
+      )
+      .subscribe((value) => {
+        expect(value.value).toBe(2);
+        done();
+      });
   });
 });
