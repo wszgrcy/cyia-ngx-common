@@ -12,6 +12,7 @@ import {
 import { GenerateStoreConfig, GenerateActionConfig } from './store.types';
 import { generateActionName } from './store.helper';
 import { StoreBase } from './store.base';
+import { ɵisPromise, ɵisObservable } from '@angular/core';
 export class CyiaStoreService {
   static storeConfigMap = new Map<Type<StoreBase>, GenerateStoreConfig>();
   static actionConfigMap = new Map<Type<StoreBase>, GenerateActionConfig[]>();
@@ -30,7 +31,11 @@ export function createReducer(instance: StoreBase) {
   if (!storeConfig) {
     throw new Error(`${type.name}未使用[NgrxStore]装饰器`);
   }
-  const actionConfigList = CyiaStoreService.actionConfigMap.get(type) || [];
+  const actionConfigList: GenerateActionConfig[] = [];
+  while (type) {
+    actionConfigList.push(...(CyiaStoreService.actionConfigMap.get(type) || []));
+    type = Object.getPrototypeOf(type);
+  }
   const memberHookList: { name: string; action: ActionCreator<string, (props: any) => any> }[] = [];
   const onList: ReducerTypes<any, any>[] = actionConfigList.map((item) => {
     const ACTION_NAME = generateActionName(storeConfig.name, item.name);
@@ -42,8 +47,20 @@ export function createReducer(instance: StoreBase) {
     return on(action, (state, action) => {
       instance.state = state;
       const result = item.on.bind(instance)(action.value);
-      instance.state = result;
-      return result;
+      if (ɵisPromise(result)) {
+        result.then((res) => {
+          instance.promiseReturn(res);
+        });
+      } else if (ɵisObservable(result)) {
+        result.subscribe((res) => {
+          instance.observableReturn(res);
+        });
+      } else {
+        instance.state = result;
+        return result;
+      }
+      instance.pending = true;
+      return instance.state;
     });
   });
   instance.storeInit = (store) => {

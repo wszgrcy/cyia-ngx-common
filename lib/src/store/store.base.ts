@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { NgrxAction } from './decorator';
 @Injectable()
 export abstract class StoreBase<T = any> {
   constructor() {}
@@ -8,6 +9,7 @@ export abstract class StoreBase<T = any> {
   state: T;
   state$: Observable<T>;
   readonly name?: string;
+  pending: boolean = false;
   get snapshot() {
     return this.state;
   }
@@ -18,4 +20,14 @@ export abstract class StoreBase<T = any> {
     return this.state$.pipe;
   }
   storeInit(store: Store<any>) {}
+  @NgrxAction()
+  promiseReturn(value: T): T {
+    this.pending = false;
+    return value;
+  }
+  @NgrxAction()
+  observableReturn(value: T): T {
+    this.pending = false;
+    return value;
+  }
 }

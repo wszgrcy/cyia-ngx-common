@@ -1,34 +1,33 @@
 import { Injectable, InjectionToken } from '@angular/core';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { ActionReducerMap, StoreModule } from '@ngrx/store';
+import { of } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { NgrxAction, NgrxStore } from './decorator';
 import { StoreBase } from './store.base';
 import { CyiaStoreModule } from './store.module';
-@Injectable()
 @NgrxStore()
+@Injectable()
 export class StoreTestService extends StoreBase<{
-  pending: boolean;
   value: any;
 }> {
-  initState = { pending: false, value: null };
+  initState = { value: null };
   @NgrxAction()
   testOne(value) {
-    return { pending: false, ...value };
+    return { ...value };
   }
   @NgrxAction()
   testPromise() {
-    setTimeout(() => {
-      this.testOne({ value: 2, pending: false });
-    }, 100);
-    return {
-      pending: false,
-    };
+    return Promise.resolve({ value: 1234 });
+  }
+  @NgrxAction()
+  testObservable() {
+    return of({ value: 100 });
   }
 }
 export const REDUCER_TOKEN = new InjectionToken<ActionReducerMap<any>>('Registered Reducers');
 
-fdescribe('store', () => {
+describe('store', () => {
   let service: StoreTestService;
   beforeEach(
     waitForAsync(() => {
@@ -42,7 +41,7 @@ fdescribe('store', () => {
       service = TestBed.inject(StoreTestService);
     })
   );
-  fit('运行', async (done) => {
+  it('运行', async (done) => {
     service.testOne({ value: 1, name: 324 });
     service.state$.subscribe((value) => {
       expect(value.value).toBe(1);
@@ -54,11 +53,24 @@ fdescribe('store', () => {
     service.testPromise();
     service.state$
       .pipe(
-        filter((result) => !result.pending),
+        filter((result) => !service.pending),
         filter((item) => item.value)
       )
-      .subscribe((value) => {
-        expect(value.value).toBe(2);
+      .subscribe((res) => {
+        expect(res.value).toBe(1234);
+        done();
+      });
+  });
+  fit('运行Observable', async (done) => {
+    service.testObservable();
+    service.state$
+      .pipe(
+        filter((result) => !service.pending),
+        filter((item) => item.value)
+      )
+      .subscribe((result) => {
+        console.log(result);
+        expect(result.value).toBe(100);
         done();
       });
   });
