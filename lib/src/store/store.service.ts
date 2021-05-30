@@ -63,13 +63,17 @@ export function createReducer(instance: StoreBase) {
       return instance.state;
     });
   });
-  instance.storeInit = (store) => {
+  instance.storeInit = (store, featureName) => {
     memberHookList.forEach((item) => {
       instance[item.name] = (arg: any) => {
         store.dispatch(item.action({ value: arg }));
       };
     });
-    instance.state$ = store.select(storeConfig.name);
+    if (featureName) {
+      instance.state$ = store.select(featureName, storeConfig.name);
+    } else {
+      instance.state$ = store.select(storeConfig.name);
+    }
   };
   return (map: ActionReducerMap<any, any>) => {
     map[storeConfig.name] = rxCreateReducer(instance.initState, ...onList);

@@ -19,7 +19,7 @@ export abstract class StoreBase<T = any> {
   get pipe() {
     return this.state$.pipe;
   }
-  storeInit(store: Store<any>) {}
+  storeInit(store: Store<any>, featureName?: string) {}
   @NgrxAction()
   promiseReturn(value: T): T {
     this.pending = false;

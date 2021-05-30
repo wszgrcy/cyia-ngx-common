@@ -1,10 +1,9 @@
 import { Inject, Injector, ModuleWithProviders, NgModule } from '@angular/core';
 import { createReducer } from './store.service';
-import { StoreModuleForRootOptions } from './store.types';
+import { StoreModuleForFeatureOptions, StoreModuleForRootOptions } from './store.types';
 import { Store } from '@ngrx/store';
-import { ROOT_TOKEN } from './store.token';
+import { FEATURE_TOKEN, ROOT_TOKEN } from './store.token';
 import { StoreBase } from './store.base';
-import { CommonModule } from '@angular/common';
 export function serviceToStoreFactory(...stores) {
   const obj = {};
   for (const store of stores) {
@@ -12,7 +11,22 @@ export function serviceToStoreFactory(...stores) {
   }
   return obj;
 }
-@NgModule({ imports: [CommonModule], providers: [], exports: [], declarations: [] })
+@NgModule({ imports: [], providers: [], exports: [], declarations: [] })
+export class CyiaStoreFeatureModule {
+  constructor(
+    store: Store,
+    injector: Injector,
+    @Inject(FEATURE_TOKEN) featureConfig: Omit<StoreModuleForFeatureOptions, 'token'>[]
+  ) {
+    featureConfig.forEach((item) => {
+      item.stores.forEach((service) => {
+        const instance = injector.get(service);
+        instance.storeInit(store, item.name);
+      });
+    });
+  }
+}
+@NgModule({ imports: [], providers: [], exports: [], declarations: [] })
 export class CyiaStoreModule {
   constructor(store: Store, @Inject(ROOT_TOKEN) serviceList: typeof StoreBase[], injector: Injector) {
     serviceList.forEach((service) => {
@@ -28,6 +42,24 @@ export class CyiaStoreModule {
         {
           provide: ROOT_TOKEN,
           useValue: options.stores,
+        },
+        {
+          provide: options.token,
+          useFactory: serviceToStoreFactory,
+          deps: [options.stores],
+        },
+      ],
+    };
+  }
+  static forFeature(options: StoreModuleForFeatureOptions) {
+    return {
+      ngModule: CyiaStoreFeatureModule,
+      providers: [
+        ...(options.stores as any),
+        {
+          provide: FEATURE_TOKEN,
+          useValue: { stores: options.stores, name: options.name },
+          multi: true,
         },
         {
           provide: options.token,

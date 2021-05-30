@@ -16,3 +16,8 @@ export interface StoreModuleForRootOptions {
   token: InjectionToken<any>;
   stores: (any extends Type<StoreBase> ? Type<StoreBase> : never)[];
 }
+export interface StoreModuleForFeatureOptions {
+  token: InjectionToken<any>;
+  stores: (any extends Type<StoreBase> ? Type<StoreBase> : never)[];
+  name: string;
+}
