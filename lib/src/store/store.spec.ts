@@ -10,8 +10,9 @@ import { CyiaStoreFeatureModule, CyiaStoreModule } from './store.module';
 @Injectable()
 export class StoreTestService extends StoreBase<{
   value: any;
+  state?: any;
 }> {
-  initState = { value: null };
+  initState = { value: 'init' };
   @NgrxAction()
   testOne(value) {
     return { ...value };
@@ -23,6 +24,12 @@ export class StoreTestService extends StoreBase<{
   @NgrxAction()
   testObservable() {
     return of({ value: 100 });
+  }
+  @NgrxAction()
+  testState() {
+    console.log('执行初始值', this.state);
+
+    return { state: this.state.value === 'init' };
   }
 }
 export const REDUCER_TOKEN = new InjectionToken<ActionReducerMap<any>>('Registered Reducers');
@@ -46,6 +53,15 @@ describe('store-root', () => {
     service.state$.subscribe((value) => {
       expect(value.value).toBe(1);
       expect(service.snapshot.value).toBe(1);
+      done();
+    });
+  });
+  it('初始化值', async (done) => {
+    service.testState();
+    service.subscribe((value) => {
+      console.log('订阅', value);
+
+      expect(value.state).toBe(true);
       done();
     });
   });

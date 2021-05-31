@@ -14,10 +14,10 @@ export abstract class StoreBase<T = any> {
     return this.state;
   }
   get subscribe() {
-    return this.state$.subscribe;
+    return this.state$.subscribe.bind(this.state$) as StoreBase<T>['state$']['subscribe'];
   }
   get pipe() {
-    return this.state$.pipe;
+    return this.state$.pipe.bind(this.state$) as StoreBase<T>['state$']['pipe'];
   }
   storeInit(store: Store<any>, featureName?: string) {}
   @NgrxAction()

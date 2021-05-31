@@ -46,7 +46,7 @@ export class CyiaStoreModule {
         {
           provide: options.token,
           useFactory: serviceToStoreFactory,
-          deps: [options.stores],
+          deps: options.stores,
         },
       ],
     };
@@ -64,7 +64,7 @@ export class CyiaStoreModule {
         {
           provide: options.token,
           useFactory: serviceToStoreFactory,
-          deps: [options.stores],
+          deps: options.stores,
         },
       ],
     };
