@@ -246,7 +246,6 @@ class TestComponent {
   imports: [CyiaLoadingHintModule, CommonModule],
   // providers: [LoadingHintService],
   declarations: [TestComponent, LoadingTestComponent],
-  entryComponents: [LoadingTestComponent],
 })
 class TestModule {
   // constructor() {
