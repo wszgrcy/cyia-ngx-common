@@ -67,7 +67,7 @@
     "karma-coverage-istanbul-reporter": "3.0.3",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
-    "markdown-it": "^11.0.0",
+    "markdown-it": "^12.3.2",
     "mockjs": "1.1.0",
     "monaco-editor-webpack-plugin": "7.0.1",
     "ng-packagr": "13.1.2",
