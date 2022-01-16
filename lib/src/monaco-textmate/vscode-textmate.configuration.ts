@@ -46,8 +46,8 @@ function convertToRegexpProperty(rawConfiguration: string): monaco.languages.Lan
       if (rule.beforeText) {
         rule.beforeText = new RegExp(rule.beforeText);
       }
-      if (rule.oneLineAboveText) {
-        rule.oneLineAboveText = new RegExp(rule.oneLineAboveText);
+      if (rule.previousLineText) {
+        rule.previousLineText = new RegExp(rule.previousLineText);
       }
     });
   }

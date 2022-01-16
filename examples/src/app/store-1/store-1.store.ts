@@ -1,6 +1,8 @@
+import { Injectable } from '@angular/core';
 import { StoreBase, NgrxStore, NgrxAction } from 'cyia-ngx-common/store';
 @NgrxStore()
-export class Store1Store implements StoreBase {
+@Injectable()
+export class Store1Store extends StoreBase {
   readonly initState: { sum: number } = {
     sum: 0,
   };

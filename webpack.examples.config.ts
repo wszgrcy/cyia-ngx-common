@@ -1,14 +1,13 @@
 import { BootstrapAssetsPlugin } from 'webpack-bootstrap-assets-plugin';
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
-
-export default (config, options, targetOptions) => {
-  config.output.jsonpFunction = 'examplesJsonp';
+import * as webpack from 'webpack';
+export default (config: webpack.Configuration, options, targetOptions) => {
   config.plugins.push(new MonacoWebpackPlugin({ languages: ['typescript', 'javascript'] }));
 
   const loaders: any[] = config.module.rules.filter(
     (rule) =>
-      rule.use &&
-      rule.use.find(
+      (rule as any).use &&
+      (rule as any).use.find(
         (it) =>
           it.loader &&
           (it.loader.includes('@angular-devkit\\build-optimizer') ||
@@ -24,8 +23,8 @@ export default (config, options, targetOptions) => {
   });
   let plugin = new BootstrapAssetsPlugin();
   config.plugins.push(plugin);
-  plugin.hooks.originAssets.tap('remove-polyfill', (list: any[]) => {
-    return list.filter((item) => !(item.name || '').includes('polyfills'));
+  plugin.hooks.removeChunk.tap('remove-polyfill', (item) => {
+    return item.name.includes('polyfills');
   });
   return config;
 };
