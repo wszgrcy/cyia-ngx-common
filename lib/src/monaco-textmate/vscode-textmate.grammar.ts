@@ -89,6 +89,11 @@ export class VscodeTextmateGrammar extends RequestBase {
         const { tokens, ruleStack: endState } = tokenizeLineResult2;
         return { tokens, endState };
       },
+      tokenize(line: string, state: monaco.languages.IState): monaco.languages.ILineTokens {
+        const tokenizeLineResult = grammar.tokenizeLine(line, state as StackElement);
+        const { tokens, ruleStack: endState } = tokenizeLineResult;
+        return { tokens: tokens as any, endState };
+      },
     };
   }
 
