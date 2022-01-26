@@ -34,11 +34,11 @@ export class CyiaStoreModule {
       instance.storeInit(store);
     });
   }
-  static forRoot(options: StoreModuleForRootOptions): ModuleWithProviders<any> {
+  static forRoot(options: StoreModuleForRootOptions): ModuleWithProviders<CyiaStoreModule> {
     return {
       ngModule: CyiaStoreModule,
       providers: [
-        ...(options.stores as any),
+        ...options.stores,
         {
           provide: ROOT_TOKEN,
           useValue: options.stores,
@@ -51,11 +51,11 @@ export class CyiaStoreModule {
       ],
     };
   }
-  static forFeature(options: StoreModuleForFeatureOptions) {
+  static forFeature(options: StoreModuleForFeatureOptions): ModuleWithProviders<CyiaStoreModule> {
     return {
       ngModule: CyiaStoreFeatureModule,
       providers: [
-        ...(options.stores as any),
+        ...options.stores,
         {
           provide: FEATURE_TOKEN,
           useValue: { stores: options.stores, name: options.name },
