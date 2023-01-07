@@ -33,7 +33,7 @@
     "@angular/router": "13.1.1",
     "@ngrx/store": "13.0.2",
     "core-js": "3.6.5",
-    "json5": "^2.2.0",
+    "json5": "^2.2.2",
     "monaco-editor": "0.31.1",
     "rxjs": "6.6.2",
     "tslib": "^2.0.0",
