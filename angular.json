@@ -17,7 +17,7 @@
             "outputPath": "dist/cyia-ngx-common-demo",
             "index": "demo/src/index.html",
             "main": "demo/src/main.ts",
-            "polyfills": "demo/src/polyfills.ts",
+            "polyfills": ["zone.js"],
             "tsConfig": "demo/src/tsconfig.app.json",
             "assets": [
               "demo/src/favicon.ico",
@@ -59,11 +59,11 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "cyia-ngx-common:build"
+            "buildTarget": "cyia-ngx-common:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "cyia-ngx-common:build:production",
+              "buildTarget": "cyia-ngx-common:build:production",
               "disableHostCheck": true
             }
           }
@@ -71,14 +71,14 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "cyia-ngx-common:build"
+            "buildTarget": "cyia-ngx-common:build"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "demo/src/test.ts",
-            "polyfills": "demo/src/polyfills.ts",
+            "polyfills": ["zone.js"],
             "tsConfig": "demo/src/tsconfig.spec.json",
             "karmaConfig": "demo/src/karma.conf.js",
             "styles": ["demo/src/styles.css"],
@@ -178,7 +178,7 @@
             "outputPath": "dist/examples",
             "index": "examples/src/index.html",
             "main": "examples/src/main.ts",
-            "polyfills": "examples/src/polyfills.ts",
+            "polyfills": ["zone.js"],
             "tsConfig": "examples/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -235,28 +235,28 @@
         "serve": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "examples:build"
+            "buildTarget": "examples:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "examples:build:production"
+              "buildTarget": "examples:build:production"
             },
             "development": {
-              "browserTarget": "examples:build:development"
+              "buildTarget": "examples:build:development"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "examples:build"
+            "buildTarget": "examples:build"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "examples/src/test.ts",
-            "polyfills": "examples/src/polyfills.ts",
+            "polyfills": ["zone.js"],
             "tsConfig": "examples/tsconfig.spec.json",
             "karmaConfig": "examples/karma.conf.js",
             "assets": ["examples/src/favicon.ico", "examples/src/assets"],
@@ -286,7 +286,6 @@
       }
     }
   },
-  "defaultProject": "cyia-ngx-common",
   "cli": {
     "analytics": false
   }
