@@ -1,15 +1,33 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, Compiler, Injector, ComponentFactoryResolver, DoBootstrap, ApplicationRef } from '@angular/core';
+import { BrowserModule, EVENT_MANAGER_PLUGINS } from '@angular/platform-browser';
+import {
+  NgModule,
+  Compiler,
+  Injector,
+  DoBootstrap,
+  ApplicationRef,
+  createComponent,
+  EnvironmentInjector,
+} from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { environment } from '../environments/environment';
 import { EXAMPLE_GROUP } from './example-group';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { DOCUMENT } from '@angular/common';
+import { ModifierEventsPlugin } from 'cyia-ngx-common/event';
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule],
-  providers: [],
+  providers: [
+    ModifierEventsPlugin,
+    {
+      provide: EVENT_MANAGER_PLUGINS,
+      useClass: ModifierEventsPlugin,
+      multi: true,
+      deps: [DOCUMENT],
+    },
+  ],
   bootstrap: environment.production ? [] : [AppComponent],
 })
 export class AppModule implements DoBootstrap {
@@ -19,10 +37,15 @@ export class AppModule implements DoBootstrap {
     if (!item) {
       throw new Error('选择器有误:' + selector);
     }
-    const moduleFactory = this.compiler.compileModuleSync(item.module);
-    const moduleRef = moduleFactory.create(this.injector);
-    const componentFac = moduleRef.componentFactoryResolver.resolveComponentFactory(item.component);
-    const ref = componentFac.create(moduleRef.injector);
+    let ref;
+    if (!item.module) {
+      ref = createComponent(item.component, { environmentInjector: this.injector.get(EnvironmentInjector) });
+    } else {
+      const moduleFactory = this.compiler.compileModuleSync(item.module);
+      const moduleRef = moduleFactory.create(this.injector);
+      const componentFac = moduleRef.componentFactoryResolver.resolveComponentFactory(item.component);
+      ref = componentFac.create(moduleRef.injector);
+    }
     this.applicationRef.attachView(ref.hostView);
     element.appendChild(ref.location.nativeElement);
     ref.changeDetectorRef.detectChanges();

@@ -1,0 +1,6 @@
+<p>请打开Console查看</p>
+<div (click)="clicked('divClicked')">
+  <button (click.stop.once)="clicked('btnClicked')">点击</button>
+</div>
+<app-a (output2.once)="output($event)"></app-a>
+<!-- <app-a (output2.once)="output($any($event))"></app-a> -->
