@@ -72,16 +72,17 @@ export class LoadingHintService {
       if (LoadingHintService.progressMap.has(key)) {
         progressSubject = LoadingHintService.progressMap.get(key);
       }
-      bothStatusSubject = (progressSubject
-        ? merge(
-            uninstallSubject.pipe(
-              skipWhile((res) => !res),
-              switchMap(() => timer(config.delay)),
-              tap(() => LoadingHintService.uninstallMap.delete(key))
-            ),
-            progressSubject.pipe()
-          )
-        : uninstallSubject.pipe(skipWhile((res) => !res))
+      bothStatusSubject = (
+        progressSubject
+          ? merge(
+              uninstallSubject.pipe(
+                skipWhile((res) => !res),
+                switchMap(() => timer(config.delay)),
+                tap(() => LoadingHintService.uninstallMap.delete(key))
+              ),
+              progressSubject.pipe()
+            )
+          : uninstallSubject.pipe(skipWhile((res) => !res))
       ).pipe(
         switchMap(() => of(result)),
         tap(() => LoadingHintService.uninstallMap.delete(key))
@@ -262,6 +263,6 @@ export class LoadingHintService {
   private manualProgressComponent(key: Symbol) {
     const subject = LoadingHintService.progressMap.get(key);
 
-    subject.next();
+    subject.next(undefined);
   }
 }

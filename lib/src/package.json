@@ -12,10 +12,9 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@angular/common": ">=11.0.0",
-    "@angular/core": ">=11.0.0",
+    "@angular/common": ">=17.0.0",
+    "@angular/core": ">=17.0.0",
     "rxjs": ">=6.6.2",
-    "@ngrx/store": ">=13.0.2",
     "json5": "^2.2.0",
     "monaco-editor": "~0.31.1",
     "vscode-oniguruma": "~1.6.1",

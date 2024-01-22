@@ -1,9 +1,9 @@
 import { LoadingHintService } from './loading-hint.service';
-import { ɵisPromise, ElementRef, ɵisObservable, Type, ViewContainerRef, InjectionToken } from '@angular/core';
-import { tap, map, switchMap } from 'rxjs/operators';
+import { ɵisPromise, ɵisSubscribable, Type, ViewContainerRef, InjectionToken } from '@angular/core';
+import { switchMap } from 'rxjs/operators';
 import { CyiaLoadHintConfig, CyiaLoadHintOption, LoadingHintViewContainer, InstallConfig } from './type';
 import { DEFAULT_INSTALL_CONFIG } from './const';
-import { of } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 /**
  * @docs-decorator
  * @description 载入提示装饰器
@@ -22,9 +22,9 @@ export function LoadingHint<T = any>(
   arg1: CyiaLoadHintOption | ((type: T) => ViewContainerRef) | 'root',
   arg2?: Type<any> | CyiaLoadHintConfig | InjectionToken<CyiaLoadHintConfig>
 ) {
-  return function(target, key: string, property: PropertyDescriptor) {
+  return function (target, key: string, property: PropertyDescriptor) {
     const fn: Function = property.value;
-    property.value = function() {
+    property.value = function () {
       const LOADING_HINT_KEY = Symbol(Date.now());
       const installConfig = getInstallConfig.call(this, arg1, arg2);
       LoadingHintService.install(LOADING_HINT_KEY, installConfig);
@@ -32,10 +32,10 @@ export function LoadingHint<T = any>(
       const res = fn.apply(this, arguments);
       if (ɵisPromise(res)) {
         return res.then((value) => {
-          return LoadingHintService.uninstall(LOADING_HINT_KEY, installConfig.container, value).toPromise();
+          return firstValueFrom(LoadingHintService.uninstall(LOADING_HINT_KEY, installConfig.container, value));
         });
-      } else if (ɵisObservable(res)) {
-        return res.pipe(
+      } else if (ɵisSubscribable(res)) {
+        return (res as Observable<any>).pipe(
           switchMap((value) => LoadingHintService.uninstall(LOADING_HINT_KEY, installConfig.container, value))
         );
       }
@@ -74,6 +74,6 @@ function getInstallConfig<T>(
     ...otherParam,
     container,
     component,
-    token: arg2 instanceof InjectionToken ? arg2 : undefined
+    token: arg2 instanceof InjectionToken ? arg2 : undefined,
   };
 }
