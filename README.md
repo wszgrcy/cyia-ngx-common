@@ -1,8 +1,9 @@
 # 使用方法
 
 ## 事件修饰器
+
 ```ts
-import { ModifierEventsPlugin } from 'cyia-ngx-common/event';
+import { ModifierEventsPlugin } from '@cyia/ngx-common/event';
 @NgModule({
  //...
   providers: [
@@ -17,30 +18,43 @@ import { ModifierEventsPlugin } from 'cyia-ngx-common/event';
  //...
 })
 ```
-- 内部output使用`once`修饰符
+
+- 内部 output 使用`once`修饰符
+
 ```ts
-import { injectEventModifier } from 'cyia-ngx-common/event';
+import { injectEventModifier } from '@cyia/ngx-common/event';
 
   constructor() {
     // 自动处理
     injectEventModifier(this);
   }
 ```
+
 # 更新日志
+
 ## 10.1.0
-- 增加`monaco-textmate`模块,用于在monaco中使用vscode相关主题及token分割方法
+
+- 增加`monaco-textmate`模块,用于在 monaco 中使用 vscode 相关主题及 token 分割方法
+
 ## 10.0.1
+
 - 暴露载入提示组件相关常量
+
 ## 10.0.0
-- 升级至ng10版本
+
+- 升级至 ng10 版本
 - 增加动态懒加载组件指令及对动态懒加载组件的自定义表单控件支持
+
 ## 9.0.0
-- 升级至ng9版本
-> `ComponentFactory.create`不能自定义选择器,否则无法销毁,原因未知(Angular Material Design 中的cdk也是外面包了一层)
-- 为了更明显的更新依赖包,主版本号和Angular的版本号一致
+
+- 升级至 ng9 版本
+  > `ComponentFactory.create`不能自定义选择器,否则无法销毁,原因未知(Angular Material Design 中的 cdk 也是外面包了一层)
+- 为了更明显的更新依赖包,主版本号和 Angular 的版本号一致
 
 ## 2.2.1
+
 - 增加了自动化生成使用文档和代码注释(简易,正在制作)
+
 ## 2.2.0
 
 - 废弃`CyiaHttpModule`使用,改为`CyiaRepositoryModule`
