@@ -15,7 +15,8 @@
     "build:lib": "ng build lib",
     "postbuild:lib": "cpx README.md ./dist/cyia-ngx-common",
     "update": "ng update @angular/core@17 @angular/cdk@17 @angular-builders/custom-webpack --force --allow-dirty",
-    "version": "ng version"
+    "version": "ng version",
+    "release-publish": "npm run build:lib && npm publish ./dist/cyia-ngx-common"
   },
   "private": true,
   "dependencies": {

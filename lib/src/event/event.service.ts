@@ -1,24 +1,26 @@
-import { ElementRef, Inject, Injectable, inject, ɵComponentDef } from '@angular/core';
+import { ElementRef, Inject, Injectable, InjectionToken, inject, reflectComponentType } from '@angular/core';
 import { EventManagerPlugin, ɵKeyEventsPlugin } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
-const PRIVATE_EVENT_LIST = Symbol('PRIVATE_EVENT_LIST');
+type CustomEventModifier = Record<string, (input: any, modifiers: string[]) => any>;
+export const CustomEventModifierToken = new InjectionToken<CustomEventModifier>('CustomEventModifier');
+const PRIVATE_OUTPUT_OBJ = Symbol('PRIVATE_OUTPUT_OBJ');
 export function injectEventModifier(instance: any) {
-  let dir = Object.getPrototypeOf(instance).constructor['ɵcmp'] as ɵComponentDef<any>;
+  let define = reflectComponentType(instance.constructor)!;
   let el = inject(ElementRef).nativeElement as HTMLElement;
-  let list = Object.keys(dir.outputs);
+  let list = define.outputs;
   if (!list.length) {
     return;
   }
-  (el as any)[PRIVATE_EVENT_LIST] = list;
-  for (const eventName in dir.outputs) {
-    const propertyName = dir.outputs[eventName];
-    instance[propertyName].next = instance[propertyName].emit = function (value: any) {
-      let event = new CustomEvent(eventName, { detail: value });
+  (el as any)[PRIVATE_OUTPUT_OBJ] = new Set(list.map((item) => item.templateName));
+  for (const item of list) {
+    const propertyName = item.propName;
+    instance[propertyName].emit = function (value: any) {
+      let event = new CustomEvent(item.templateName, { detail: value });
       el.dispatchEvent(event);
     };
   }
 }
-const systemModifiers = ['control', 'shift', 'alt', 'meta'];
+const systemModifiers = ['ctrl', 'shift', 'alt', 'meta'];
 
 type KeyedEvent = KeyboardEvent | MouseEvent | TouchEvent;
 
@@ -39,7 +41,8 @@ const RemoveModifiers = ['stop', 'prevent', 'self', 'left', 'middle', 'right', '
 
 const withModifiers = <T extends (event: Event) => any>(
   fn: T & { _withMods?: { [key: string]: T } },
-  modifiers: string[]
+  modifiers: string[],
+  customEventModifier: CustomEventModifier
 ) => {
   const cache = fn._withMods || (fn._withMods = {});
   const cacheKey = modifiers.join('.');
@@ -47,7 +50,7 @@ const withModifiers = <T extends (event: Event) => any>(
     cache[cacheKey] ||
     (cache[cacheKey] = ((event, ...args) => {
       for (let i = 0; i < modifiers.length; i++) {
-        const guard = modifierGuards[modifiers[i]];
+        const guard = customEventModifier?.[modifiers[i]] ?? modifierGuards[modifiers[i]];
         if (guard && guard(event, modifiers)) return;
       }
       return fn(event, ...args);
@@ -64,7 +67,8 @@ function getModifierStatusAndRemove(list: string[], item: string) {
 }
 
 @Injectable()
-export class ModifierEventsPlugin extends EventManagerPlugin {
+export class EventModifiersPlugin extends EventManagerPlugin {
+  #customEventModifiers = inject(CustomEventModifierToken, { optional: true }) ?? {};
   constructor(@Inject(DOCUMENT) doc: any) {
     super(doc);
   }
@@ -74,9 +78,9 @@ export class ModifierEventsPlugin extends EventManagerPlugin {
   addEventListener(element: HTMLElement, eventName: string, handler: (event: Event) => any): Function {
     let list = eventName.split('.');
     let name = list.shift()!;
-    let newHandler = withModifiers(handler, list.slice());
+    let newHandler = withModifiers(handler, list.slice(), this.#customEventModifiers);
     list = list.filter((item) => !RemoveModifiers.includes(item));
-    if (((element as any)[PRIVATE_EVENT_LIST] as string[])?.includes(name)) {
+    if (((element as any)[PRIVATE_OUTPUT_OBJ] as Set<string>)?.has(name)) {
       let fn = (event: any) => newHandler(event.detail);
       element.addEventListener(name, fn, {
         once: getModifierStatusAndRemove(list, 'once'),

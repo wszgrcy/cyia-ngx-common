@@ -1,4 +1,4 @@
-import { mergePath, getDir, extname } from 'cyia-ngx-common/util';
+import { mergePath, getDir, extname } from '@cyia/ngx-common/util';
 import { HttpClient } from '@angular/common/http';
 import { RequestBase } from './request.base';
 import { IRawTheme, IRawThemeSetting } from 'vscode-textmate';

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
-import { LoadingHint } from 'cyia-ngx-common/loading-hint';
+import { LoadingHint } from '@cyia/ngx-common/loading-hint';
 import { LoadingComponent } from './loading/loading.component';
 
 @Component({

@@ -4,7 +4,7 @@ import {
   ClassDataSourceOptions,
   ClassDataSourceOptionsPrivate,
 } from './type/decorator.options';
-import { throwIf } from 'cyia-ngx-common/util';
+import { throwIf } from '@cyia/ngx-common/util';
 import { switchMap, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 /**实体配置仓库,保存装饰器相关配置 */

@@ -1,7 +1,7 @@
 import { RequestBase } from './request.base';
 import { HttpClient } from '@angular/common/http';
 import { Monaco, TextmateGrammarMap } from './vscode.define';
-import { extname } from 'cyia-ngx-common/util';
+import { extname } from '@cyia/ngx-common/util';
 import { parseRawGrammar, IGrammar, StackElement, IRawGrammar } from 'vscode-textmate';
 import * as monaco from 'monaco-editor';
 import { INITIAL, Registry } from 'vscode-textmate';

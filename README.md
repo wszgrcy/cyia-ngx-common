@@ -1,7 +1,31 @@
 # 使用方法
 
-- 无
+## 事件修饰器
+```ts
+import { ModifierEventsPlugin } from 'cyia-ngx-common/event';
+@NgModule({
+ //...
+  providers: [
+    ModifierEventsPlugin,
+    {
+      provide: EVENT_MANAGER_PLUGINS,
+      useClass: ModifierEventsPlugin,
+      multi: true,
+      deps: [DOCUMENT],
+    },
+  ],
+ //...
+})
+```
+- 内部output使用`once`修饰符
+```ts
+import { injectEventModifier } from 'cyia-ngx-common/event';
 
+  constructor() {
+    // 自动处理
+    injectEventModifier(this);
+  }
+```
 # 更新日志
 ## 10.1.0
 - 增加`monaco-textmate`模块,用于在monaco中使用vscode相关主题及token分割方法

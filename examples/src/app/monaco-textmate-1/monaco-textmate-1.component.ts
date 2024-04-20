@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import * as monaco from 'monaco-editor';
-import { Monaco, CyiaMonacoTextmateService } from 'cyia-ngx-common/monaco-textmate';
+import { Monaco, CyiaMonacoTextmateService } from '@cyia/ngx-common/monaco-textmate';
 
 @Component({
   selector: 'app-monaco-textmate-1',

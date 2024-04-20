@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Repository1Component } from './repository-1.component';
-import { CyiaRepositoryModule } from 'cyia-ngx-common/repository';
+import { CyiaRepositoryModule } from '@cyia/ngx-common/repository';
 
 @NgModule({
   imports: [CommonModule, CyiaRepositoryModule],

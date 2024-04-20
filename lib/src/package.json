@@ -1,7 +1,12 @@
 {
-  "name": "cyia-ngx-common",
-  "version": "13.0.3",
+  "name": "@cyia/ngx-common",
+  "version": "17.0.1",
   "description": "cyia公共模块",
+  "keywords": [
+    "angular",
+    "common",
+    "event modifier"
+  ],
   "author": {
     "name": "cyia",
     "email": "wszgrcy@gmail.com"
@@ -14,11 +19,11 @@
   "peerDependencies": {
     "@angular/common": ">=17.0.0",
     "@angular/core": ">=17.0.0",
-    "rxjs": ">=6.6.2",
-    "json5": "^2.2.0",
-    "monaco-editor": "~0.31.1",
-    "vscode-oniguruma": "~1.6.1",
-    "vscode-textmate": "~6.0.0"
+    "rxjs": "^7.8.0"
   },
-  "optionalDependencies": {}
+  "optionalDependencies": {},
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  }
 }

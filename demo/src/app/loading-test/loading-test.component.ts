@@ -1,5 +1,5 @@
 import { Component, OnInit, Injectable, ViewChild, ViewContainerRef } from '@angular/core';
-import { LoadingHint, CyiaLoadingHintUninstall } from 'cyia-ngx-common/loading-hint';
+import { LoadingHint, CyiaLoadingHintUninstall } from '@cyia/ngx-common/loading-hint';
 import { LoadComponent } from '../load/load.component';
 import { LOAD_HINT_TOKEN } from '../token';
 import { timer } from 'rxjs';
@@ -7,7 +7,7 @@ import { timer } from 'rxjs';
 @Component({
   selector: 'app-loading-test',
   templateUrl: './loading-test.component.html',
-  styleUrls: ['./loading-test.component.css']
+  styleUrls: ['./loading-test.component.css'],
 })
 export class LoadingTestComponent implements OnInit {
   @ViewChild('loadp', { read: ViewContainerRef, static: true }) loadPromiseRef: ViewContainerRef;
@@ -42,7 +42,7 @@ export class LoadingTestComponent implements OnInit {
   @LoadingHint((type: LoadingTestComponent) => type.loadDurRef, {
     duration: 5000,
     component: LoadComponent,
-    uninstallMod: CyiaLoadingHintUninstall.duration
+    uninstallMod: CyiaLoadingHintUninstall.duration,
   })
   loadDuration() {
     console.log('持续一定时间');
@@ -55,7 +55,7 @@ export class LoadingTestComponent implements OnInit {
   @LoadingHint((type: LoadingTestComponent) => type.loadCompRef, {
     component: LoadComponent,
     uninstallMod: CyiaLoadingHintUninstall.component,
-    blockReturn: true
+    blockReturn: true,
   })
   loadComp() {
     return new Promise((res) => {
@@ -78,7 +78,7 @@ export class LoadingTestComponent implements OnInit {
     });
   }
   loadCompDefaultE() {
-    console.log('点击')
+    console.log('点击');
     this.loadCompDefault().then((item: any) => {
       console.log(Date.now() - item);
     });

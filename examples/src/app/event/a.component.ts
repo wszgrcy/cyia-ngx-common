@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { injectEventModifier } from 'cyia-ngx-common/event';
+import { injectEventModifier } from '@cyia/ngx-common/event';
 // 用于测试动态组件
 @Component({
   selector: 'app-a',

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CyiaRepositoryService } from 'cyia-ngx-common/repository';
+import { CyiaRepositoryService } from '@cyia/ngx-common/repository';
 import { PackageEntity } from './data.entity';
 
 @Component({

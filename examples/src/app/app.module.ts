@@ -15,15 +15,15 @@ import { EXAMPLE_GROUP } from './example-group';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { DOCUMENT } from '@angular/common';
-import { ModifierEventsPlugin } from 'cyia-ngx-common/event';
+import { EventModifiersPlugin } from '@cyia/ngx-common/event';
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule],
   providers: [
-    ModifierEventsPlugin,
+    EventModifiersPlugin,
     {
       provide: EVENT_MANAGER_PLUGINS,
-      useClass: ModifierEventsPlugin,
+      useClass: EventModifiersPlugin,
       multi: true,
       deps: [DOCUMENT],
     },

@@ -1,7 +1,7 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LazyLoadBaseComponent } from './lazy-load-base.component';
-import { LazyLoadModule, createWebComponent } from 'cyia-ngx-common/lazy-load';
+import { LazyLoadModule, createWebComponent } from '@cyia/ngx-common/lazy-load';
 
 @NgModule({
   imports: [

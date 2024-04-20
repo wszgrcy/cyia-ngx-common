@@ -1,5 +1,5 @@
 import { Type } from '@angular/core';
-import { stronglyTyped } from 'cyia-ngx-common/util';
+import { stronglyTyped } from '@cyia/ngx-common/util';
 
 export class FindResult<T> {
   result: T[];

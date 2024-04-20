@@ -1,6 +1,6 @@
 import { PropertyDataSourceOptions, PropertyDataSourceOptionsPrivate } from '../../type/decorator.options';
 import { EntityConfigRepository } from '../../entity-config.repository';
-import { mergeOptions } from 'cyia-ngx-common/util';
+import { mergeOptions } from '@cyia/ngx-common/util';
 import { PropertyDefaultValueOptions } from '../../type/decorator.extend.options';
 import { PropertyDataSource } from '../property-data-source';
 import { of } from 'rxjs';
