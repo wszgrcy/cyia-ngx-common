@@ -33,7 +33,7 @@ import { EVENT_MODIFIER_OPTIONS, EventModifiersPlugin } from '@cyia/ngx-common/e
         modifiers: {
           map: {
             prefix: (value) => {
-              return `1${value}`;
+              return `prefix:${value}`;
             },
           },
         },

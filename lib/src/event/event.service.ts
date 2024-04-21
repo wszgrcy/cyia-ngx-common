@@ -79,7 +79,7 @@ function getModifierStatusAndRemove(list: string[], item: string) {
   list.splice(index, 1);
   return true;
 }
-
+const HOOKED_EVENT = Symbol('HOOKED_EVENT');
 @Injectable()
 export class EventModifiersPlugin extends EventManagerPlugin {
   #options = inject(EVENT_MODIFIER_OPTIONS, { optional: true }) ?? {};
@@ -95,7 +95,7 @@ export class EventModifiersPlugin extends EventManagerPlugin {
     let newHandler = withModifiers(handler, modifierList.slice(), this.#options.modifiers);
     // 1.找组件,找不到正常.2.找到组件但是没有output正常(component click)
     modifierList = modifierList.filter((item) => !RemoveModifiers.includes(item));
-    if (this.#options.componentOutput && typeof (element as any)['__ngContext__'] === 'number' && eventName !== name) {
+    if (this.#options.componentOutput && typeof (element as any)['__ngContext__'] !== undefined) {
       let lContext = ɵgetLContext(element);
       let maybeComponent = lContext?.lView?.[lContext.nodeIndex]?.[8];
       if (maybeComponent) {
@@ -106,7 +106,8 @@ export class EventModifiersPlugin extends EventManagerPlugin {
           let outputP = maybeComponent[item.propName];
           if (outputP) {
             const propertyName = item.propName;
-            let newEvent = new EventEmitter(false);
+            let newEvent: EventEmitter<any> = maybeComponent[propertyName][HOOKED_EVENT] ?? new EventEmitter(false);
+            maybeComponent[propertyName][HOOKED_EVENT] = newEvent;
             let ob = newEvent as Observable<any>;
             if (getModifierStatusAndRemove(modifierList, 'once')) {
               ob = ob.pipe(first());
@@ -114,7 +115,6 @@ export class EventModifiersPlugin extends EventManagerPlugin {
             let subscription = ob.subscribe((value) => {
               newHandler(value);
             });
-
             maybeComponent[propertyName].emit = function (value: any) {
               newEvent.next(value);
             };
