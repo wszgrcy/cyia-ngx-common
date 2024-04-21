@@ -15,7 +15,7 @@ import { EXAMPLE_GROUP } from './example-group';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { DOCUMENT } from '@angular/common';
-import { CustomEventModifiers, EventModifiersPlugin } from '@cyia/ngx-common/event';
+import { EVENT_MODIFIER_OPTIONS, EventModifiersPlugin } from '@cyia/ngx-common/event';
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule],
@@ -28,13 +28,16 @@ import { CustomEventModifiers, EventModifiersPlugin } from '@cyia/ngx-common/eve
       deps: [DOCUMENT],
     },
     {
-      provide: CustomEventModifiers,
+      provide: EVENT_MODIFIER_OPTIONS,
       useValue: {
-        map: {
-          prefix: (value) => {
-            return `1${value}`;
+        modifiers: {
+          map: {
+            prefix: (value) => {
+              return `1${value}`;
+            },
           },
         },
+        componentOutput: true,
       },
     },
   ],

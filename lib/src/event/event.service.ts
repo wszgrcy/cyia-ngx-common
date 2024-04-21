@@ -1,28 +1,25 @@
-import { ElementRef, Inject, Injectable, InjectionToken, inject, reflectComponentType } from '@angular/core';
+import {
+  EventEmitter,
+  Inject,
+  Injectable,
+  InjectionToken,
+  inject,
+  reflectComponentType,
+  ɵgetLContext,
+} from '@angular/core';
 import { EventManagerPlugin, ɵKeyEventsPlugin } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
-type CustomEventModifier = {
+import { Observable, first } from 'rxjs';
+type EventModifiers = {
   map?: Record<string, (input: any, modifiers: string[]) => any>;
   guard?: Record<string, (input: any, modifiers: string[]) => any>;
 };
-export const CustomEventModifiers = new InjectionToken<CustomEventModifier>('CustomEventModifiers');
-const PRIVATE_OUTPUT_OBJ = Symbol('PRIVATE_OUTPUT_OBJ');
-export function injectEventModifier(instance: any) {
-  let define = reflectComponentType(instance.constructor)!;
-  let el = inject(ElementRef).nativeElement as HTMLElement;
-  let list = define.outputs;
-  if (!list.length) {
-    return;
-  }
-  (el as any)[PRIVATE_OUTPUT_OBJ] = new Set(list.map((item) => item.templateName));
-  for (const item of list) {
-    const propertyName = item.propName;
-    instance[propertyName].emit = function (value: any) {
-      let event = new CustomEvent(item.templateName, { detail: value });
-      el.dispatchEvent(event);
-    };
-  }
+export interface EventModifierOptions {
+  modifiers?: EventModifiers;
+  componentOutput?: boolean;
 }
+export const EVENT_MODIFIER_OPTIONS = new InjectionToken<EventModifierOptions>('EVENT_MODIFIER_OPTIONS');
+
 const systemModifiers = ['ctrl', 'shift', 'alt', 'meta'];
 
 type KeyedEvent = KeyboardEvent | MouseEvent | TouchEvent;
@@ -45,7 +42,7 @@ const RemoveModifiers = ['stop', 'prevent', 'self', 'left', 'middle', 'right', '
 function withModifiers<T extends (event: Event) => any>(
   fn: T & { _withMods?: { [key: string]: T } },
   modifiers: string[],
-  customEventModifier: CustomEventModifier
+  customEventModifier: EventModifiers
 ) {
   const cache = fn._withMods || (fn._withMods = {});
   const cacheKey = modifiers.join('.');
@@ -85,7 +82,7 @@ function getModifierStatusAndRemove(list: string[], item: string) {
 
 @Injectable()
 export class EventModifiersPlugin extends EventManagerPlugin {
-  #customEventModifiers = inject(CustomEventModifiers, { optional: true }) ?? { map: {}, guard: {} };
+  #options = inject(EVENT_MODIFIER_OPTIONS, { optional: true }) ?? {};
   constructor(@Inject(DOCUMENT) doc: any) {
     super(doc);
   }
@@ -93,29 +90,51 @@ export class EventModifiersPlugin extends EventManagerPlugin {
     return true;
   }
   addEventListener(element: HTMLElement, eventName: string, handler: (event: Event) => any): Function {
-    let list = eventName.split('.');
-    let name = list.shift()!;
-    let newHandler = withModifiers(handler, list.slice(), this.#customEventModifiers);
-    list = list.filter((item) => !RemoveModifiers.includes(item));
-    if (((element as any)[PRIVATE_OUTPUT_OBJ] as Set<string>)?.has(name)) {
-      let fn = (event: any) => newHandler(event.detail);
-      element.addEventListener(name, fn, {
-        once: getModifierStatusAndRemove(list, 'once'),
-      });
-      return () => this.#removeEventListener(element, eventName, fn as EventListener);
-    } else {
-      let options: AddEventListenerOptions = {
-        capture: getModifierStatusAndRemove(list, 'capture'),
-        once: getModifierStatusAndRemove(list, 'once'),
-        passive: getModifierStatusAndRemove(list, 'passive'),
-      };
-      let newEventName = [name, ...list].join('.');
-      let parsedEvent = ɵKeyEventsPlugin.parseEventName(newEventName);
-      if (!parsedEvent) {
-        return this.#commonEvent(element, name, newHandler, options);
-      } else {
-        return this.#keyBoardEvent(element, parsedEvent, newHandler, options);
+    let modifierList = eventName.split('.');
+    let name = modifierList.shift()!;
+    let newHandler = withModifiers(handler, modifierList.slice(), this.#options.modifiers);
+    // 1.找组件,找不到正常.2.找到组件但是没有output正常(component click)
+    modifierList = modifierList.filter((item) => !RemoveModifiers.includes(item));
+    if (this.#options.componentOutput && typeof (element as any)['__ngContext__'] === 'number' && eventName !== name) {
+      let lContext = ɵgetLContext(element);
+      let maybeComponent = lContext?.lView?.[lContext.nodeIndex]?.[8];
+      if (maybeComponent) {
+        let define = reflectComponentType(maybeComponent.constructor)!;
+        let list = define.outputs;
+        if (list.length) {
+          let item = list.find((item) => item.templateName === name);
+          let outputP = maybeComponent[item.propName];
+          if (outputP) {
+            const propertyName = item.propName;
+            let newEvent = new EventEmitter(false);
+            let ob = newEvent as Observable<any>;
+            if (getModifierStatusAndRemove(modifierList, 'once')) {
+              ob = ob.pipe(first());
+            }
+            let subscription = ob.subscribe((value) => {
+              newHandler(value);
+            });
+
+            maybeComponent[propertyName].emit = function (value: any) {
+              newEvent.next(value);
+            };
+            return () => subscription.unsubscribe();
+          }
+        }
       }
+    }
+
+    let options: AddEventListenerOptions = {
+      capture: getModifierStatusAndRemove(modifierList, 'capture'),
+      once: getModifierStatusAndRemove(modifierList, 'once'),
+      passive: getModifierStatusAndRemove(modifierList, 'passive'),
+    };
+    let newEventName = [name, ...modifierList].join('.');
+    let parsedEvent = ɵKeyEventsPlugin.parseEventName(newEventName);
+    if (!parsedEvent) {
+      return this.#commonEvent(element, name, newHandler, options);
+    } else {
+      return this.#keyBoardEvent(element, parsedEvent, newHandler, options);
     }
   }
 

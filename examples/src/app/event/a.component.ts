@@ -1,5 +1,4 @@
 import { Component, EventEmitter, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { injectEventModifier } from '@cyia/ngx-common/event';
 // 用于测试动态组件
 @Component({
   selector: 'app-a',
@@ -11,7 +10,6 @@ import { injectEventModifier } from '@cyia/ngx-common/event';
 export class AComponent implements OnInit {
   @Output() output2 = new EventEmitter();
   constructor() {
-    injectEventModifier(this);
     setTimeout(() => {
       this.output2.emit('测试');
       setTimeout(() => {
