@@ -1,16 +1,18 @@
 # 使用方法
 
-## 事件修饰器
+## 事件修饰符
+
+- 支持组件与 dom 元素
 
 ```ts
 import { ModifierEventsPlugin } from '@cyia/ngx-common/event';
 @NgModule({
  //...
   providers: [
-    ModifierEventsPlugin,
+    EVENT_MANAGER_PLUGINS,
     {
       provide: EVENT_MANAGER_PLUGINS,
-      useClass: ModifierEventsPlugin,
+      useClass: EVENT_MANAGER_PLUGINS,
       multi: true,
       deps: [DOCUMENT],
     },
@@ -19,15 +21,22 @@ import { ModifierEventsPlugin } from '@cyia/ngx-common/event';
 })
 ```
 
-- 内部 output 使用`once`修饰符
+## 自定义修饰符
 
 ```ts
-import { injectEventModifier } from '@cyia/ngx-common/event';
-
-  constructor() {
-    // 自动处理
-    injectEventModifier(this);
-  }
+    {
+      provide: EVENT_MODIFIER_OPTIONS,
+      useValue: {
+        modifiers: {
+          map: {
+            prefix: (value) => {
+              return `prefix:${value}`;
+            },
+          },
+        },
+        componentOutput: true,
+      },
+    },
 ```
 
 # 更新日志
