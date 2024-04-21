@@ -13,7 +13,7 @@ export class AComponent implements OnInit {
   constructor() {
     injectEventModifier(this);
     setTimeout(() => {
-      this.output2.emit({ output: '测试' });
+      this.output2.emit('测试');
       setTimeout(() => {
         this.output2.emit('测试2');
       }, 1000);

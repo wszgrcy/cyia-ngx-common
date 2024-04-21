@@ -1,8 +1,11 @@
 import { ElementRef, Inject, Injectable, InjectionToken, inject, reflectComponentType } from '@angular/core';
 import { EventManagerPlugin, ɵKeyEventsPlugin } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
-type CustomEventModifier = Record<string, (input: any, modifiers: string[]) => any>;
-export const CustomEventModifierToken = new InjectionToken<CustomEventModifier>('CustomEventModifier');
+type CustomEventModifier = {
+  map?: Record<string, (input: any, modifiers: string[]) => any>;
+  guard?: Record<string, (input: any, modifiers: string[]) => any>;
+};
+export const CustomEventModifiers = new InjectionToken<CustomEventModifier>('CustomEventModifiers');
 const PRIVATE_OUTPUT_OBJ = Symbol('PRIVATE_OUTPUT_OBJ');
 export function injectEventModifier(instance: any) {
   let define = reflectComponentType(instance.constructor)!;
@@ -39,24 +42,38 @@ const modifierGuards: Record<string, (e: Event, modifiers: string[]) => void | b
 };
 const RemoveModifiers = ['stop', 'prevent', 'self', 'left', 'middle', 'right', 'exact'];
 
-const withModifiers = <T extends (event: Event) => any>(
+function withModifiers<T extends (event: Event) => any>(
   fn: T & { _withMods?: { [key: string]: T } },
   modifiers: string[],
   customEventModifier: CustomEventModifier
-) => {
+) {
   const cache = fn._withMods || (fn._withMods = {});
   const cacheKey = modifiers.join('.');
   return (
     cache[cacheKey] ||
     (cache[cacheKey] = ((event, ...args) => {
-      for (let i = 0; i < modifiers.length; i++) {
-        const guard = customEventModifier?.[modifiers[i]] ?? modifierGuards[modifiers[i]];
-        if (guard && guard(event, modifiers)) return;
+      for (const item of modifiers) {
+        if (item === 'once') {
+          continue;
+        }
+        const guard = customEventModifier?.guard?.[item] ?? modifierGuards[item];
+        if (guard) {
+          if (guard(event, modifiers)) {
+            return;
+          }
+        } else {
+          let mapItem = customEventModifier?.map?.[item];
+          if (!mapItem) {
+            throw new Error(`unknown modifier: ${item}`);
+          }
+          event = mapItem(event, modifiers);
+        }
       }
+
       return fn(event, ...args);
     }) as T)
   );
-};
+}
 function getModifierStatusAndRemove(list: string[], item: string) {
   let index = list.indexOf(item);
   if (index === -1) {
@@ -68,7 +85,7 @@ function getModifierStatusAndRemove(list: string[], item: string) {
 
 @Injectable()
 export class EventModifiersPlugin extends EventManagerPlugin {
-  #customEventModifiers = inject(CustomEventModifierToken, { optional: true }) ?? {};
+  #customEventModifiers = inject(CustomEventModifiers, { optional: true }) ?? { map: {}, guard: {} };
   constructor(@Inject(DOCUMENT) doc: any) {
     super(doc);
   }
