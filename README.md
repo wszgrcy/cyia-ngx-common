@@ -9,10 +9,9 @@ import { ModifierEventsPlugin } from '@cyia/ngx-common/event';
 @NgModule({
  //...
   providers: [
-    EVENT_MANAGER_PLUGINS,
-    {
+     {
       provide: EVENT_MANAGER_PLUGINS,
-      useClass: EVENT_MANAGER_PLUGINS,
+      useClass: EventModifiersPlugin,
       multi: true,
       deps: [DOCUMENT],
     },
