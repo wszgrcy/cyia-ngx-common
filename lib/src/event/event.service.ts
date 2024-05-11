@@ -12,10 +12,11 @@ import { DOCUMENT } from '@angular/common';
 import { Observable, first } from 'rxjs';
 type EventModifiers = {
   map?: Record<string, (input: any, modifiers: string[]) => any>;
-  guard?: Record<string, (input: any, modifiers: string[]) => any>;
+  guard?: Record<string, (input: any, modifiers: string[]) => boolean | Promise<boolean>>;
 };
 export interface EventModifierOptions {
   modifiers?: EventModifiers;
+  /** 支持组件output */
   componentOutput?: boolean;
 }
 export const EVENT_MODIFIER_OPTIONS = new InjectionToken<EventModifierOptions>('EVENT_MODIFIER_OPTIONS');
@@ -24,9 +25,9 @@ const systemModifiers = ['ctrl', 'shift', 'alt', 'meta'];
 
 type KeyedEvent = KeyboardEvent | MouseEvent | TouchEvent;
 
-const modifierGuards: Record<string, (e: Event, modifiers: string[]) => void | boolean> = {
-  stop: (e) => e.stopPropagation(),
-  prevent: (e) => e.preventDefault(),
+const modifierGuards: Record<string, (e: Event, modifiers: string[]) => boolean> = {
+  stop: (e) => e.stopPropagation() as unknown as false,
+  prevent: (e) => e.preventDefault() as unknown as false,
   self: (e) => e.target !== e.currentTarget,
   control: (e) => !(e as KeyedEvent).ctrlKey,
   shift: (e) => !(e as KeyedEvent).shiftKey,
@@ -38,38 +39,57 @@ const modifierGuards: Record<string, (e: Event, modifiers: string[]) => void | b
   exact: (e, modifiers) => systemModifiers.some((m) => (e as any)[`${m}Key`] && !modifiers.includes(m)),
 };
 const RemoveModifiers = ['stop', 'prevent', 'self', 'left', 'middle', 'right', 'exact'];
-
-function withModifiers<T extends (event: Event) => any>(
-  fn: T & { _withMods?: { [key: string]: T } },
-  modifiers: string[],
-  customEventModifier: EventModifiers
-) {
-  const cache = fn._withMods || (fn._withMods = {});
-  const cacheKey = modifiers.join('.');
-  return (
-    cache[cacheKey] ||
-    (cache[cacheKey] = ((event, ...args) => {
-      for (const item of modifiers) {
-        if (item === 'once') {
-          continue;
+type Data = any;
+const DISABLED = Symbol('DISABLED');
+function withModifiers<T extends (event: any) => any>(fn: T, modifiers: string[], customEventModifier: EventModifiers) {
+  return ((data, ...args) => {
+    const modifierFn = (item: string, data: Data) => {
+      if (item === 'once') {
+        return data;
+      }
+      const guard = customEventModifier?.guard?.[item] ?? modifierGuards[item];
+      if (guard) {
+        let disabled = guard(data, modifiers);
+        if (disabled instanceof Promise) {
+          return disabled.then((disabled) => {
+            return disabled ? DISABLED : data;
+          });
         }
-        const guard = customEventModifier?.guard?.[item] ?? modifierGuards[item];
-        if (guard) {
-          if (guard(event, modifiers)) {
-            return;
+        return disabled ? DISABLED : data;
+      } else {
+        let mapItem = customEventModifier?.map?.[item];
+        if (!mapItem) {
+          throw new Error(`unknown modifier: ${item}`);
+        }
+        return mapItem(data, modifiers);
+      }
+    };
+    for (const item of modifiers) {
+      if (data instanceof Promise) {
+        data = data.then((value) => {
+          if (value === DISABLED) {
+            return value;
           }
-        } else {
-          let mapItem = customEventModifier?.map?.[item];
-          if (!mapItem) {
-            throw new Error(`unknown modifier: ${item}`);
-          }
-          event = mapItem(event, modifiers);
+          return modifierFn(item, value);
+        });
+      } else {
+        data = modifierFn(item, data);
+        if (data === DISABLED) {
+          return;
         }
       }
-
-      return fn(event, ...args);
-    }) as T)
-  );
+    }
+    if (data instanceof Promise) {
+      return data.then((value) => {
+        if (value === DISABLED) {
+          return;
+        }
+        return fn(value, ...args);
+      });
+    } else {
+      return fn(data, ...args);
+    }
+  }) as T;
 }
 function getModifierStatusAndRemove(list: string[], item: string) {
   let index = list.indexOf(item);

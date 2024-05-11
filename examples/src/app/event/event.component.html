@@ -4,3 +4,6 @@
 </div>
 <app-a (output2.prefix.once)="output($event)" (output2)="output($event)"></app-a>
 <!-- <app-a (output2.once)="output($any($event))"></app-a> -->
+<button (click.delay)="clicked('延迟触发')">延迟触发</button>
+<button (click.enable)="clicked('允许')">允许</button>
+<button (click.disable)="clicked('禁止')">禁止</button>

@@ -15,7 +15,7 @@ import { EXAMPLE_GROUP } from './example-group';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { DOCUMENT } from '@angular/common';
-import { EVENT_MODIFIER_OPTIONS, EventModifiersPlugin } from '@cyia/ngx-common/event';
+import { EVENT_MODIFIER_OPTIONS, EventModifierOptions, EventModifiersPlugin } from '@cyia/ngx-common/event';
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule],
@@ -36,9 +36,24 @@ import { EVENT_MODIFIER_OPTIONS, EventModifiersPlugin } from '@cyia/ngx-common/e
               return `prefix:${value}`;
             },
           },
+          guard: {
+            delay: (value) => {
+              return new Promise((res) => {
+                setTimeout(() => {
+                  res(false);
+                }, 1000);
+              });
+            },
+            disable: (value) => {
+              return true;
+            },
+            enable: (value) => {
+              return false;
+            },
+          },
         },
         componentOutput: true,
-      },
+      } as EventModifierOptions,
     },
   ],
   bootstrap: environment.production ? [] : [AppComponent],
