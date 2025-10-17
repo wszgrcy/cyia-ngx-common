@@ -9,6 +9,7 @@ import {
   input,
   Input,
   inputBinding,
+  isSignal,
   outputBinding,
   Signal,
   SimpleChange,
@@ -70,7 +71,14 @@ export class SelectorlessOutlet<T = any> {
           environmentInjector: this.selectlessOutletEnvironmentInjector() ?? this.#environmentInjector,
           bindings: [
             ...Object.keys(inputs).map((key) => {
-              return inputBinding(key, inputs[key]);
+              return inputBinding(
+                key,
+                isSignal(inputs[key])
+                  ? inputs[key]
+                  : inputs[key] instanceof TemplateRef
+                  ? () => inputs[key]
+                  : inputs[key]
+              );
             }),
             ...Object.keys(outputs).map((key) => {
               return outputBinding(key, outputs[key]);

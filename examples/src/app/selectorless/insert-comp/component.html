@@ -1,1 +1,6 @@
-<ng-template #templateRef> input: {{index()}} </ng-template>
+<ng-template #templateRef>
+  input: {{index()}} @if(input()){
+  <ng-container *ngTemplateOutlet="input()"></ng-container>
+
+  }
+</ng-template>
