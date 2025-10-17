@@ -31,12 +31,8 @@ export class AppComponent {
 
   loadExample(selector: keyof typeof EXAMPLE_GROUP, element: HTMLElement, destroy$: Observable<void>) {
     const item = EXAMPLE_GROUP[selector];
-    if (!item) {
-      throw new Error('选择器有误:' + selector);
-    }
-    let ref;
 
-    ref = createComponent(item.component, { environmentInjector: this.injector.get(EnvironmentInjector) });
+    let ref = createComponent(item.component, { environmentInjector: this.injector.get(EnvironmentInjector) });
 
     this.applicationRef.attachView(ref.hostView);
     element.appendChild(ref.location.nativeElement);
