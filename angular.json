@@ -3,123 +3,6 @@
   "version": 1,
   "newProjectRoot": "",
   "projects": {
-    "cyia-ngx-common": {
-      "root": "",
-      "sourceRoot": "demo/src",
-      "projectType": "application",
-      "prefix": "app",
-      "schematics": {},
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
-            "aot": true,
-            "outputPath": "dist/cyia-ngx-common-demo",
-            "index": "demo/src/index.html",
-            "main": "demo/src/main.ts",
-            "polyfills": ["zone.js"],
-            "tsConfig": "demo/src/tsconfig.app.json",
-            "assets": [
-              "demo/src/favicon.ico",
-              "demo/src/assets",
-              {
-                "glob": "*.wasm",
-                "input": "node_modules/vscode-oniguruma/release",
-                "output": "assets/vscode-oniguruma"
-              }
-            ],
-            "styles": ["demo/src/styles.css", "./node_modules/monaco-editor/min/vs/editor/editor.main.css"],
-            "scripts": []
-          },
-          "configurations": {
-            "production": {
-              "budgets": [
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb"
-                }
-              ],
-              "fileReplacements": [
-                {
-                  "replace": "demo/src/environments/environment.ts",
-                  "with": "demo/src/environments/environment.prod.ts"
-                }
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true
-            }
-          }
-        },
-        "serve": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
-          "options": {
-            "buildTarget": "cyia-ngx-common:build"
-          },
-          "configurations": {
-            "production": {
-              "buildTarget": "cyia-ngx-common:build:production",
-              "disableHostCheck": true
-            }
-          }
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "buildTarget": "cyia-ngx-common:build"
-          }
-        },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "demo/src/test.ts",
-            "polyfills": ["zone.js"],
-            "tsConfig": "demo/src/tsconfig.spec.json",
-            "karmaConfig": "demo/src/karma.conf.js",
-            "styles": ["demo/src/styles.css"],
-            "scripts": [],
-            "assets": ["demo/src/favicon.ico", "demo/src/assets"]
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": ["src/tsconfig.app.json", "src/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**"]
-          }
-        }
-      }
-    },
-    "cyia-ngx-common-e2e": {
-      "root": "e2e/",
-      "projectType": "application",
-      "architect": {
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "cyia-ngx-common:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "cyia-ngx-common:serve:production"
-            }
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": "e2e/tsconfig.e2e.json",
-            "exclude": ["**/node_modules/**"]
-          }
-        }
-      }
-    },
     "lib": {
       "root": "lib",
       "sourceRoot": "lib/src",
@@ -170,14 +53,12 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "customWebpackConfig": {
-              "path": "./webpack.examples.config.ts"
+            "outputPath": {
+              "base": "dist/examples"
             },
-            "outputPath": "dist/examples",
             "index": "examples/src/index.html",
-            "main": "examples/src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "examples/tsconfig.app.json",
             "aot": true,
@@ -191,7 +72,8 @@
               }
             ],
             "styles": ["examples/src/styles.scss", "./node_modules/monaco-editor/min/vs/editor/editor.main.css"],
-            "scripts": []
+            "scripts": [],
+            "browser": "examples/src/main.ts"
           },
           "configurations": {
             "production": {
@@ -207,8 +89,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -223,9 +103,7 @@
               ]
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -233,7 +111,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
+          "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "buildTarget": "examples:build"
           },
@@ -270,23 +148,37 @@
             "tsConfig": ["examples/tsconfig.app.json", "examples/tsconfig.spec.json", "examples/e2e/tsconfig.json"],
             "exclude": ["**/node_modules/**"]
           }
-        },
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "examples/e2e/protractor.conf.js",
-            "devServerTarget": "examples:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "examples:serve:production"
-            }
-          }
         }
       }
     }
   },
   "cli": {
     "analytics": false
+  },
+  "schematics": {
+    "@schematics/angular:component": {
+      "type": "component"
+    },
+    "@schematics/angular:directive": {
+      "type": "directive"
+    },
+    "@schematics/angular:service": {
+      "type": "service"
+    },
+    "@schematics/angular:guard": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:interceptor": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:module": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:pipe": {
+      "typeSeparator": "."
+    },
+    "@schematics/angular:resolver": {
+      "typeSeparator": "."
+    }
   }
 }

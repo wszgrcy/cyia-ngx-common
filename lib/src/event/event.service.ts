@@ -6,9 +6,10 @@ import {
   inject,
   reflectComponentType,
   ɵgetLContext,
+  DOCUMENT,
 } from '@angular/core';
 import { EventManagerPlugin, ɵKeyEventsPlugin } from '@angular/platform-browser';
-import { DOCUMENT } from '@angular/common';
+
 import { Observable, first } from 'rxjs';
 type EventModifiers = {
   map?: Record<string, (input: any, modifiers: string[]) => any>;

@@ -7,9 +7,10 @@ import {
   ApplicationRef,
   ComponentRef,
   Optional,
+  DOCUMENT,
 } from '@angular/core';
 import { Subject, timer, of, from, fromEvent, partition, BehaviorSubject, Observable, merge } from 'rxjs';
-import { DOCUMENT } from '@angular/common';
+
 import { CYIA_LOADING_HINT_COMPONENT } from './token';
 import { InstallConfig, CyiaLoadingHintUninstall, LoadingHintViewContainer } from './type';
 import { filter, take, map, switchMap, takeUntil, tap, skip, skipUntil, skipWhile } from 'rxjs/operators';

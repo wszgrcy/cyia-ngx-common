@@ -17,6 +17,7 @@ export function selectorGenerate(str: string) {
 @Directive({
   selector: '[lazyLoadFormControl]',
   providers: [{ provide: NG_VALUE_ACCESSOR, multi: true, useExisting: forwardRef(() => LazyLoadFormControlDirective) }],
+  standalone: false,
 })
 export class LazyLoadFormControlDirective implements ControlValueAccessor {
   private onChange: (arg) => void;

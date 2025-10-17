@@ -11,6 +11,7 @@ import { Directive, ViewContainerRef, Input, TemplateRef, SimpleChanges, OnChang
  */
 @Directive({
   selector: '[lazyLoad]',
+  standalone: false,
 })
 export class LazyLoadDirective implements OnChanges {
   @Input() private lazyLoad: string;

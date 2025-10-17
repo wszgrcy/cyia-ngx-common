@@ -1,19 +1,49 @@
-import { enableProdMode, NgModuleRef } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { DOCUMENT, enableProdMode, NgModuleRef } from '@angular/core';
 
-import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
-import { Observable } from 'rxjs';
+import { bootstrapApplication, EVENT_MANAGER_PLUGINS } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
+import { EVENT_MODIFIER_OPTIONS, EventModifierOptions, EventModifiersPlugin } from '@cyia/ngx-common/event';
 
 if (environment.production) {
   enableProdMode();
 }
-
-(window as any).cyiaNgxDocsLoadExamples = platformBrowserDynamic()
-  .bootstrapModule(AppModule)
-  .catch((err) => console.error(err))
-  .then((ref: NgModuleRef<AppModule>) => {
-    return (selector: string, element: HTMLElement, destroy$: Observable<void>) => {
-      return ref.instance.loadExample(selector as any, element, destroy$);
-    };
-  });
+bootstrapApplication(AppComponent, {
+  providers: [
+    EventModifiersPlugin,
+    {
+      provide: EVENT_MANAGER_PLUGINS,
+      useClass: EventModifiersPlugin,
+      multi: true,
+      deps: [DOCUMENT],
+    },
+    {
+      provide: EVENT_MODIFIER_OPTIONS,
+      useValue: {
+        modifiers: {
+          map: {
+            prefix: (value) => {
+              return `prefix:${value}`;
+            },
+          },
+          guard: {
+            delay: (value) => {
+              return new Promise((res) => {
+                setTimeout(() => {
+                  res(false);
+                }, 1000);
+              });
+            },
+            disable: (value) => {
+              return true;
+            },
+            enable: (value) => {
+              return false;
+            },
+          },
+        },
+        componentOutput: true,
+      } as EventModifierOptions,
+    },
+  ],
+});
