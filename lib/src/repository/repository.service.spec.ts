@@ -1,11 +1,11 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { CyiaRepositoryModule } from './repository.module';
 import { ClassDataSource } from './decorator/class-data-source';
 import { of } from 'rxjs';
 import { PropertyDataSource } from './decorator/property-data-source';
 import { CyiaRepositoryService } from './repository.service';
 import { HttpClient } from '@angular/common/http';
-import { Injector, InjectionToken } from '@angular/core';
+import { Injector, InjectionToken, provideZonelessChangeDetection } from '@angular/core';
 @ClassDataSource({
   source: () => {
     return of({ name: 'level3' });
@@ -166,14 +166,12 @@ class ItemSelectParams {
 const testtoken = new InjectionToken('token');
 describe('仓库服务(基础)', () => {
   let repository: CyiaRepositoryService;
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CyiaRepositoryModule],
-        providers: [{ provide: testtoken, useValue: '测试用' }],
-      });
-    })
-  );
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [CyiaRepositoryModule],
+      providers: [{ provide: testtoken, useValue: '测试用' }, provideZonelessChangeDetection()],
+    });
+  });
   beforeEach(() => {
     repository = TestBed.inject(CyiaRepositoryService);
   });
@@ -181,7 +179,7 @@ describe('仓库服务(基础)', () => {
     expect(repository).toBeTruthy();
     expect(repository.findMany).toBeTruthy();
   });
-  it('返回为item&结构化基础', async (done) => {
+  it('返回为item&结构化基础', (done) => {
     repository.findOne(Level1Item).subscribe((item) => {
       expect(item instanceof Level1Item);
       expect(item.name).toBe('level1');
@@ -190,7 +188,7 @@ describe('仓库服务(基础)', () => {
       done();
     });
   });
-  it('返回为list&&结构化基础', async (done) => {
+  it('返回为list&&结构化基础', (done) => {
     repository.findMany(Level1List).subscribe((res) => {
       expect(res instanceof Array).toBe(true);
       expect(res.length).toBeTruthy();
@@ -204,7 +202,7 @@ describe('仓库服务(基础)', () => {
     });
   });
 
-  it('item级联', async (done) => {
+  it('item级联', (done) => {
     repository.findOne(Level1EascadeItem).subscribe((item) => {
       expect(item instanceof Level1EascadeItem);
       expect(item.name).toBe('level1');
@@ -215,7 +213,7 @@ describe('仓库服务(基础)', () => {
       done();
     });
   });
-  it('list级联', async (done) => {
+  it('list级联', (done) => {
     repository.findMany(Level1List).subscribe((list) => {
       list.forEach((item, i) => {
         expect(item.name).toBe(`level1-${i + 1}`);
@@ -227,7 +225,7 @@ describe('仓库服务(基础)', () => {
       done();
     });
   });
-  it('请求参数&属性数据源(item)source参数', async (done) => {
+  it('请求参数&属性数据源(item)source参数', (done) => {
     const str = { name: 'params' };
     repository.findOne(Level1UseSourceParams, str).subscribe((res) => {
       expect(res.name).toBe(str.name);
@@ -238,7 +236,7 @@ describe('仓库服务(基础)', () => {
       done();
     });
   });
-  it('请求参数&属性数据源(list)source参数', async (done) => {
+  it('请求参数&属性数据源(list)source参数', (done) => {
     const str = [{ name: 'name1' }, { name: 'name2' }];
     repository.findMany(Level1UseSourceParams, str).subscribe((res) => {
       res.forEach((item, i) => {
@@ -247,11 +245,11 @@ describe('仓库服务(基础)', () => {
         expect(item.httpClient === http).toBeTruthy('http');
         expect(isInjector(item.injector, TestBed.inject(Injector))).toBeTruthy('injector');
         expect(item.result === res).toBeTruthy('result');
-        done();
       });
+      done();
     });
   });
-  it('属性数据源(item)itemSelect参数', async (done) => {
+  it('属性数据源(item)itemSelect参数', (done) => {
     repository.findOne(ItemSelectParams, {}).subscribe((item) => {
       expect(item.http === TestBed.inject(HttpClient)).toBeTruthy('http');
 
@@ -262,7 +260,7 @@ describe('仓库服务(基础)', () => {
       done();
     });
   });
-  it('属性数据源(list)itemSelect参数', async (done) => {
+  it('属性数据源(list)itemSelect参数', (done) => {
     repository.findMany(ItemSelectParams, [{}, {}]).subscribe((list) => {
       list.forEach((item, i) => {
         expect(item.http === TestBed.inject(HttpClient)).toBeTruthy('http');

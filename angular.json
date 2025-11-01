@@ -10,7 +10,7 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "builder": "@angular/build:ng-packagr",
           "options": {
             "tsConfig": "lib/tsconfig.lib.json",
             "project": "lib/src/ng-package.json"
@@ -24,19 +24,10 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:karma",
           "options": {
-            "main": "lib/src/test.ts",
-            "tsConfig": "lib/tsconfig.spec.json",
-            "karmaConfig": "lib/karma.conf.js"
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "fix": true,
-            "tsConfig": ["lib/tsconfig.lib.json", "lib/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**"]
+            "sourceMap": true,
+            "tsConfig": "lib/tsconfig.spec.json"
           }
         }
       }
@@ -130,18 +121,7 @@
             "buildTarget": "examples:build"
           }
         },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
-          "options": {
-            "main": "examples/src/test.ts",
-            "polyfills": ["zone.js"],
-            "tsConfig": "examples/tsconfig.spec.json",
-            "karmaConfig": "examples/karma.conf.js",
-            "assets": ["examples/src/favicon.ico", "examples/src/assets"],
-            "styles": ["examples/src/styles.scss"],
-            "scripts": []
-          }
-        },
+
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {

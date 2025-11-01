@@ -1,4 +1,4 @@
-import { TestBed, waitForAsync } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { CyiaRepositoryModule } from './repository.module';
 import { ClassDataSource } from './decorator/class-data-source';
 import { of } from 'rxjs';
@@ -10,6 +10,7 @@ import { PropertyDataSourceStandalone } from './decorator';
 import { PropertyFormatValue } from './decorator/extend/property-format-value';
 import { PropertyInherit } from './decorator/extend/property-inherit';
 import { ClassInherit } from './decorator/extend/class-inherit';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 class Level1Object {
   name: string;
@@ -98,17 +99,16 @@ class ChildClass extends ParentClass {
 }
 describe('仓库服务(拓展)', () => {
   let repository: CyiaRepositoryService;
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [CyiaRepositoryModule],
-      });
-    })
-  );
+  beforeEach(async () => {
+    TestBed.configureTestingModule({
+      imports: [CyiaRepositoryModule],
+      providers: [provideZonelessChangeDetection()],
+    });
+  });
   beforeEach(() => {
     repository = TestBed.inject(CyiaRepositoryService);
   });
-  it('子对象强类型化', async (done) => {
+  it('子对象强类型化', (done) => {
     repository.findMany(Level1Item).subscribe((item) => {
       expect(item[0].object instanceof Level1Object).toBeTruthy();
       expect(item[0].object.index === 1).toBeTruthy();
@@ -117,7 +117,7 @@ describe('仓库服务(拓展)', () => {
       done();
     });
   });
-  it('默认值', async (done) => {
+  it('默认值', (done) => {
     repository.findMany(Level1Item).subscribe((item) => {
       expect(item[0].useDefaultValue).toEqual(666);
       expect(item[1].useDefaultValue).not.toEqual(666);
@@ -126,14 +126,14 @@ describe('仓库服务(拓展)', () => {
       done();
     });
   });
-  it('属性独立请求', async (done) => {
+  it('属性独立请求', (done) => {
     repository.findMany(Level1Item).subscribe((list) => {
       expect(list[0].standalone !== list[1].standalone).toBeTruthy();
 
       done();
     });
   });
-  it('属性格式化', async (done) => {
+  it('属性格式化', (done) => {
     repository.findMany(Level1Item).subscribe((list) => {
       list.forEach((item) => {
         expect(item.format instanceof Date).toBeTruthy();
@@ -141,25 +141,25 @@ describe('仓库服务(拓展)', () => {
       done();
     });
   });
-  it('多装饰器顺序', async (done) => {
+  it('多装饰器顺序', (done) => {
     repository.findMany(Level1Item).subscribe((list) => {
       expect(list[0].multiDecoarator).toEqual(`defaultfirstsecond`);
       done();
     });
   });
-  it('多装饰器单一源', async (done) => {
+  it('多装饰器单一源', (done) => {
     repository.findMany(Level1Item).subscribe((list) => {
       expect(list[0].multiDecoratorWithSource).toEqual('1format');
       done();
     });
   });
-  it('类属性装饰器继承', async (done) => {
+  it('类属性装饰器继承', (done) => {
     repository.findOne(Child).subscribe((item) => {
       expect(item.name).toEqual('childparent');
     });
     done();
   });
-  it('类装饰器继承', async (done) => {
+  it('类装饰器继承', (done) => {
     repository.findOne(ChildClass).subscribe((item) => {
       expect(item.name).toEqual('parent');
     });
