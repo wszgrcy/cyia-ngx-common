@@ -23,7 +23,7 @@ import {
   exportAs: 'selectlessOutlet',
 })
 export class SelectorlessOutlet<T = any> {
-  selectlessOutlet = input.required<Type<any>>();
+  selectlessOutlet = input.required<Type<T>>();
 
   selectlessOutletInputs = input<Record<string, () => unknown>>();
   selectlessOutletOutputs = input<Record<string, (event: any) => unknown>>();

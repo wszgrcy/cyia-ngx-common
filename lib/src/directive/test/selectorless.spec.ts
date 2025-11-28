@@ -36,11 +36,13 @@ describe('selectorless', () => {
       [selectlessOutlet]="DComp"
       [selectlessOutletInputs]="{ value: value$ }"
       [selectlessOutletOutputs]="{ output1: output1Emit }"
+      #ref="selectlessOutlet"
     ></ng-template> `,
     standalone: true,
     imports: [SelectorlessOutlet],
   })
   class TestComp {
+    ref = viewChild.required(SelectorlessOutlet);
     DComp = DComp;
     value$ = signal(1);
     outputValue = signal(undefined);
@@ -77,5 +79,10 @@ describe('selectorless', () => {
     let buttonEl = element.querySelector('.output1') as HTMLButtonElement;
     buttonEl.click();
     expect(instance.outputValue()).toBeTruthy();
+  });
+  it('export', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+    expect(instance.ref().componentInstance).toBeTruthy();
   });
 });
