@@ -1,6 +1,7 @@
 import {
   ApplicationRef,
   ComponentRef,
+  computed,
   createComponent,
   Directive,
   EnvironmentInjector,
@@ -11,6 +12,7 @@ import {
   inputBinding,
   isSignal,
   outputBinding,
+  signal,
   Signal,
   SimpleChange,
   TemplateRef,
@@ -59,26 +61,33 @@ export class SelectorlessOutlet<T = any> {
     );
   }
 
+  signalInput$ = computed(() => {
+    let inputs = this.selectlessOutletInputs() ?? {};
+    let obj: Record<string, Signal<any>> = {};
+    for (const key in inputs) {
+      const data = inputs[key];
+      if (isSignal(data)) {
+        obj[key] = data;
+      } else {
+        obj[key] = signal(data);
+      }
+    }
+    return obj;
+  });
   ngOnChanges(changes: Record<keyof SelectorlessOutlet, SimpleChange>) {
     if (this._needToReCreateComponentInstance(changes)) {
       this.dispose();
       if (this.selectlessOutlet) {
         const injector = this.selectlessOutletInjector() || this.#injector;
-        const inputs = this.selectlessOutletInputs() ?? {};
+        const inputs = this.signalInput$();
+
         const outputs = this.selectlessOutletOutputs() ?? {};
         this._componentRef = createComponent(this.selectlessOutlet(), {
           elementInjector: injector,
           environmentInjector: this.selectlessOutletEnvironmentInjector() ?? this.#environmentInjector,
           bindings: [
             ...Object.keys(inputs).map((key) => {
-              return inputBinding(
-                key,
-                isSignal(inputs[key])
-                  ? inputs[key]
-                  : inputs[key] instanceof TemplateRef
-                  ? () => inputs[key]
-                  : inputs[key]
-              );
+              return inputBinding(key, inputs[key]);
             }),
             ...Object.keys(outputs).map((key) => {
               return outputBinding(key, outputs[key]);
