@@ -59,9 +59,9 @@ export class SelectorlessOutlet<T = any> {
 
   ngOnChanges(changes: Record<keyof SelectorlessOutlet, SimpleChange>) {
     if (changes.selectlessOutletInputs) {
-      let keyEqual = this.#inputKeyEqual(this.selectlessOutlet());
-      this.#updateInput(this.selectlessOutletInputs());
-      if (Object.keys(changes).length === 1 && keyEqual) {
+      let needUpdate = this.#inputKeyEqual(this.selectlessOutlet());
+      needUpdate ||= this.#updateInput(this.selectlessOutletInputs());
+      if (Object.keys(changes).length === 1 && needUpdate) {
         return;
       }
     }
@@ -117,23 +117,32 @@ export class SelectorlessOutlet<T = any> {
     this.dispose();
   }
   #updateInput(value: any) {
+    let needUpdate = false;
     this.#inputValue$.update((inputValue) => {
       for (const key in value) {
         const inputItem = value[key];
         inputValue[key] ??= signal(undefined);
         if (isSignal(inputItem)) {
+          if (inputItem === inputValue[key]) {
+            continue;
+          }
           inputValue[key] = inputItem as any;
+          needUpdate = true;
         } else {
+          if (inputItem === inputValue[key]()) {
+            continue;
+          }
           if (isSignal(inputValue[key]) && 'set' in inputValue[key]) {
             inputValue[key].set(inputItem);
           } else {
             inputValue[key] = signal(inputItem);
-            throw new Error(`selectorless:${key}:Signal-> WritableSignal❌`);
+            needUpdate = true;
           }
         }
       }
       return inputValue;
     });
+    return needUpdate;
   }
   #inputKeyEqual(newValue: any) {
     let list = Object.keys(newValue).sort();
