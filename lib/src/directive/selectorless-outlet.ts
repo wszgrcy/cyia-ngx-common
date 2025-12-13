@@ -28,7 +28,7 @@ import {
 export class SelectorlessOutlet<T = any> {
   selectlessOutlet = input.required<Type<T>>();
 
-  selectlessOutletInputs = input<Record<string, () => unknown>>();
+  selectlessOutletInputs = input<Record<string, any>>();
   selectlessOutletOutputs = input<Record<string, (event: any) => unknown>>();
 
   selectlessOutletDirectives = input<
