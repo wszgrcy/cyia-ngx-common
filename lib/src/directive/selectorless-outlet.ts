@@ -61,7 +61,7 @@ export class SelectorlessOutlet<T = any> {
     if (changes.selectlessOutletInputs) {
       let needUpdate = this.#inputKeyEqual(this.selectlessOutlet());
       needUpdate ||= this.#updateInput(this.selectlessOutletInputs());
-      if (Object.keys(changes).length === 1 && needUpdate) {
+      if (Object.keys(changes).length === 1 && !needUpdate) {
         return;
       }
     }
