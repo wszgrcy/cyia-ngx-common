@@ -16,6 +16,7 @@ import { SelectorlessOutlet } from '../selectorless-outlet';
     <ng-template #templateRef>
       <div class="d-wrapper">{{ value() }}</div>
       <button class="output1" (click)="output1Emit($event)"></button>
+      <ng-content></ng-content>
     </ng-template>
   `,
   standalone: true,
@@ -36,6 +37,7 @@ describe('selectorless', () => {
       [selectlessOutlet]="DComp"
       [selectlessOutletInputs]="{ value: value$ }"
       [selectlessOutletOutputs]="{ output1: output1Emit }"
+      [selectlessOutletContent]="selectlessOutletContent()"
       #ref="selectlessOutlet"
     ></ng-template> `,
     standalone: true,
@@ -49,6 +51,7 @@ describe('selectorless', () => {
     output1Emit = (event: any) => {
       this.outputValue.set(event);
     };
+    selectlessOutletContent = signal<Node[][]>([]);
   }
   let tb: TestBed;
   let fixture: ComponentFixture<TestComp>;
@@ -84,5 +87,17 @@ describe('selectorless', () => {
     await fixture.whenStable();
     fixture.detectChanges();
     expect(instance.ref().componentInstance).toBeTruthy();
+  });
+
+  it('content projection', async () => {
+    const customDiv = document.createElement('div');
+    customDiv.className = 'projected-content';
+    customDiv.textContent = 'Projected Content';
+    instance.selectlessOutletContent.set([[customDiv]]);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    let projectedEl = element.querySelector('.projected-content');
+    expect(projectedEl).toBeTruthy();
+    expect(projectedEl?.textContent).toEqual('Projected Content');
   });
 });

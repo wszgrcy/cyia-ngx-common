@@ -30,6 +30,7 @@ export class SelectorlessOutlet<T = any> {
 
   selectlessOutletInputs = input<Record<string, any>>();
   selectlessOutletOutputs = input<Record<string, (event: any) => unknown>>();
+  selectlessOutletContent = input<Node[][]>();
 
   selectlessOutletDirectives = input<
     {
@@ -72,9 +73,11 @@ export class SelectorlessOutlet<T = any> {
       const inputs = this.#inputValue$();
 
       const outputs = this.selectlessOutletOutputs() ?? {};
+      let content = this.selectlessOutletContent();
       this._componentRef = createComponent(this.selectlessOutlet(), {
         elementInjector: injector,
         environmentInjector: this.selectlessOutletEnvironmentInjector() ?? this.#environmentInjector,
+        projectableNodes: content,
         bindings: [
           ...Object.keys(inputs).map((key) => {
             return inputBinding(key, inputs[key]);
