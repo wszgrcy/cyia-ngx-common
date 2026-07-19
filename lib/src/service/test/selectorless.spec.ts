@@ -134,7 +134,10 @@ describe('selectorless', () => {
     class TestComp {
       open = signal(true);
     }
-    let { fixture, element, instance } = await createComponent(TestComp);
+    let { fixture, element, instance } = await createComponent(TestComp, [
+      reflectComponentType(Hello)!.selector,
+      reflectComponentType(World)!.selector,
+    ]);
     expect(element.textContent).eq('hello');
     instance.open.set(false);
     fixture.detectChanges();
@@ -163,7 +166,7 @@ describe('selectorless', () => {
     class TestComp {
       open = signal(true);
     }
-    let { fixture, element, instance } = await createComponent(TestComp);
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(Hello)!.selector]);
     expect(element.textContent).eq('hello');
     instance.open.set(false);
     fixture.detectChanges();
@@ -192,7 +195,7 @@ describe('selectorless', () => {
     class TestComp {
       open = signal(true);
     }
-    let { fixture, element, instance } = await createComponent(TestComp);
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(World)!.selector]);
     expect(element.textContent).eq('hello');
     instance.open.set(false);
     fixture.detectChanges();
@@ -246,7 +249,7 @@ describe('selectorless', () => {
       template: `@for(item of list();track $index){
         <span>{{ item }}</span>
         }`,
-      imports: [NgTemplateOutlet],
+      imports: [],
     })
     class TestComp {
       list = signal(['1', '2']);
@@ -281,7 +284,7 @@ describe('selectorless', () => {
     class TestComp {
       open = signal(true);
     }
-    let { fixture, element, instance } = await createComponent(TestComp);
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(Hello)!.selector]);
     expect(element.textContent).eq('hello');
     instance.open.set(false);
     fixture.detectChanges();
@@ -320,7 +323,7 @@ describe('selectorless', () => {
     class TestComp {
       open = signal(true);
     }
-    let { fixture, element, instance } = await createComponent(TestComp);
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(Hello)!.selector]);
     expect(element.textContent).eq('firsthellolast');
   });
   it('component-tag-component', async () => {
@@ -339,7 +342,114 @@ describe('selectorless', () => {
     class TestComp {
       open = signal(true);
     }
-    let { fixture, element, instance } = await createComponent(TestComp);
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(Hello)!.selector]);
     expect(element.textContent).eq('hellofirsthello');
+  });
+  it('component-ng-content-component', async () => {
+    @Component({
+      selector: 'child',
+      template: `<span><ng-content></ng-content> </span>`,
+    })
+    class Child {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<child><child>hello</child></child>`,
+      imports: [Child],
+    })
+    class TestComp {
+      open = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(Child)!.selector]);
+    expect(element.textContent).eq('hello');
+  });
+  it('component-switch', async () => {
+    @Component({
+      selector: 'child',
+      template: `<span>first</span><span><ng-content></ng-content></span><span>last</span>`,
+    })
+    class Child {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<child>@if(open()){hello}@else{world}</child>`,
+      imports: [Child],
+    })
+    class TestComp {
+      open = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(Child)!.selector]);
+    expect(element.textContent).eq('firsthellolast');
+    instance.open.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('firstworldlast');
+    instance.open.set(true);
+    fixture.detectChanges();
+    expect(element.textContent).eq('firsthellolast');
+  });
+  it('component-ng-content-dynamic', async () => {
+    @Component({
+      selector: 'child',
+      template: `<span>first</span
+        ><span>
+          @if(1){
+          <ng-content></ng-content>
+          } </span
+        ><span>last</span>`,
+    })
+    class Child {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<child>@if(open()){hello}@else{world}</child>`,
+      imports: [Child],
+    })
+    class TestComp {
+      open = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(Child)!.selector]);
+    expect(element.textContent).eq('firsthellolast');
+    instance.open.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('firstworldlast');
+    instance.open.set(true);
+    fixture.detectChanges();
+    expect(element.textContent).eq('firsthellolast');
+  });
+  it('component-ng-content-dynamic2', async () => {
+    @Component({
+      selector: 'child',
+      template: `<span>first</span
+        ><span>
+          @if(open()){
+          <ng-content></ng-content>
+          } </span
+        ><span>last</span>`,
+    })
+    class Child {
+      open = signal(true);
+      constructor() {
+        expect(inject(ElementRef).nativeElement).instanceOf(ProxyNode);
+      }
+    }
+
+    @Component({
+      template: `<child #child><span>hello</span></child>`,
+      imports: [Child],
+    })
+    class TestComp {
+      child = viewChild.required<Child>('child');
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(Child)!.selector]);
+    expect(element.textContent).eq('firsthellolast');
+    instance.child().open.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('firstlast');
+    instance.child().open.set(true);
+    fixture.detectChanges();
+    expect(element.textContent).eq('firsthellolast');
   });
 });

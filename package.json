@@ -15,7 +15,8 @@
     "postbuild:lib": "cpx README.md ./dist/cyia-ngx-common",
     "update": "ng update @angular/cdk@22 @angular/material@22 @angular/cli@22 --force --allow-dirty",
     "version": "ng version",
-    "release-publish": "npm run build:lib && npm publish ./dist/cyia-ngx-common"
+    "release-publish": "npm run build:lib && npm publish ./dist/cyia-ngx-common",
+    "coverage": "ng test lib --coverage --watch false"
   },
   "private": true,
   "dependencies": {
@@ -46,6 +47,7 @@
     "@types/mockjs": "^1.0.2",
     "@types/node": "^26.1.1",
     "@vitest/browser-playwright": "^4.1.10",
+    "@vitest/coverage-v8": "^4.1.10",
     "codelyzer": "^6.0.0",
     "cpx": "^1.5.0",
     "highlight.js": "10.1.2",
