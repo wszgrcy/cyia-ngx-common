@@ -16,13 +16,13 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import { DomRendererFactory2 } from '../dom_renderer';
-import { excludeTag, resetTag } from '../exclude-component';
+import { selectorlessExcludeTag, selectorlessResetTag } from '../exclude-component';
 import { ProxyNode } from '../proxy-node';
 import { NgTemplateOutlet } from '@angular/common';
 async function createComponent<T>(Comp: Type<T>, tagList?: string[]) {
-  resetTag();
+  selectorlessResetTag();
   tagList?.forEach((item) => {
-    excludeTag(item);
+    selectorlessExcludeTag(item);
   });
   let tb: TestBed;
   let fixture: ComponentFixture<T>;

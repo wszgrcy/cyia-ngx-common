@@ -1,11 +1,11 @@
 export const ExcludeTagSet = new Set<string>();
-export function excludeTag(tag: string, remove?: boolean) {
+export function selectorlessExcludeTag(tag: string, remove?: boolean) {
   if (remove) {
     ExcludeTagSet.delete(tag);
   } else {
     ExcludeTagSet.add(tag);
   }
 }
-export function resetTag() {
+export function selectorlessResetTag() {
   ExcludeTagSet.clear();
 }
