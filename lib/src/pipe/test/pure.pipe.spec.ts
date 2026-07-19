@@ -39,7 +39,7 @@ describe('pure-pipe', () => {
   });
 
   it('sync', () => {
-    let el = element.querySelector('div.pure-wrapper');
+    let el = element.querySelector('div.pure-wrapper')!;
     expect(el.innerHTML).toEqual('1');
     instance.value$.set(2);
     fixture.detectChanges();

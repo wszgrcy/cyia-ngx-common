@@ -42,7 +42,11 @@ const modifierGuards: Record<string, (e: Event, modifiers: string[]) => boolean>
 const RemoveModifiers = ['stop', 'prevent', 'self', 'left', 'middle', 'right', 'exact'];
 type Data = any;
 const DISABLED = Symbol('DISABLED');
-function withModifiers<T extends (event: any) => any>(fn: T, modifiers: string[], customEventModifier: EventModifiers) {
+function withModifiers<T extends (event: any) => any>(
+  fn: T,
+  modifiers: string[],
+  customEventModifier?: EventModifiers
+) {
   return ((data, ...args) => {
     const modifierFn = (item: string, data: Data) => {
       if (item === 'once') {
@@ -104,8 +108,8 @@ const HOOKED_EVENT = Symbol('HOOKED_EVENT');
 @Injectable()
 export class EventModifiersPlugin extends EventManagerPlugin {
   #options = inject(EVENT_MODIFIER_OPTIONS, { optional: true }) ?? {};
-  constructor(@Inject(DOCUMENT) doc: any) {
-    super(doc);
+  constructor() {
+    super(inject(DOCUMENT));
   }
   supports(eventName: string): boolean {
     return true;
@@ -123,7 +127,7 @@ export class EventModifiersPlugin extends EventManagerPlugin {
         let define = reflectComponentType(maybeComponent.constructor)!;
         let list = define.outputs;
         if (list.length) {
-          let item = list.find((item) => item.templateName === name);
+          let item = list.find((item) => item.templateName === name)!;
           let outputP = maybeComponent[item.propName];
           if (outputP) {
             const propertyName = item.propName;

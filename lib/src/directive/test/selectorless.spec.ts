@@ -20,7 +20,6 @@ import { SelectorlessOutlet } from '../selectorless-outlet';
     </ng-template>
   `,
   standalone: true,
-  imports: [SelectorlessOutlet],
 })
 class DComp {
   templateRef = viewChild.required('templateRef');
@@ -73,7 +72,7 @@ describe('selectorless', () => {
   it('hello', async () => {
     await fixture.whenStable();
     fixture.detectChanges();
-    let el = element.querySelector('div.d-wrapper');
+    let el = element.querySelector('div.d-wrapper')!;
     expect(el).toBeTruthy();
     expect(el.innerHTML).toEqual('1');
     instance.value$.set(2);
