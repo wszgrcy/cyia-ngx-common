@@ -1,6 +1,6 @@
-export type CommonNode = HTMLElement;
-export type ContainerNode = HTMLElement;
-export type ChildNode = HTMLElement | ProxyNode;
+export type CommonNode = Node;
+export type ContainerNode = Node;
+export type ChildNode = Node | ProxyNode;
 function isTemplateNode(node: any): node is HTMLTemplateElement {
   return node.tagName === 'TEMPLATE' && node.content !== undefined;
 }
@@ -99,9 +99,10 @@ export class ProxyNode {
       return undefined;
     }
     // todo 是否可以改造，实现更方便的位置获取
-    return container.children[count] as HTMLElement;
+
+    return (container as HTMLElement).children[count] as HTMLElement;
   }
-  #removeContainerChild(child: CommonNode) {
+  #removeContainerChild(child: any) {
     child.remove();
   }
   #removeAllOnly() {

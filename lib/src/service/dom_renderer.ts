@@ -284,7 +284,11 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   destroy(): void {}
 
-  destroyNode = null;
+  destroyNode(node: any) {
+    if (node instanceof Node) {
+      this.nodeContext.boxMap.delete(node);
+    }
+  }
   createProxy() {
     return new ProxyNode(this.nodeContext);
   }
@@ -383,7 +387,7 @@ class DefaultDomRenderer2 implements Renderer2 {
       if (isProxyNode(oldChild)) {
         oldChild.unlinkContainer();
       } else {
-        oldChild.remove();
+        (oldChild as any).remove();
       }
     }
     this.nodeContext.removeChild(container as any, oldChild);
