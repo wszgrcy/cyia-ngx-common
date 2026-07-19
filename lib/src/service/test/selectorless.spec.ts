@@ -12,10 +12,13 @@ import {
   inject,
   ElementRef,
   reflectComponentType,
+  TemplateRef,
+  ViewContainerRef,
 } from '@angular/core';
 import { DomRendererFactory2 } from '../dom_renderer';
 import { excludeTag, resetTag } from '../exclude-component';
 import { ProxyNode } from '../proxy-node';
+import { NgTemplateOutlet } from '@angular/common';
 async function createComponent<T>(Comp: Type<T>, tagList?: string[]) {
   resetTag();
   tagList?.forEach((item) => {
@@ -66,5 +69,277 @@ describe('selectorless', () => {
     let { fixture, element, instance } = await createComponent(TestParent, [reflectComponentType(TestComp)!.selector]);
     expect(element.textContent).eq('hello');
     expect(instance.ref().el.nativeElement).instanceOf(ProxyNode);
+  });
+  it('if-hello', async () => {
+    @Component({
+      template: `@if(open()){
+        <div>hello</div>
+        }`,
+    })
+    class TestComp {
+      open = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('hello');
+    instance.open.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('');
+    instance.open.set(true);
+    fixture.detectChanges();
+    expect(element.textContent).eq('hello');
+  });
+  it('if-else', async () => {
+    @Component({
+      template: `@if(open()){
+        <div>hello</div>
+        }@else{
+        <span>world</span>
+        }`,
+    })
+    class TestComp {
+      open = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('hello');
+    instance.open.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('world');
+    instance.open.set(true);
+    fixture.detectChanges();
+    expect(element.textContent).eq('hello');
+  });
+  it('if-else-component', async () => {
+    @Component({
+      selector: 'hello',
+      template: `<div>hello</div>`,
+    })
+    class Hello {
+      el = inject(ElementRef);
+    }
+    @Component({
+      selector: 'world',
+      template: `<span>world</span>`,
+    })
+    class World {
+      el = inject(ElementRef);
+    }
+    @Component({
+      template: `@if(open()){
+        <hello></hello>
+        }@else{
+        <world></world>
+        }`,
+      imports: [Hello, World],
+    })
+    class TestComp {
+      open = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('hello');
+    instance.open.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('world');
+    instance.open.set(true);
+    fixture.detectChanges();
+    expect(element.textContent).eq('hello');
+  });
+  it('if-else-component-text', async () => {
+    @Component({
+      selector: 'hello',
+      template: `<div>hello</div>`,
+    })
+    class Hello {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@if(open()){
+        <hello></hello>
+        }@else{
+        <span>world</span>
+        }`,
+      imports: [Hello],
+    })
+    class TestComp {
+      open = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('hello');
+    instance.open.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('world');
+    instance.open.set(true);
+    fixture.detectChanges();
+    expect(element.textContent).eq('hello');
+  });
+  it('if-else-text-component', async () => {
+    @Component({
+      selector: 'world',
+      template: `<div>world</div>`,
+    })
+    class World {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@if(open()){
+        <div>hello</div>
+        }@else{
+        <world></world>
+        }`,
+      imports: [World],
+    })
+    class TestComp {
+      open = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('hello');
+    instance.open.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('world');
+    instance.open.set(true);
+    fixture.detectChanges();
+    expect(element.textContent).eq('hello');
+  });
+  it('ng-template', async () => {
+    @Component({
+      template: `
+        <ng-template #hello>hello</ng-template>
+
+        <ng-container *ngTemplateOutlet="hello"></ng-container>
+      `,
+      imports: [NgTemplateOutlet],
+    })
+    class TestComp {
+      open = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('hello');
+  });
+  it('if-ng-template', async () => {
+    @Component({
+      template: ` <ng-template #hello>hello</ng-template>
+        <ng-template #world>world</ng-template>
+
+        @if(open()){
+        <ng-container *ngTemplateOutlet="hello"></ng-container>
+
+        }@else{
+        <ng-container *ngTemplateOutlet="world"></ng-container>
+        }`,
+      imports: [NgTemplateOutlet],
+    })
+    class TestComp {
+      open = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('hello');
+    instance.open.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('world');
+    instance.open.set(true);
+    fixture.detectChanges();
+    expect(element.textContent).eq('hello');
+  });
+  it('list', async () => {
+    @Component({
+      template: `@for(item of list();track $index){
+        <span>{{ item }}</span>
+        }`,
+      imports: [NgTemplateOutlet],
+    })
+    class TestComp {
+      list = signal(['1', '2']);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('12');
+    instance.list.set([]);
+    fixture.detectChanges();
+    expect(element.textContent).eq('');
+    instance.list.set(['1', '2', '3']);
+    fixture.detectChanges();
+    expect(element.textContent).eq('123');
+  });
+
+  it('ng-content', async () => {
+    @Component({
+      selector: 'hello',
+      template: `<div><ng-content></ng-content></div>`,
+    })
+    class Hello {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@if(open()){
+        <hello>hello</hello>
+        }@else{
+        <hello>world</hello>
+        }`,
+      imports: [Hello],
+    })
+    class TestComp {
+      open = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('hello');
+    instance.open.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('world');
+    instance.open.set(true);
+    fixture.detectChanges();
+    expect(element.textContent).eq('hello');
+  });
+  it('ViewContainerRef', async () => {
+    @Component({
+      template: `<ng-template #ref><span>world</span></ng-template> <span #vc>hello</span>`,
+    })
+    class TestComp {
+      vc = viewChild.required('vc', { read: ViewContainerRef });
+      ref = viewChild.required<TemplateRef<any>>('ref');
+      ngOnInit(): void {
+        this.vc().createEmbeddedView(this.ref());
+      }
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('helloworld');
+  });
+  it('tag-component-tag', async () => {
+    @Component({
+      selector: 'hello',
+      template: `<span>hello</span>`,
+    })
+    class Hello {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<span>first</span><hello></hello><span>last</span>`,
+      imports: [Hello],
+    })
+    class TestComp {
+      open = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('firsthellolast');
+  });
+  it('component-tag-component', async () => {
+    @Component({
+      selector: 'hello',
+      template: `<span>hello</span>`,
+    })
+    class Hello {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<hello></hello><span>first</span><hello></hello>`,
+      imports: [Hello],
+    })
+    class TestComp {
+      open = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('hellofirsthello');
   });
 });
