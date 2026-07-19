@@ -1,7 +1,7 @@
 {
   "name": "@cyia/ngx-common",
-  "version": "20.1.0",
-  "description": "cyia公共模块",
+  "version": "22.0.0",
+  "description": "selectorless/purepipe/event modifier",
   "keywords": [
     "angular",
     "common",
