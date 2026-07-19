@@ -1,7 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "./",
+    "rootDir": "./src",
     "sourceRoot": "./",
     "declarationMap": true,
     "outDir": "../out-tsc/lib",
@@ -16,15 +16,18 @@
     "importHelpers": true,
     "types": [],
     "lib": ["dom", "es2015", "esnext"],
-    "paths": {
-      "@cyia/ngx-common/loading-hint": ["./src/loading-hint"],
-      "@cyia/ngx-common/repository": ["./src/repository"],
-      "@cyia/ngx-common/util": ["./src/util"],
-      "@cyia/ngx-common/monaco-textmate": ["./src/monaco-textmate"]
-    }
+    "paths": {}
   },
-
   "exclude": ["src/test.ts", "**/*.spec.ts"],
   "files": ["./src/index.ts"],
-  "include": []
+  "include": [],
+  "angularCompilerOptions": {
+    "extendedDiagnostics": {
+      "checks": {
+        "nullishCoalescingNotNullable": "suppress",
+        "optionalChainNotNullable": "suppress"
+      }
+    },
+    "strictTemplates": true
+  }
 }

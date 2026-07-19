@@ -17,17 +17,19 @@
           },
           "configurations": {
             "production": {
-              "project": "lib/src/ng-package.prod.json",
               "tsConfig": "lib/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "lib/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "sourceMap": true,
-            "tsConfig": "lib/tsconfig.spec.json"
+            "tsConfig": "lib/tsconfig.spec.json",
+            "browsers": ["chromium"]
           }
         }
       }
@@ -50,7 +52,7 @@
               "base": "dist/examples"
             },
             "index": "examples/src/index.html",
-            "polyfills": ["zone.js"],
+            "polyfills": [],
             "tsConfig": "examples/tsconfig.app.json",
             "aot": true,
             "assets": [
@@ -62,7 +64,7 @@
                 "output": "assets/vscode-oniguruma"
               }
             ],
-            "styles": ["examples/src/styles.scss", "./node_modules/monaco-editor/min/vs/editor/editor.main.css"],
+            "styles": ["examples/src/styles.scss"],
             "scripts": [],
             "browser": "examples/src/main.ts"
           },

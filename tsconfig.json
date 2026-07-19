@@ -1,7 +1,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
@@ -10,12 +9,20 @@
     "moduleResolution": "bundler",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "ES2015",
-    "typeRoots": ["node_modules/@types"],
-    "lib": ["es2018", "dom"],
+    "target": "ES2022",
     "paths": {
       "@cyia/ngx-common": ["./lib/src"],
-      "@cyia/ngx-common/*": ["lib/src/*"]
+      "@cyia/ngx-common/*": ["./lib/src/*"]
     }
-  }
+  },
+  "include": [],
+  "files": [],
+  "references": [
+    {
+      "path": "./lib/tsconfig.lib.json"
+    },
+    {
+      "path": "./lib/tsconfig.spec.json"
+    }
+  ]
 }

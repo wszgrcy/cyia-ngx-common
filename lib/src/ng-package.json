@@ -3,6 +3,6 @@
   "dest": "../../dist/cyia-ngx-common",
   "deleteDestPath": true,
   "lib": {
-    "entryFile": "./public_api.ts"
+    "entryFile": "./index.ts"
   }
 }

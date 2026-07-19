@@ -1,4 +1,4 @@
-import { DOCUMENT, enableProdMode, NgModuleRef } from '@angular/core';
+import { DOCUMENT, enableProdMode, NgModuleRef, provideZoneChangeDetection } from '@angular/core';
 
 import { environment } from './environments/environment';
 import { bootstrapApplication, EVENT_MANAGER_PLUGINS } from '@angular/platform-browser';
@@ -10,6 +10,7 @@ if (environment.production) {
 }
 bootstrapApplication(AppComponent, {
   providers: [
+    provideZoneChangeDetection(),
     EventModifiersPlugin,
     {
       provide: EVENT_MANAGER_PLUGINS,
