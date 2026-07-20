@@ -330,7 +330,7 @@ class DefaultDomRenderer2 implements Renderer2 {
       if (isProxyNode(newChild)) {
         newChild.linkContainer(parent);
       } else {
-        const maybeParentProxy = this.nodeContext.findDescendantParent(newChild);
+        const maybeParentProxy = this.nodeContext.parentNode(newChild);
         if (maybeParentProxy) {
           maybeParentProxy.remove(newChild);
         }
@@ -355,7 +355,7 @@ class DefaultDomRenderer2 implements Renderer2 {
       if (isProxyNode(newChild)) {
         newChild.linkContainer(parent, refChild ?? undefined);
       } else {
-        const maybeParentProxy = this.nodeContext.findDescendantParent(newChild);
+        const maybeParentProxy = this.nodeContext.parentNode(newChild);
         if (maybeParentProxy) {
           maybeParentProxy.remove(newChild);
         }
@@ -376,7 +376,7 @@ class DefaultDomRenderer2 implements Renderer2 {
     if (isProxyNode(oldChild)) {
       container = oldChild.parentNode!;
     } else {
-      container = this.nodeContext.findDescendantParent(oldChild) ?? this.parentNode(oldChild)!;
+      container = this.nodeContext.parentNode(oldChild) ?? this.parentNode(oldChild)!;
     }
     if (!container) {
       return;
@@ -412,7 +412,7 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   parentNode(node: any): any {
-    return this.nodeContext.findDescendantParent(node);
+    return this.nodeContext.parentNode(node);
   }
 
   nextSibling(node: ChildNode): any {

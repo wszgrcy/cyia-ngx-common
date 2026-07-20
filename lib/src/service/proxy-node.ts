@@ -128,7 +128,7 @@ export class ProxyNode {
   }
 
   appendChild(newChild: CommonNode, refChild?: ChildNode | null) {
-    const oldParent = this.context.findDescendantParent(newChild);
+    const oldParent = this.context.parentNode(newChild);
     if (oldParent) {
       oldParent.remove(newChild);
     }
@@ -216,7 +216,7 @@ export class ProxyNodeContext {
 
     this.boxMap.set(parent, instance);
   }
-  findDescendantParent(node: CommonNode): ProxyNode | null {
+  parentNode(node: CommonNode): ProxyNode | null {
     const maybeParent = node.parentNode;
     if (!maybeParent) {
       return null;
