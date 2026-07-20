@@ -412,7 +412,7 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   parentNode(node: any): any {
-    return node.parentNode;
+    return this.nodeContext.findDescendantParent(node);
   }
 
   nextSibling(node: ChildNode): any {

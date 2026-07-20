@@ -675,7 +675,7 @@ describe('selectorless', () => {
 
     @Component({
       template: `<ng-container *ngComponentOutlet="compType"></ng-container>`,
-      imports: [DynamicComp, NgComponentOutlet],
+      imports: [NgComponentOutlet],
     })
     class TestComp {
       compType = DynamicComp;
@@ -703,7 +703,7 @@ describe('selectorless', () => {
 
     @Component({
       template: `<ng-container *ngComponentOutlet="compType()"></ng-container>`,
-      imports: [CompA, CompB, NgComponentOutlet],
+      imports: [NgComponentOutlet],
     })
     class TestComp {
       compType = signal<Type<any>>(CompA);
@@ -731,7 +731,7 @@ describe('selectorless', () => {
 
     @Component({
       template: `<ng-container *ngComponentOutlet="compType; inputs: compInputs"></ng-container>`,
-      imports: [InputComp, NgComponentOutlet],
+      imports: [NgComponentOutlet],
     })
     class TestComp {
       compType = InputComp;
@@ -825,7 +825,7 @@ describe('selectorless', () => {
 
     @Component({
       template: `@if(show()){ <ng-container *ngComponentOutlet="DynComp"></ng-container> }`,
-      imports: [DynComp, NgComponentOutlet],
+      imports: [NgComponentOutlet],
     })
     class TestComp {
       show = signal(true);
@@ -1083,7 +1083,7 @@ describe('selectorless', () => {
 
     @Component({
       template: `<span>first</span><ng-container *ngComponentOutlet="Dyn"></ng-container>`,
-      imports: [Dyn, NgComponentOutlet],
+      imports: [NgComponentOutlet],
     })
     class TestComp {
       Dyn = Dyn;
@@ -1204,7 +1204,7 @@ describe('selectorless', () => {
 
     @Component({
       template: `<static-comp></static-comp><ng-container *ngComponentOutlet="DynComp"></ng-container>`,
-      imports: [StaticComp, DynComp, NgComponentOutlet],
+      imports: [StaticComp, NgComponentOutlet],
     })
     class TestComp {
       DynComp = DynComp;
@@ -1448,6 +1448,11 @@ describe('selectorless', () => {
 
     @Component({
       template: `<ng-container *ngComponentOutlet="DynComp"></ng-container>@for(item of items(); track item){{{ item
+
+
+
+
+
         }}}`,
       imports: [NgComponentOutlet],
     })
@@ -1851,6 +1856,11 @@ describe('selectorless', () => {
   it('group-3-for-tag-for', async () => {
     @Component({
       template: `@for(item of items1(); track item){{{ item }}}<span>MIDDLE</span>@for(item of items2(); track item){{{ item
+
+
+
+
+
         }}}`,
     })
     class TestComp {
@@ -2643,5 +2653,2124 @@ describe('selectorless', () => {
     }
     let { fixture, element } = await createComponent(TestComp, [reflectComponentType(MyComp)!.selector]);
     expect(element.textContent).eq('templatecompend');
+  });
+
+  // ==================== 补充缺失的3元素分组测试 ====================
+
+  // 元素 + 组件直接 + 组件动态
+  it('group-3-tag-component-component-outlet', async () => {
+    @Component({
+      selector: 'static-comp',
+      template: `static`,
+    })
+    class StaticComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<span>first</span><static-comp></static-comp
+        ><ng-container *ngComponentOutlet="DynComp"></ng-container>`,
+      imports: [StaticComp, NgComponentOutlet],
+    })
+    class TestComp {
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [
+      reflectComponentType(StaticComp)!.selector,
+      reflectComponentType(DynComp)!.selector,
+    ]);
+    expect(element.textContent).eq('firststaticdynamic');
+  });
+
+  // 元素 + 模板动态 + 组件动态
+  it('group-3-tag-template-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <ng-template #t>template</ng-template>
+        <span>first</span>
+        <ng-container *ngTemplateOutlet="t"></ng-container>
+        <ng-container *ngComponentOutlet="DynComp"></ng-container>
+      `,
+      imports: [NgTemplateOutlet, NgComponentOutlet],
+    })
+    class TestComp {
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('firsttemplatedynamic');
+  });
+
+  // 组件直接 + 元素 + 组件动态
+  it('group-3-component-tag-component-outlet', async () => {
+    @Component({
+      selector: 'static-comp',
+      template: `static`,
+    })
+    class StaticComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<static-comp></static-comp><span>MIDDLE</span
+        ><ng-container *ngComponentOutlet="DynComp"></ng-container>`,
+      imports: [StaticComp, NgComponentOutlet],
+    })
+    class TestComp {
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [
+      reflectComponentType(StaticComp)!.selector,
+      reflectComponentType(DynComp)!.selector,
+    ]);
+    expect(element.textContent).eq('staticMIDDLEdynamic');
+  });
+
+  // 组件直接 + 模板动态 + 组件动态
+  it('group-3-component-template-component-outlet', async () => {
+    @Component({
+      selector: 'static-comp',
+      template: `static`,
+    })
+    class StaticComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<static-comp></static-comp><ng-template #t>template</ng-template
+        ><ng-container *ngTemplateOutlet="t"></ng-container><ng-container *ngComponentOutlet="DynComp"></ng-container>`,
+      imports: [StaticComp, NgTemplateOutlet, NgComponentOutlet],
+    })
+    class TestComp {
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [
+      reflectComponentType(StaticComp)!.selector,
+      reflectComponentType(DynComp)!.selector,
+    ]);
+    expect(element.textContent).eq('statictemplatedynamic');
+  });
+
+  // 模板动态 + 元素 + 组件动态
+  it('group-3-template-tag-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <ng-template #t>template</ng-template>
+        <ng-container *ngTemplateOutlet="t"></ng-container>
+        <span>MIDDLE</span>
+        <ng-container *ngComponentOutlet="DynComp"></ng-container>
+      `,
+      imports: [NgTemplateOutlet, NgComponentOutlet],
+    })
+    class TestComp {
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('templateMIDDLEdynamic');
+  });
+
+  // 模板动态 + 组件动态 + 元素
+  it('group-3-template-component-outlet-tag', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <ng-template #t>template</ng-template>
+        <ng-container *ngTemplateOutlet="t"></ng-container>
+        <ng-container *ngComponentOutlet="DynComp"></ng-container>
+        <span>last</span>
+      `,
+      imports: [NgTemplateOutlet, NgComponentOutlet],
+    })
+    class TestComp {
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('templatedynamiclast');
+  });
+
+  // 组件动态 + 元素 + 模板动态
+  it('group-3-component-outlet-tag-template', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <ng-container *ngComponentOutlet="DynComp"></ng-container>
+        <span>MIDDLE</span>
+        <ng-template #t>template</ng-template>
+        <ng-container *ngTemplateOutlet="t"></ng-container>
+      `,
+      imports: [NgComponentOutlet, NgTemplateOutlet],
+    })
+    class TestComp {
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('dynamicMIDDLEtemplate');
+  });
+
+  // 组件动态 + 模板动态 + 元素
+  it('group-3-component-outlet-template-tag', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <ng-container *ngComponentOutlet="DynComp"></ng-container>
+        <ng-template #t>template</ng-template>
+        <ng-container *ngTemplateOutlet="t"></ng-container>
+        <span>last</span>
+      `,
+      imports: [NgComponentOutlet, NgTemplateOutlet],
+    })
+    class TestComp {
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('dynamictemplatelast');
+  });
+
+  // @if条件 + 组件动态 + @if条件
+  it('group-3-if-component-outlet-if', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<ng-container *ngComponentOutlet="DynComp"></ng-container>@if(a()){A}@if(b()){B}`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      a = signal(true);
+      b = signal(true);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('dynamicAB');
+    instance.a.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('dynamicB');
+  });
+
+  // @for循环 + 组件动态 + @for循环
+  it('group-3-for-component-outlet-for', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@for(item of items1(); track item){{{ item }}}<ng-container *ngComponentOutlet="DynComp"></ng-container
+        >@for(item of items2(); track item){{{ item }}}`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      items1 = signal(['a']);
+      items2 = signal(['b']);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('adynamicb');
+  });
+
+  // @switch + 组件动态 + @switch
+  it('group-3-switch-component-outlet-switch', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@switch(s1()){ @case(1){A} }<ng-container *ngComponentOutlet="DynComp"></ng-container>@switch(s2()){
+        @case(2){B} }`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      s1 = signal(1);
+      s2 = signal(2);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('AdynamicB');
+  });
+
+  // 组件动态 + @if条件 + 组件动态
+  it('group-3-component-outlet-if-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<ng-container *ngComponentOutlet="DynComp"></ng-container>@if(show()){ <span>M</span> }<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('dynamicMdynamic');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('dynamicdynamic');
+  });
+
+  // 组件动态 + @for循环 + 组件动态
+  it('group-3-component-outlet-for-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<ng-container *ngComponentOutlet="DynComp"></ng-container>@for(item of items(); track item){{{ item
+
+
+
+
+        }}}<ng-container *ngComponentOutlet="DynComp"></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      items = signal(['x']);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('dynamicxdynamic');
+  });
+
+  // 组件动态 + @switch + 组件动态
+  it('group-3-component-outlet-switch-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<ng-container *ngComponentOutlet="DynComp"></ng-container>@switch(state()){ @case(1){M} }<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      state = signal(1);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('dynamicMdynamic');
+  });
+
+  // 元素 + @if条件 + 组件动态
+  it('group-3-tag-if-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<span>first</span>@if(show()){ <span>middle</span> }<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('firstmiddledynamic');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('firstdynamic');
+  });
+
+  // 元素 + @for循环 + 组件动态
+  it('group-3-tag-for-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<span>before</span>@for(item of items(); track item){{{ item }}}<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      items = signal(['x']);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('beforexdynamic');
+  });
+
+  // 元素 + @switch + 组件动态
+  it('group-3-tag-switch-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<span>before</span>@switch(state()){ @case(1){ <span>M</span> } }<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      state = signal(1);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('beforeMdynamic');
+  });
+
+  // @if条件 + 元素 + 组件动态
+  it('group-3-if-tag-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@if(show()){ <span>first</span> }<span>MIDDLE</span
+        ><ng-container *ngComponentOutlet="DynComp"></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('firstMIDDLEdynamic');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('MIDDLEdynamic');
+  });
+
+  // @for循环 + 元素 + 组件动态
+  it('group-3-for-tag-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@for(item of items(); track item){{{ item }}}<span>MIDDLE</span
+        ><ng-container *ngComponentOutlet="DynComp"></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      items = signal(['x']);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('xMIDDLEdynamic');
+  });
+
+  // @switch + 元素 + 组件动态
+  it('group-3-switch-tag-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@switch(state()){ @case(1){ <span>first</span> } }<span>MIDDLE</span
+        ><ng-container *ngComponentOutlet="DynComp"></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      state = signal(1);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('firstMIDDLEdynamic');
+  });
+
+  // 组件动态 + 元素 + @if条件
+  it('group-3-component-outlet-tag-if', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<ng-container *ngComponentOutlet="DynComp"></ng-container><span>MIDDLE</span>@if(show()){
+        <span>last</span> }`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('dynamicMIDDLElast');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('dynamicMIDDLE');
+  });
+
+  // 组件动态 + 元素 + @for循环
+  it('group-3-component-outlet-tag-for', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<ng-container *ngComponentOutlet="DynComp"></ng-container><span>MIDDLE</span>@for(item of items();
+        track item){{{ item }}}`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      items = signal(['x']);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('dynamicMIDDLEx');
+  });
+
+  // 组件动态 + 元素 + @switch
+  it('group-3-component-outlet-tag-switch', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<ng-container *ngComponentOutlet="DynComp"></ng-container><span>MIDDLE</span>@switch(state()){
+        @case(1){ <span>last</span> } }`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      state = signal(1);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('dynamicMIDDLElast');
+  });
+
+  // @if条件 + 组件动态 + 元素
+  it('group-3-if-component-outlet-tag', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@if(show()){ <ng-container *ngComponentOutlet="DynComp"></ng-container> }<span>MIDDLE</span
+        ><span>last</span>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('dynamicMIDDLElast');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('MIDDLElast');
+  });
+
+  // @for循环 + 组件动态 + 元素
+  it('group-3-for-component-outlet-tag', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@for(item of items(); track item){{{ item }}}<ng-container *ngComponentOutlet="DynComp"></ng-container
+        ><span>last</span>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      items = signal(['x']);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('xdynamiclast');
+  });
+
+  // @switch + 组件动态 + 元素
+  it('group-3-switch-component-outlet-tag', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@switch(state()){ @case(1){ <span>first</span> } }<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container
+        ><span>last</span>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      state = signal(1);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('firstdynamiclast');
+  });
+
+  // @if条件 + 组件动态 + 模板动态
+  it('group-3-if-component-outlet-template', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@if(show()){ <ng-container *ngComponentOutlet="DynComp"></ng-container> }<ng-template #t
+          >template</ng-template
+        ><ng-container *ngTemplateOutlet="t"></ng-container>`,
+      imports: [NgComponentOutlet, NgTemplateOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('dynamictemplate');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('template');
+  });
+
+  // @for循环 + 组件动态 + 模板动态
+  it('group-3-for-component-outlet-template', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@for(item of items(); track item){{{ item }}}<ng-container *ngComponentOutlet="DynComp"></ng-container
+        ><ng-template #t>template</ng-template><ng-container *ngTemplateOutlet="t"></ng-container>`,
+      imports: [NgComponentOutlet, NgTemplateOutlet],
+    })
+    class TestComp {
+      items = signal(['x']);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('xdynamictemplate');
+  });
+
+  // @switch + 组件动态 + 模板动态
+  it('group-3-switch-component-outlet-template', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@switch(state()){ @case(1){ <span>first</span> } }<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container
+        ><ng-template #t>template</ng-template><ng-container *ngTemplateOutlet="t"></ng-container>`,
+      imports: [NgComponentOutlet, NgTemplateOutlet],
+    })
+    class TestComp {
+      state = signal(1);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('firstdynamictemplate');
+  });
+
+  // @if条件 + 模板动态 + 组件动态
+  it('group-3-if-template-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<ng-template #t>template</ng-template>@if(show()){
+        <ng-container *ngTemplateOutlet="t"></ng-container> }<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container>`,
+      imports: [NgComponentOutlet, NgTemplateOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('templatedynamic');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('dynamic');
+  });
+
+  // @for循环 + 模板动态 + 组件动态
+  it('group-3-for-template-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<ng-template #t>template</ng-template>@for(item of items(); track item){{{ item }}}<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      items = signal(['x']);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('xdynamic');
+  });
+
+  // @switch + 模板动态 + 组件动态
+  it('group-3-switch-template-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<ng-template #t>template</ng-template>@switch(state()){ @case(1){ <span>M</span> } }<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      state = signal(1);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('Mdynamic');
+  });
+
+  // @if条件 + @for循环 + 组件动态 (3个)
+  it('group-3-if-for-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@if(show()){A}@for(item of items(); track item){{{ item }}}<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+      items = signal(['x']);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('Axdynamic');
+  });
+
+  // @if条件 + @switch + 组件动态 (3个)
+  it('group-3-if-switch-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@if(show()){A}@switch(state()){ @case(1){M} }<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+      state = signal(1);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('AMdynamic');
+  });
+
+  // @for循环 + @if条件 + 组件动态 (3个)
+  it('group-3-for-if-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@for(item of items(); track item){{{ item }}}@if(show()){ <span>M</span> }<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      items = signal(['x']);
+      show = signal(true);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('xMdynamic');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('xdynamic');
+  });
+
+  // @for循环 + @switch + 组件动态 (3个)
+  it('group-3-for-switch-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@for(item of items(); track item){{{ item }}}@switch(state()){ @case(1){M} }<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      items = signal(['x']);
+      state = signal(1);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('xMdynamic');
+  });
+
+  // @switch + @if条件 + 组件动态 (3个)
+  it('group-3-switch-if-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@switch(state()){ @case(1){A} }@if(show()){ <span>M</span> }<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      state = signal(1);
+      show = signal(true);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('AMdynamic');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('Adynamic');
+  });
+
+  // @switch + @for循环 + 组件动态 (3个)
+  it('group-3-switch-for-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@switch(state()){ @case(1){A} }@for(item of items(); track item){{{ item }}}<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      state = signal(1);
+      items = signal(['x']);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('Axdynamic');
+  });
+
+  // @if条件 + 组件动态 + @for循环 (3个)
+  it('group-3-if-component-outlet-for', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@if(show()){A}<ng-container *ngComponentOutlet="DynComp"></ng-container>@for(item of items(); track
+        item){{{ item }}}`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+      items = signal(['x']);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('Adynamicx');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('dynamicx');
+  });
+
+  // @for循环 + 组件动态 + @if条件 (3个)
+  it('group-3-for-component-outlet-if', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@for(item of items(); track item){{{ item }}}<ng-container *ngComponentOutlet="DynComp"></ng-container
+        >@if(show()){ <span>M</span> }`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      items = signal(['x']);
+      show = signal(true);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('xdynamicM');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('xdynamic');
+  });
+
+  // @switch + 组件动态 + @for循环 (3个)
+  it('group-3-switch-component-outlet-for', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@switch(state()){ @case(1){A} }<ng-container *ngComponentOutlet="DynComp"></ng-container>@for(item of
+        items(); track item){{{ item }}}`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      state = signal(1);
+      items = signal(['x']);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('Adynamicx');
+  });
+
+  // @for循环 + 组件动态 + @switch (3个)
+  it('group-3-for-component-outlet-switch', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@for(item of items(); track item){{{ item }}}<ng-container *ngComponentOutlet="DynComp"></ng-container
+        >@switch(state()){ @case(1){M} }`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      items = signal(['x']);
+      state = signal(1);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('xdynamicM');
+  });
+
+  // @if条件 + 组件动态 + @switch (3个)
+  it('group-3-if-component-outlet-switch', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@if(show()){A}<ng-container *ngComponentOutlet="DynComp"></ng-container>@switch(state()){ @case(1){M} }`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+      state = signal(1);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('AdynamicM');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('dynamicM');
+  });
+
+  // @switch + 组件动态 + @if条件 (3个)
+  it('group-3-switch-component-outlet-if', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@switch(state()){ @case(1){A} }<ng-container *ngComponentOutlet="DynComp"></ng-container>@if(show()){
+        <span>M</span> }`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      state = signal(1);
+      show = signal(true);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('AdynamicM');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('Adynamic');
+  });
+
+  // ==================== 补充缺失的2元素分组测试 ====================
+
+  // 组件动态 + @if条件(验证else分支)
+  it('group-2-component-outlet-if-else', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<ng-container *ngComponentOutlet="DynComp"></ng-container>@if(show()){ <span>shown</span> }@else{
+        <span>hidden</span> }`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('dynamicshown');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('dynamichidden');
+  });
+
+  // @if条件 + 组件动态(验证if的else分支)
+  it('group-2-if-component-outlet-else', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@if(show()){ <span>shown</span> }@else{ <span>hidden</span> }<ng-container
+          *ngComponentOutlet="DynComp"
+        ></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('showndynamic');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('hiddendynamic');
+  });
+
+  // @for循环 + @if条件(验证for为空时)
+  it('group-2-for-if-empty', async () => {
+    @Component({
+      template: `@for(item of items(); track item){{{ item }}}@empty{none}@if(show()){A}`,
+    })
+    class TestComp {
+      show = signal(true);
+      items = signal<string[]>([]);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('noneA');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('none');
+  });
+
+  // @if条件 + @for循环(验证if为false时)
+  it('group-2-if-for-false', async () => {
+    @Component({
+      template: `@if(show()){A}@for(item of items(); track item){{{ item }}}@empty{none}`,
+    })
+    class TestComp {
+      show = signal(false);
+      items = signal<string[]>([]);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('none');
+    instance.show.set(true);
+    fixture.detectChanges();
+    expect(element.textContent).eq('Anone');
+  });
+
+  // @switch + @for循环(验证switch default时)
+  it('group-2-switch-for-default', async () => {
+    @Component({
+      template: `@switch(state()){ @case(1){A} @default(){D} }@for(item of items(); track item){{{ item }}}`,
+    })
+    class TestComp {
+      state = signal(2);
+      items = signal(['x']);
+    }
+    let { fixture, element } = await createComponent(TestComp);
+    expect(element.textContent).eq('Dx');
+  });
+
+  // @for循环 + @switch(验证for为空时)
+  it('group-2-for-switch-empty', async () => {
+    @Component({
+      template: `@for(item of items(); track item){{{ item }}}@empty{none}@switch(state()){ @case(1){A} @default(){D} }`,
+    })
+    class TestComp {
+      state = signal(99);
+      items = signal<string[]>([]);
+    }
+    let { fixture, element } = await createComponent(TestComp);
+    expect(element.textContent).eq('noneD');
+  });
+
+  // ==================== 补充复杂嵌套测试 ====================
+
+  it('complex-nested-if-for-component', async () => {
+    @Component({
+      selector: 'my-comp',
+      template: `comp`,
+    })
+    class MyComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@if(show()){ @for(item of items(); track item){ <my-comp></my-comp> } }`,
+      imports: [MyComp],
+    })
+    class TestComp {
+      show = signal(true);
+      items = signal(['a', 'b']);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(MyComp)!.selector]);
+    expect(element.textContent).eq('compcomp');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('');
+  });
+
+  it('complex-nested-for-if-component', async () => {
+    @Component({
+      selector: 'my-comp',
+      template: `comp`,
+    })
+    class MyComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@for(item of items(); track item){ @if(item.active){ <my-comp></my-comp> } }`,
+      imports: [MyComp],
+    })
+    class TestComp {
+      items = signal([{ active: true }, { active: false }, { active: true }]);
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(MyComp)!.selector]);
+    expect(element.textContent).eq('compcomp');
+  });
+
+  it('complex-nested-switch-for-component', async () => {
+    @Component({
+      selector: 'my-comp',
+      template: `comp`,
+    })
+    class MyComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `@switch(state()){ @case(1){ @for(item of items(); track item){ <my-comp></my-comp> } } @default(){none}
+        }`,
+      imports: [MyComp],
+    })
+    class TestComp {
+      state = signal(1);
+      items = signal(['a', 'b']);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(MyComp)!.selector]);
+    expect(element.textContent).eq('compcomp');
+    instance.state.set(2);
+    fixture.detectChanges();
+    expect(element.textContent).eq('none');
+  });
+
+  it('complex-nested-component-switch-content', async () => {
+    @Component({
+      selector: 'wrapper',
+      template: `<div><ng-content></ng-content></div>`,
+    })
+    class Wrapper {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'my-comp',
+      template: `comp`,
+    })
+    class MyComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<wrapper>@switch(state()){ @case(1){ <my-comp></my-comp> } @default(){text} } </wrapper>`,
+      imports: [Wrapper, MyComp],
+    })
+    class TestComp {
+      state = signal(1);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [
+      reflectComponentType(Wrapper)!.selector,
+      reflectComponentType(MyComp)!.selector,
+    ]);
+    expect(element.textContent).eq('comp');
+    instance.state.set(2);
+    fixture.detectChanges();
+    expect(element.textContent).eq('text');
+  });
+
+  it('complex-template-with-if-content', async () => {
+    @Component({
+      template: `
+        <ng-template #t> @if(show()){inside} </ng-template>
+        <ng-container *ngTemplateOutlet="t"></ng-container>
+      `,
+      imports: [NgTemplateOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('inside');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('');
+  });
+
+  it('complex-component-outlet-with-if-content', async () => {
+    @Component({
+      selector: 'content-comp',
+      template: `<div>@if(show()){ <span>inside</span> }</div>`,
+    })
+    class ContentComp {
+      el = inject(ElementRef);
+      show = signal(true);
+    }
+
+    @Component({
+      template: `<ng-container *ngComponentOutlet="ContentComp"></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      ContentComp = ContentComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(ContentComp)!.selector]);
+    expect(element.textContent).eq('inside');
+  });
+
+  it('complex-mixed-4-types', async () => {
+    @Component({
+      selector: 'my-comp',
+      template: `comp`,
+    })
+    class MyComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <span>start</span>
+        <my-comp></my-comp>
+        <ng-template #t>template</ng-template>
+        <ng-container *ngTemplateOutlet="t"></ng-container>
+        <ng-container *ngComponentOutlet="DynComp"></ng-container>
+        <span>end</span>
+      `,
+      imports: [MyComp, NgTemplateOutlet, NgComponentOutlet],
+    })
+    class TestComp {
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [
+      reflectComponentType(MyComp)!.selector,
+      reflectComponentType(DynComp)!.selector,
+    ]);
+    expect(element.textContent).eq('startcomptemplatedynamicend');
+  });
+
+  it('complex-all-types-with-conditions', async () => {
+    @Component({
+      selector: 'my-comp',
+      template: `comp`,
+    })
+    class MyComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <span>start</span>
+        @if(show_comp()){ <my-comp></my-comp> } @else{ <span>no-comp</span> }
+        <ng-template #t>template</ng-template>
+        <ng-container *ngTemplateOutlet="t"></ng-container>
+        @for(item of items(); track item){ <span>{{ item }}</span> } @empty{none}
+        <ng-container *ngComponentOutlet="DynComp"></ng-container>
+        @switch(state()){ @case(1){ <span>one</span> } @default(){other} }
+        <span>end</span>
+      `,
+      imports: [MyComp, NgTemplateOutlet, NgComponentOutlet],
+    })
+    class TestComp {
+      show_comp = signal(true);
+      items = signal(['a']);
+      state = signal(1);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [
+      reflectComponentType(MyComp)!.selector,
+      reflectComponentType(DynComp)!.selector,
+    ]);
+    expect(element.textContent).eq('startcomptemplateadynamiconeend');
+    instance.show_comp.set(false);
+    instance.state.set(2);
+    fixture.detectChanges();
+    expect(element.textContent).eq('startno-comptemplateadynamicotherend');
+  });
+
+  it('complex-deep-nesting-3-level', async () => {
+    @Component({
+      selector: 'level1',
+      template: `<div>l1<ng-content></ng-content></div>`,
+    })
+    class Level1 {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'level2',
+      template: `<span>l2<ng-content></ng-content></span>`,
+    })
+    class Level2 {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'level3',
+      template: `<em>l3<ng-content></ng-content></em>`,
+    })
+    class Level3 {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<level1
+        ><level2><level3>deep</level3></level2></level1
+      >`,
+      imports: [Level1, Level2, Level3],
+    })
+    class TestComp {}
+    let { fixture, element } = await createComponent(TestComp, [
+      reflectComponentType(Level1)!.selector,
+      reflectComponentType(Level2)!.selector,
+      reflectComponentType(Level3)!.selector,
+    ]);
+    expect(element.textContent).eq('l1l2l3deep');
+  });
+
+  it('complex-component-with-template-content', async () => {
+    @Component({
+      selector: 'wrapper',
+      template: `<div><ng-content></ng-content></div>`,
+    })
+    class Wrapper {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <ng-template #t><span>in-template</span></ng-template>
+        <wrapper><ng-container *ngTemplateOutlet="t"></ng-container></wrapper>
+      `,
+      imports: [Wrapper, NgTemplateOutlet],
+    })
+    class TestComp {}
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(Wrapper)!.selector]);
+    expect(element.textContent).eq('in-template');
+  });
+
+  it('complex-component-outlet-with-for-content', async () => {
+    @Component({
+      selector: 'content-comp',
+      template: `<div>
+        @for(item of items; track item){ <span>{{ item }}</span> }
+      </div>`,
+      inputs: ['items'],
+    })
+    class ContentComp {
+      el = inject(ElementRef);
+      items: string[] = [];
+    }
+
+    @Component({
+      template: `<ng-container *ngComponentOutlet="ContentComp; inputs: compInputs"></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      ContentComp = ContentComp;
+      compInputs = { items: ['a', 'b'] };
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(ContentComp)!.selector]);
+    expect(element.textContent).eq('ab');
+  });
+
+  it('complex-template-with-component-outlet', async () => {
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <ng-template #t>
+          <ng-container *ngComponentOutlet="DynComp"></ng-container>
+        </ng-template>
+        <ng-container *ngTemplateOutlet="t"></ng-container>
+      `,
+      imports: [NgTemplateOutlet, NgComponentOutlet],
+    })
+    class TestComp {
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(DynComp)!.selector]);
+    expect(element.textContent).eq('dynamic');
+  });
+
+  it('complex-mixed-reverse-order', async () => {
+    @Component({
+      selector: 'my-comp',
+      template: `comp`,
+    })
+    class MyComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <span>end</span>
+        <ng-container *ngComponentOutlet="DynComp"></ng-container>
+        <ng-template #t>template</ng-template>
+        <ng-container *ngTemplateOutlet="t"></ng-container>
+        <my-comp></my-comp>
+        <span>start</span>
+      `,
+      imports: [MyComp, NgTemplateOutlet, NgComponentOutlet],
+    })
+    class TestComp {
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [
+      reflectComponentType(MyComp)!.selector,
+      reflectComponentType(DynComp)!.selector,
+    ]);
+    expect(element.textContent).eq('enddynamictemplatecompstart');
+  });
+
+  it('complex-if-for-switch-mixed', async () => {
+    @Component({
+      template: `@if(show()){ @for(item of items(); track item){{{ item }}} @empty{none}}@switch(state()){ @case(1){A}
+        @default(){B} }`,
+    })
+    class TestComp {
+      show = signal(true);
+      items = signal(['x', 'y']);
+      state = signal(1);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('xyA');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('A');
+    instance.state.set(2);
+    fixture.detectChanges();
+    expect(element.textContent).eq('B');
+  });
+
+  it('complex-for-if-switch-mixed', async () => {
+    @Component({
+      template: `@for(item of items(); track item){ @if(item.a){A} @else{B} }@switch(state()){ @case(1){X} @default(){Y}
+      }`,
+    })
+    class TestComp {
+      items = signal([{ a: true }, { a: false }]);
+      state = signal(1);
+    }
+    let { fixture, element } = await createComponent(TestComp);
+    expect(element.textContent).eq('ABX');
+  });
+
+  it('complex-switch-if-for-mixed', async () => {
+    @Component({
+      template: `@switch(state()){ @case(1){ @if(show()){A} @else{B} } @default(){C} }@for(item of items(); track
+        item){{{ item }}}`,
+    })
+    class TestComp {
+      state = signal(1);
+      show = signal(true);
+      items = signal(['x']);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('Ax');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('Bx');
+    instance.state.set(2);
+    fixture.detectChanges();
+    expect(element.textContent).eq('Cx');
+  });
+
+  it('complex-all-conditions-with-components', async () => {
+    @Component({
+      selector: 'my-comp',
+      template: `comp`,
+    })
+    class MyComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        @if(show()){ <my-comp></my-comp> } @for(item of items(); track item){ <my-comp></my-comp> } @empty{none}
+        @switch(state()){ @case(1){ <my-comp></my-comp> } @default(){default} }
+      `,
+      imports: [MyComp],
+    })
+    class TestComp {
+      show = signal(true);
+      items = signal(['a', 'b']);
+      state = signal(1);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(MyComp)!.selector]);
+    expect(element.textContent).eq('compcompcompcomp');
+    instance.show.set(false);
+    instance.items.set([]);
+    instance.state.set(2);
+    fixture.detectChanges();
+    expect(element.textContent).eq('nonedefault');
+  });
+
+  it('complex-component-content-with-all-conditions', async () => {
+    @Component({
+      selector: 'wrapper',
+      template: `<div><ng-content></ng-content></div>`,
+    })
+    class Wrapper {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<wrapper>
+        @if(show()){ <span>a</span> } @for(item of items(); track item){ <span>{{ item }}</span> } @empty{none}
+        @switch(state()){ @case(1){ <span>one</span> } @default(){other} }
+      </wrapper>`,
+      imports: [Wrapper],
+    })
+    class TestComp {
+      show = signal(true);
+      items = signal(['x']);
+      state = signal(1);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(Wrapper)!.selector]);
+    expect(element.textContent).eq('axone');
+    instance.show.set(false);
+    instance.items.set([]);
+    instance.state.set(2);
+    fixture.detectChanges();
+    expect(element.textContent).eq('noneother');
+  });
+
+  it('complex-template-outlet-with-conditions', async () => {
+    @Component({
+      template: `
+        <ng-template #a>template-a</ng-template>
+        <ng-template #b>template-b</ng-template>
+        @if(show_a()){ <ng-container *ngTemplateOutlet="a"></ng-container> } @else{
+        <ng-container *ngTemplateOutlet="b"></ng-container> }
+      `,
+      imports: [NgTemplateOutlet],
+    })
+    class TestComp {
+      show_a = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp);
+    expect(element.textContent).eq('template-a');
+    instance.show_a.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('template-b');
+  });
+
+  it('complex-component-outlet-with-conditions', async () => {
+    @Component({
+      selector: 'comp-a',
+      template: `comp-a`,
+    })
+    class CompA {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'comp-b',
+      template: `comp-b`,
+    })
+    class CompB {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<ng-container *ngComponentOutlet="selected()"></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      selected = signal(CompA);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [
+      reflectComponentType(CompA)!.selector,
+      reflectComponentType(CompB)!.selector,
+    ]);
+    expect(element.textContent).eq('comp-a');
+    instance.selected.set(CompB);
+    fixture.detectChanges();
+    expect(element.textContent).eq('comp-b');
+  });
+
+  it('complex-mixed-static-dynamic', async () => {
+    @Component({
+      selector: 'static-comp',
+      template: `static`,
+    })
+    class StaticComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <span>1</span>
+        <static-comp></static-comp>
+        <ng-template #t>template</ng-template>
+        <ng-container *ngTemplateOutlet="t"></ng-container>
+        <ng-container *ngComponentOutlet="DynComp"></ng-container>
+        <span>5</span>
+      `,
+      imports: [StaticComp, NgTemplateOutlet, NgComponentOutlet],
+    })
+    class TestComp {
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [
+      reflectComponentType(StaticComp)!.selector,
+      reflectComponentType(DynComp)!.selector,
+    ]);
+    expect(element.textContent).eq('1statictemplatedynamic5');
+  });
+
+  it('complex-all-permutations-2-element', async () => {
+    @Component({
+      selector: 'tag-el',
+      template: `tag`,
+    })
+    class TagEl {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'comp-a',
+      template: `compA`,
+    })
+    class CompA {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'comp-b',
+      template: `compB`,
+    })
+    class CompB {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <span>el1</span><span>el2</span> <comp-a></comp-a><comp-b></comp-b>
+        <ng-template #t>t-content</ng-template>
+        <ng-container *ngTemplateOutlet="t"></ng-container>
+        @if(show()){ <span>cond</span> } @for(item of items(); track item){{{ item }}}
+      `,
+      imports: [NgTemplateOutlet, CompA, CompB],
+    })
+    class TestComp {
+      show = signal(true);
+      items = signal(['x']);
+    }
+    let { fixture, element } = await createComponent(TestComp, [
+      reflectComponentType(CompA)!.selector,
+      reflectComponentType(CompB)!.selector,
+    ]);
+    expect(element.textContent).eq('el1el2compAcompBt-contentcondx');
+  });
+
+  it('complex-all-permutations-3-element', async () => {
+    @Component({
+      selector: 'my-comp',
+      template: `comp`,
+    })
+    class MyComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <span>el</span>
+        <my-comp></my-comp>
+        <ng-template #t>t-content</ng-template>
+        <ng-container *ngTemplateOutlet="t"></ng-container>
+        <ng-container *ngComponentOutlet="DynComp"></ng-container>
+        @if(show()){ <span>cond</span> } @for(item of items(); track item){{{ item }}} @switch(state()){ @case(1){
+        <span>sw</span> } }
+      `,
+      imports: [MyComp, NgTemplateOutlet, NgComponentOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+      items = signal(['x']);
+      state = signal(1);
+      DynComp = DynComp;
+    }
+    let { fixture, element } = await createComponent(TestComp, [
+      reflectComponentType(MyComp)!.selector,
+      reflectComponentType(DynComp)!.selector,
+    ]);
+    expect(element.textContent).eq('elcompt-contentdynamiccondxsw');
+  });
+
+  it('complex-empty-all-conditions', async () => {
+    @Component({
+      template: `
+        @if(false){ <span>never</span> } @for(item of empty(); track item){{{ item }}} @empty{none} @switch(none()){
+        @case(1){one} @default(){default} }
+      `,
+    })
+    class TestComp {
+      empty = signal<string[]>([]);
+      none = signal(999);
+    }
+    let { fixture, element } = await createComponent(TestComp);
+    expect(element.textContent).eq('nonedefault');
+  });
+
+  it('complex-component-with-template-and-conditions', async () => {
+    @Component({
+      selector: 'wrapper',
+      template: `<div><ng-content></ng-content></div>`,
+    })
+    class Wrapper {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <ng-template #t>
+          <span>in-template</span>
+          @if(show()){ <span>extra</span> }
+        </ng-template>
+        <wrapper><ng-container *ngTemplateOutlet="t"></ng-container></wrapper>
+      `,
+      imports: [Wrapper, NgTemplateOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [reflectComponentType(Wrapper)!.selector]);
+    expect(element.textContent).eq('in-templateextra');
+    instance.show.set(false);
+    fixture.detectChanges();
+    expect(element.textContent).eq('in-template');
+  });
+
+  it('complex-component-outlet-dynamic-with-conditions', async () => {
+    @Component({
+      selector: 'comp-a',
+      template: `A@if(show()){ -extra }`,
+    })
+    class CompA {
+      el = inject(ElementRef);
+      show = signal(true);
+    }
+
+    @Component({
+      selector: 'comp-b',
+      template: `B`,
+    })
+    class CompB {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `<ng-container *ngComponentOutlet="selected()"></ng-container>`,
+      imports: [NgComponentOutlet],
+    })
+    class TestComp {
+      selected = signal<Type<any>>(CompA);
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [
+      reflectComponentType(CompA)!.selector,
+      reflectComponentType(CompB)!.selector,
+    ]);
+    expect(element.textContent).eq('A -extra ');
+    instance.selected.set(CompB);
+    fixture.detectChanges();
+    expect(element.textContent).eq('B');
+  });
+
+  it('complex-nested-conditions-in-component', async () => {
+    @Component({
+      selector: 'nested-comp',
+      template: `
+        @if(a()){A} @for(item of items(); track item){{{ item }}} @empty{ none } @switch(s()){ @case(1){one}
+        @default(){other} }
+      `,
+    })
+    class NestedComp {
+      a = signal(true);
+      items = signal(['x']);
+      s = signal(1);
+    }
+
+    @Component({
+      template: `<nested-comp></nested-comp>`,
+      imports: [NestedComp],
+    })
+    class TestComp {}
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(NestedComp)!.selector]);
+    expect(element.textContent).eq('Axone');
+  });
+
+  it('complex-mixed-all-with-proxy', async () => {
+    @Component({
+      selector: 'my-comp',
+      template: `comp`,
+    })
+    class MyComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <span>start</span>
+        <my-comp></my-comp>
+        <ng-template #t>template</ng-template>
+        <ng-container *ngTemplateOutlet="t"></ng-container>
+        <ng-container *ngComponentOutlet="DynComp"></ng-container>
+        @if(show()){ <span>conditional</span> } @for(item of items(); track item){{{ item }}} @switch(state()){
+        @case(1){ <span>switched</span> } @default(){other} }
+        <span>end</span>
+      `,
+      imports: [MyComp, NgTemplateOutlet, NgComponentOutlet],
+    })
+    class TestComp {
+      show = signal(true);
+      items = signal(['x', 'y']);
+      state = signal(1);
+      DynComp = DynComp;
+    }
+    let { fixture, element, instance } = await createComponent(TestComp, [
+      reflectComponentType(MyComp)!.selector,
+      reflectComponentType(DynComp)!.selector,
+    ]);
+    expect(element.textContent).eq('startcomptemplatedynamicconditionalxyswitchedend');
+    instance.show.set(false);
+    instance.state.set(2);
+    instance.items.set([]);
+    fixture.detectChanges();
+    expect(element.textContent).eq('startcomptemplatedynamicotherend');
+  });
+  it('complex-mixed-all-with-proxy', async () => {
+    @Component({
+      selector: 'my-comp',
+      template: `comp`,
+    })
+    class MyComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      selector: 'dyn-comp',
+      template: `dynamic`,
+    })
+    class DynComp {
+      el = inject(ElementRef);
+    }
+
+    @Component({
+      template: `
+        <ng-template #t>template</ng-template>
+        <ng-container *ngTemplateOutlet="t"></ng-container>
+      `,
+      imports: [NgTemplateOutlet],
+    })
+    class TestComp {}
+    let { fixture, element, instance } = await createComponent(TestComp, [
+      reflectComponentType(MyComp)!.selector,
+      reflectComponentType(DynComp)!.selector,
+    ]);
+    expect(element.textContent).eq('template');
+  });
+  it('complex-nested-conditions-in-component', async () => {
+    @Component({
+      selector: 'nested-comp',
+      template: ` @if(s()){one} `,
+    })
+    class NestedComp {
+      s = signal(1);
+    }
+
+    @Component({
+      template: `<nested-comp></nested-comp>`,
+      imports: [NestedComp],
+    })
+    class TestComp {}
+    let { fixture, element } = await createComponent(TestComp, [reflectComponentType(NestedComp)!.selector]);
+    expect(element.textContent).eq('one');
   });
 });

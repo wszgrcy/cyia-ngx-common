@@ -228,7 +228,7 @@ export class ProxyNodeContext {
     if (!ctx) {
       return null;
     }
-    return this._findInRealList(ctx.realList, node, null);
+    return this._findInRealList(ctx.realList, node, maybeParent as any);
   }
 
   private _findInRealList(realList: ChildNode[], node: CommonNode, currentProxy: ProxyNode | null): ProxyNode | null {
