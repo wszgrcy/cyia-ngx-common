@@ -100,7 +100,7 @@ export class ProxyNode {
     }
     // todo 是否可以改造，实现更方便的位置获取
 
-    return (container as HTMLElement).children[count] as HTMLElement;
+    return (container as HTMLElement).childNodes[count] as HTMLElement;
   }
   #removeContainerChild(child: any) {
     child.remove();
