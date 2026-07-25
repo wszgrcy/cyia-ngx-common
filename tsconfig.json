@@ -26,7 +26,7 @@
       "path": "./lib/tsconfig.spec.json"
     },
     {
-      "path": "./examples/tsconfig.app.json"
+      "path": "./examples/tsconfig.json"
     }
   ]
 }

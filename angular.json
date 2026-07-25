@@ -53,17 +53,9 @@
             },
             "index": "examples/src/index.html",
             "polyfills": [],
-            "tsConfig": "examples/tsconfig.app.json",
+            "tsConfig": "examples/tsconfig.json",
             "aot": true,
-            "assets": [
-              "examples/src/favicon.ico",
-              "examples/src/assets",
-              {
-                "glob": "*.wasm",
-                "input": "node_modules/vscode-oniguruma/release",
-                "output": "assets/vscode-oniguruma"
-              }
-            ],
+            "assets": ["examples/src/favicon.ico", "examples/src/assets"],
             "styles": ["examples/src/styles.scss"],
             "scripts": [],
             "browser": "examples/src/main.ts"
@@ -121,14 +113,6 @@
           "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "examples:build"
-          }
-        },
-
-        "lint": {
-          "builder": "@angular/build:tslint",
-          "options": {
-            "tsConfig": ["examples/tsconfig.app.json", "examples/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**"]
           }
         }
       }

@@ -640,30 +640,6 @@
 
   </section>
 
-  <!-- ==================== 交互控制面板 ==================== -->
-  <section class="demo-section">
-    <h2>四、交互控制面板</h2>
-    <div class="example-block">
-      <h3>动态测试面板</h3>
-      <p><strong>说明:</strong> 通过以下按钮可以动态控制被排除组件的状态,实时观察 DOM 变化。</p>
-      <div class="control-panel">
-        <button (click)="toggleExclude()">Toggle Exclude Tag</button>
-        <button (click)="addComp()">Add Component</button>
-        <button (click)="removeComp()">Remove Last Component</button>
-        <button (click)="resetComps()">Reset All</button>
-        <p *ngIf="isExcluded" style="color: green;">✓ Tag is excluded (no wrapper)</p>
-        <p *ngIf="!isExcluded" style="color: orange;">○ Tag is NOT excluded (has wrapper)</p>
-        <p>Component count: {{ compCount }}</p>
-      </div>
-      <div class="demo-output interactive">
-        @for (c of dynamicComps(); track c) {
-          <app-s-excluded-comp></app-s-excluded-comp>
-        }
-        @if (dynamicComps.length === 0) {
-          <em>No components to display. Click "Add Component" to add one.</em>
-        }
-      </div>
-    </div>
-  </section>
+
 
 </div>

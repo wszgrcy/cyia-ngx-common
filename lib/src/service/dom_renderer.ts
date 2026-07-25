@@ -39,7 +39,7 @@ import {
   ProxyNode,
   ProxyNodeContext,
 } from './proxy-node';
-import { ExcludeTagSet } from './exclude-component';
+import { ExcludeTagFunction, ExcludeTagSet } from './exclude-component';
 
 export const NAMESPACE_URIS: { [ns: string]: string } = {
   svg: 'http://www.w3.org/2000/svg',
@@ -305,7 +305,7 @@ class DefaultDomRenderer2 implements Renderer2 {
       // https://github.com/angular/angular/issues/44883
       return this.doc.createElementNS(NAMESPACE_URIS[namespace] || namespace, name);
     }
-    if (ExcludeTagSet.has(name)) {
+    if (ExcludeTagSet.has(name) || ExcludeTagFunction?.(name)) {
       return this.createProxy();
     }
     return this.doc.createElement(name);
@@ -438,7 +438,7 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (!el.setAttribute) {
-      return
+      return;
     }
     if (namespace) {
       name = namespace + ':' + name;

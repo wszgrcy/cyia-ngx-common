@@ -9,3 +9,7 @@ export function selectorlessExcludeTag(tag: string, remove?: boolean) {
 export function selectorlessResetTag() {
   ExcludeTagSet.clear();
 }
+export let ExcludeTagFunction: (name: string) => boolean;
+export function setSelectorlessFilter(fn: (name: string) => boolean) {
+  ExcludeTagFunction = fn;
+}
