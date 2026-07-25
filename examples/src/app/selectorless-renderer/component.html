@@ -1,0 +1,669 @@
+<div class="selectorless-demo">
+  <h1>Selectorless Renderer 演示</h1>
+  <p class="description">
+    Selectorless 功能允许组件在没有标签(selector)时直接渲染其内容,
+    或者通过 <code>selectorlessExcludeTag()</code> 将指定选择器的组件排除,
+    使其在父容器中不显示包装标签,直接输出子内容。
+  </p>
+
+  <!-- ==================== 第一部分:基础概念演示 ==================== -->
+  <section class="demo-section">
+    <h2>一、基础概念演示</h2>
+
+    <!-- 示例1: 普通组件(有选择器) -->
+    <div class="example-block">
+      <h3>示例1: 普通组件(有选择器,正常渲染)</h3>
+      <p><strong>说明:</strong> 这是一个带有选择器的标准 Angular 组件,会正常渲染其标签和内部内容。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;normal-comp&gt;&lt;span&gt;normal content&lt;/span&gt;&lt;/normal-comp&gt;</code></p>
+      <div class="demo-output">
+        <app-s-normal-comp></app-s-normal-comp>
+      </div>
+    </div>
+
+    <!-- 示例2: 无选择器组件 -->
+    <div class="example-block">
+      <h3>示例2: 无选择器组件(selectorless)</h3>
+      <p><strong>说明:</strong> 这是一个没有设置 selector 的组件,它不会被 Angular 作为元素插入,而是直接渲染其内容。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;no-selector content&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-no-selector-comp></app-s-no-selector-comp>
+      </div>
+    </div>
+
+    <!-- 示例3: 被排除的组件 -->
+    <div class="example-block">
+      <h3>示例3: 被排除的组件(excludeTag)</h3>
+      <p><strong>说明:</strong> 通过 <code>selectorlessExcludeTag('excluded-comp')</code> 将该选择器加入排除列表后,
+         该组件在渲染时不会显示其包装标签,而是直接输出内部内容。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;excluded content&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-excluded-comp></app-s-excluded-comp>
+      </div>
+    </div>
+
+    <!-- 示例4: 排除前后对比 -->
+    <div class="example-block">
+      <h3>示例4: 排除组件的前后对比</h3>
+      <p><strong>说明:</strong> 左侧为未排除时的状态(有包装标签),右侧为排除后的状态(无包装标签)。</p>
+      <p><strong>预期渲染结果:</strong> 左:<code>&lt;before-comp&gt;before&lt;/before-comp&gt;</code> | 右:<code>after-content</code></p>
+      <div class="demo-output compare">
+        <div class="compare-item">
+          <strong>排除前:</strong>
+          <app-s-before-comp></app-s-before-comp>
+        </div>
+        <div class="compare-item">
+          <strong>排除后:</strong>
+          <app-s-after-content-demo></app-s-after-content-demo>
+        </div>
+      </div>
+    </div>
+
+    <!-- 示例5: 多个被排除组件并列 -->
+    <div class="example-block">
+      <h3>示例5: 多个被排除组件并列</h3>
+      <p><strong>说明:</strong> 多个被排除的组件并列放置时,它们的包装标签都不会出现,内容直接拼接。</p>
+      <p><strong>预期渲染结果:</strong> <code>firstmiddlelast</code></p>
+      <div class="demo-output">
+        <app-s-multi-excluded></app-s-multi-excluded>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 第二部分:组件与静态标签的关系 ==================== -->
+  <section class="demo-section">
+    <h2>二、组件与静态标签的关系</h2>
+
+    <!-- 示例6: 被排除组件 + 普通标签 -->
+    <div class="example-block">
+      <h3>示例6: 被排除组件 + 普通标签(组件在前)</h3>
+      <p><strong>说明:</strong> 被排除的组件在前,后面跟着一个普通 span 标签。组件无包装标签,内容直接与后续标签拼接。</p>
+      <p><strong>预期渲染结果:</strong> <code>comp-content &lt;span&gt;text&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-comp-tag-1></app-s-comp-tag-1>
+      </div>
+    </div>
+
+    <!-- 示例7: 普通标签 + 被排除组件 -->
+    <div class="example-block">
+      <h3>示例7: 普通标签 + 被排除组件(标签在前)</h3>
+      <p><strong>说明:</strong> 普通标签在前,被排除的组件在后。标签正常渲染,组件无包装标签。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;text&lt;/span&gt; comp-content</code></p>
+      <div class="demo-output">
+        <app-s-tag-comp-1></app-s-tag-comp-1>
+      </div>
+    </div>
+
+    <!-- 示例8: 标签 + 组件 + 标签 -->
+    <div class="example-block">
+      <h3>示例8: 标签 + 被排除组件 + 标签</h3>
+      <p><strong>说明:</strong> 被排除的组件夹在两个普通标签之间。组件内容嵌入到两个标签内容中间。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;before&lt;/span&gt; comp-content &lt;span&gt;after&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-tag-comp-tag-1></app-s-tag-comp-tag-1>
+      </div>
+    </div>
+
+    <!-- 示例9: 多个标签包围单个组件 -->
+    <div class="example-block">
+      <h3>示例9: 多个标签包围单个被排除组件</h3>
+      <p><strong>说明:</strong> 三个 span 标签围绕一个被排除的组件,形成"三明治"结构。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;1&lt;/span&gt;&lt;span&gt;2&lt;/span&gt; comp &lt;span&gt;3&lt;/span&gt;&lt;span&gt;4&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-multi-tag-comp></app-s-multi-tag-comp>
+      </div>
+    </div>
+
+    <!-- 示例10: 嵌套标签中的被排除组件 -->
+    <div class="example-block">
+      <h3>示例10: 嵌套标签中的被排除组件</h3>
+      <p><strong>说明:</strong> 被排除的组件放在 div 内部的 span 之间,验证层级关系是否正确处理。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;div&gt;&lt;span&gt;a&lt;/span&gt; comp &lt;span&gt;b&lt;/span&gt;&lt;/div&gt;</code></p>
+      <div class="demo-output">
+        <app-s-nested-tag-comp></app-s-nested-tag-comp>
+      </div>
+    </div>
+
+    <!-- 示例11: 多个被排除组件与多个标签交替 -->
+    <div class="example-block">
+      <h3>示例11: 多个被排除组件与多个标签交替排列</h3>
+      <p><strong>说明:</strong> 组件和标签交替出现,验证复杂的插入位置是否正确。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;a&lt;/span&gt; c1 &lt;span&gt;b&lt;/span&gt; c2 &lt;span&gt;c&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-alternating-comp-tag></app-s-alternating-comp-tag>
+      </div>
+    </div>
+
+    <!-- 示例12: 被排除组件内部包含多个子元素 -->
+    <div class="example-block">
+      <h3>示例12: 被排除组件内部包含多个子元素</h3>
+      <p><strong>说明:</strong> 被排除的组件模板中包含多个子元素,验证所有子元素都能正确渲染。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;a&lt;/span&gt;&lt;span&gt;b&lt;/span&gt;&lt;span&gt;c&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-multi-child-comp></app-s-multi-child-comp>
+      </div>
+    </div>
+
+    <!-- 示例13: 被排除组件内部包含文本和标签混合 -->
+    <div class="example-block">
+      <h3>示例13: 被排除组件内部文本与标签混合</h3>
+      <p><strong>说明:</strong> 被排除的组件模板中包含纯文本和 HTML 标签混合的内容。</p>
+      <p><strong>预期渲染结果:</strong> <code>text &lt;em&gt;emphasis&lt;/em&gt; more text</code></p>
+      <div class="demo-output">
+        <app-s-mixed-content-comp></app-s-mixed-content-comp>
+      </div>
+    </div>
+
+    <!-- 示例14: 被排除组件包含深层嵌套 -->
+    <div class="example-block">
+      <h3>示例14: 被排除组件包含深层嵌套结构</h3>
+      <p><strong>说明:</strong> 被排除的组件内部有深层次的标签嵌套,验证 DOM 树是否正确构建。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;div&gt;&lt;ul&gt;&lt;li&gt;nested&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;</code></p>
+      <div class="demo-output">
+        <app-s-deep-nested-comp></app-s-deep-nested-comp>
+      </div>
+    </div>
+
+    <!-- 示例15: 被排除组件包含列表 -->
+    <div class="example-block">
+      <h3>示例15: 被排除组件包含 ngFor 列表</h3>
+      <p><strong>说明:</strong> 被排除的组件内部使用 &#64;for 循环生成多个元素,验证动态内容是否正确插入。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;1&lt;/span&gt;&lt;span&gt;2&lt;/span&gt;&lt;span&gt;3&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-for-comp></app-s-for-comp>
+      </div>
+    </div>
+
+    <!-- 示例16: 被排除组件包含条件渲染 -->
+    <div class="example-block">
+      <h3>示例16: 被排除组件包含 &#64;if 条件渲染</h3>
+      <p><strong>说明:</strong> 被排除的组件内部使用 &#64;if 控制内容的显示/隐藏。</p>
+      <p><strong>预期渲染结果:</strong> <code>&#64;if true: &lt;span&gt;shown&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-if-comp></app-s-if-comp>
+      </div>
+    </div>
+
+    <!-- 示例17: 被排除组件包含 switch -->
+    <div class="example-block">
+      <h3>示例17: 被排除组件包含 &#64;switch 条件渲染</h3>
+      <p><strong>说明:</strong> 被排除的组件内部使用 &#64;switch 选择不同内容。</p>
+      <p><strong>预期渲染结果:</strong> <code>&#64;case(1): &lt;span&gt;one&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-switch-comp></app-s-switch-comp>
+      </div>
+    </div>
+
+    <!-- 示例18: 多个被排除组件嵌套 -->
+    <div class="example-block">
+      <h3>示例18: 多个被排除组件相互嵌套</h3>
+      <p><strong>说明:</strong> 外层被排除组件包含内层被排除组件,验证 ProxyNode 的嵌套关系。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;outer &lt;span&gt;inner&lt;/span&gt;&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-nested-excluded-comps></app-s-nested-excluded-comps>
+      </div>
+    </div>
+
+    <!-- 示例19: 被排除组件与普通组件混合 -->
+    <div class="example-block">
+      <h3>示例19: 被排除组件与普通(有选择器)组件混合</h3>
+      <p><strong>说明:</strong> 被排除的组件和正常有选择器的组件交替出现,验证两种类型的组件能共存。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;a&lt;/span&gt; excluded &lt;normal-comp&gt;&lt;span&gt;b&lt;/span&gt;&lt;/normal-comp&gt;</code></p>
+      <div class="demo-output">
+        <app-s-mixed-normal-excluded></app-s-mixed-normal-excluded>
+      </div>
+    </div>
+
+    <!-- 示例20: 被排除组件包含 ng-content -->
+    <div class="example-block">
+      <h3>示例20: 被排除组件使用 ng-content 透传内容</h3>
+      <p><strong>说明:</strong> 被排除的组件内部使用 <code>&lt;ng-content&gt;</code>,外部传入的内容会被正确透传。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;transmitted content&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-content-outlet-comp>
+          <span>transmitted content</span>
+        </app-s-content-outlet-comp>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 第三部分:动态插入测试 ==================== -->
+  <section class="demo-section">
+    <h2>三、动态插入测试 (NgTemplateOutlet / NgComponentOutlet)</h2>
+
+    <!-- 示例21: 模板动态 + 被排除组件 -->
+    <div class="example-block">
+      <h3>示例21: ng-template 动态 + 被排除组件</h3>
+      <p><strong>说明:</strong> 通过 *ngTemplateOutlet 动态插入模板内容,后面跟着一个被排除的组件。</p>
+      <p><strong>预期渲染结果:</strong> <code>template &lt;span&gt;comp&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-template-comp-1></app-s-template-comp-1>
+      </div>
+    </div>
+
+    <!-- 示例22: 被排除组件 + 模板动态 -->
+    <div class="example-block">
+      <h3>示例22: 被排除组件 + ng-template 动态</h3>
+      <p><strong>说明:</strong> 被排除的组件在前,通过 *ngTemplateOutlet 动态插入模板内容在后。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;comp&lt;/span&gt; template</code></p>
+      <div class="demo-output">
+        <app-s-comp-template-1></app-s-comp-template-1>
+      </div>
+    </div>
+
+    <!-- 示例23: 模板 + 标签 + 被排除组件 -->
+    <div class="example-block">
+      <h3>示例23: ng-template 动态 + 标签 + 被排除组件</h3>
+      <p><strong>说明:</strong> 三种类型交替排列:模板动态、普通标签、被排除组件。</p>
+      <p><strong>预期渲染结果:</strong> <code>template &lt;span&gt;middle&lt;/span&gt; comp</code></p>
+      <div class="demo-output">
+        <app-s-template-tag-comp></app-s-template-tag-comp>
+      </div>
+    </div>
+
+    <!-- 示例24: 被排除组件 + 标签 + 模板动态 -->
+    <div class="example-block">
+      <h3>示例24: 被排除组件 + 标签 + ng-template 动态</h3>
+      <p><strong>说明:</strong> 被排除组件在前,中间是普通标签,最后是模板动态插入。</p>
+      <p><strong>预期渲染结果:</strong> <code>comp &lt;span&gt;middle&lt;/span&gt; template</code></p>
+      <div class="demo-output">
+        <app-s-comp-tag-template></app-s-comp-tag-template>
+      </div>
+    </div>
+
+    <!-- 示例25: 被排除组件 + ngComponentOutlet -->
+    <div class="example-block">
+      <h3>示例25: 被排除组件 + *ngComponentOutlet 动态组件</h3>
+      <p><strong>说明:</strong> 被排除的静态组件在前,通过 *ngComponentOutlet 动态插入另一个组件在后。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;static-comp&lt;/span&gt; dynamic</code></p>
+      <div class="demo-output">
+        <app-s-static-dynamic-comp></app-s-static-dynamic-comp>
+      </div>
+    </div>
+
+    <!-- 示例26: ngComponentOutlet + 被排除组件 -->
+    <div class="example-block">
+      <h3>示例26: *ngComponentOutlet 动态组件 + 被排除组件</h3>
+      <p><strong>说明:</strong> 通过 *ngComponentOutlet 动态插入的组件在前,被排除的静态组件在后。</p>
+      <p><strong>预期渲染结果:</strong> <code>dynamic &lt;span&gt;static-comp&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-dynamic-static-comp></app-s-dynamic-static-comp>
+      </div>
+    </div>
+
+    <!-- 示例27: 模板 + 被排除组件 + 动态组件 -->
+    <div class="example-block">
+      <h3>示例27: ng-template + 被排除组件 + *ngComponentOutlet</h3>
+      <p><strong>说明:</strong> 三种动态/静态类型组合:模板、被排除组件、动态组件。</p>
+      <p><strong>预期渲染结果:</strong> <code>template comp dynamic</code></p>
+      <div class="demo-output">
+        <app-s-template-comp-dynamic></app-s-template-comp-dynamic>
+      </div>
+    </div>
+
+    <!-- 示例28: 被排除组件 + 模板 + 动态组件 -->
+    <div class="example-block">
+      <h3>示例28: 被排除组件 + ng-template + *ngComponentOutlet</h3>
+      <p><strong>说明:</strong> 被排除组件在最前面,后面跟着模板和动态组件。</p>
+      <p><strong>预期渲染结果:</strong> <code>comp template dynamic</code></p>
+      <div class="demo-output">
+        <app-s-comp-template-dynamic></app-s-comp-template-dynamic>
+      </div>
+    </div>
+
+    <!-- 示例29: 被排除组件 + 动态组件 + 模板 -->
+    <div class="example-block">
+      <h3>示例29: 被排除组件 + *ngComponentOutlet + ng-template</h3>
+      <p><strong>说明:</strong> 被排除组件在最前面,后面跟着动态组件和模板。</p>
+      <p><strong>预期渲染结果:</strong> <code>comp dynamic template</code></p>
+      <div class="demo-output">
+        <app-s-comp-dynamic-template></app-s-comp-dynamic-template>
+      </div>
+    </div>
+
+    <!-- 示例30: 动态组件 + 被排除组件 + 模板 -->
+    <div class="example-block">
+      <h3>示例30: *ngComponentOutlet + 被排除组件 + ng-template</h3>
+      <p><strong>说明:</strong> 动态组件在最前面,后面跟着被排除组件和模板。</p>
+      <p><strong>预期渲染结果:</strong> <code>dynamic comp template</code></p>
+      <div class="demo-output">
+        <app-s-dynamic-comp-template></app-s-dynamic-comp-template>
+      </div>
+    </div>
+
+    <!-- 示例31: 模板 + 动态组件 + 被排除组件 -->
+    <div class="example-block">
+      <h3>示例31: ng-template + *ngComponentOutlet + 被排除组件</h3>
+      <p><strong>说明:</strong> 模板在最前面,后面跟着动态组件和被排除组件。</p>
+      <p><strong>预期渲染结果:</strong> <code>template dynamic comp</code></p>
+      <div class="demo-output">
+        <app-s-template-dynamic-comp></app-s-template-dynamic-comp>
+      </div>
+    </div>
+
+    <!-- 示例32: 动态组件 + 模板 + 被排除组件 -->
+    <div class="example-block">
+      <h3>示例32: *ngComponentOutlet + ng-template + 被排除组件</h3>
+      <p><strong>说明:</strong> 动态组件在最前面,后面跟着模板和被排除组件。</p>
+      <p><strong>预期渲染结果:</strong> <code>dynamic template comp</code></p>
+      <div class="demo-output">
+        <app-s-dynamic-template-comp></app-s-dynamic-template-comp>
+      </div>
+    </div>
+
+    <!-- 示例33-38: 标签+组件+动态组件的各种排列组合 -->
+    <!-- 示例33: 被排除组件 + 标签 + 动态组件 -->
+    <div class="example-block">
+      <h3>示例33: 被排除组件 + 标签 + *ngComponentOutlet</h3>
+      <p><strong>说明:</strong> 被排除组件、普通标签、动态组件三者组合。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;comp&lt;/span&gt; middle dynamic</code></p>
+      <div class="demo-output">
+        <app-s-comp-tag-dynamic></app-s-comp-tag-dynamic>
+      </div>
+    </div>
+
+    <!-- 示例34: 动态组件 + 标签 + 被排除组件 -->
+    <div class="example-block">
+      <h3>示例34: *ngComponentOutlet + 标签 + 被排除组件</h3>
+      <p><strong>说明:</strong> 动态组件、普通标签、被排除组件三者组合。</p>
+      <p><strong>预期渲染结果:</strong> <code>dynamic middle &lt;span&gt;comp&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-dynamic-tag-comp></app-s-dynamic-tag-comp>
+      </div>
+    </div>
+
+    <!-- 示例35: 标签 + 被排除组件 + 动态组件 -->
+    <div class="example-block">
+      <h3>示例35: 标签 + 被排除组件 + *ngComponentOutlet</h3>
+      <p><strong>说明:</strong> 普通标签、被排除组件、动态组件三者组合。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;before&lt;/span&gt; comp dynamic</code></p>
+      <div class="demo-output">
+        <app-s-tag-comp-dynamic></app-s-tag-comp-dynamic>
+      </div>
+    </div>
+
+    <!-- 示例36: 标签 + 动态组件 + 被排除组件 -->
+    <div class="example-block">
+      <h3>示例36: 标签 + *ngComponentOutlet + 被排除组件</h3>
+      <p><strong>说明:</strong> 普通标签、动态组件、被排除组件三者组合。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;before&lt;/span&gt; dynamic comp</code></p>
+      <div class="demo-output">
+        <app-s-tag-dynamic-comp></app-s-tag-dynamic-comp>
+      </div>
+    </div>
+
+    <!-- 示例37: 动态组件 + 被排除组件 + 标签 -->
+    <div class="example-block">
+      <h3>示例37: *ngComponentOutlet + 被排除组件 + 标签</h3>
+      <p><strong>说明:</strong> 动态组件、被排除组件、普通标签三者组合。</p>
+      <p><strong>预期渲染结果:</strong> <code>dynamic comp &lt;span&gt;after&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-dynamic-comp-tag></app-s-dynamic-comp-tag>
+      </div>
+    </div>
+
+    <!-- 示例38: 被排除组件 + 动态组件 + 标签 -->
+    <div class="example-block">
+      <h3>示例38: 被排除组件 + *ngComponentOutlet + 标签</h3>
+      <p><strong>说明:</strong> 被排除组件、动态组件、普通标签三者组合。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;comp&lt;/span&gt; dynamic &lt;span&gt;after&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-comp-dynamic-tag></app-s-comp-dynamic-tag>
+      </div>
+    </div>
+
+    <!-- 示例39-42: &#64;if条件相关的排列 -->
+    <!-- 示例39: 被排除组件 + &#64;if条件 -->
+    <div class="example-block">
+      <h3>示例39: 被排除组件 + &#64;if 条件控制</h3>
+      <p><strong>说明:</strong> 被排除的组件在前,后面跟着一个 &#64;if 条件块。切换信号可验证条件渲染是否正确。</p>
+      <p><strong>预期渲染结果:</strong> true时:<code>&lt;span&gt;comp&lt;/span&gt; conditional</code> | false时:<code>&lt;span&gt;comp&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-comp-if></app-s-comp-if>
+      </div>
+    </div>
+
+    <!-- 示例40: &#64;if条件 + 被排除组件 -->
+    <div class="example-block">
+      <h3>示例40: &#64;if 条件控制 + 被排除组件</h3>
+      <p><strong>说明:</strong> &#64;if 条件在前,后面跟着一个被排除的组件。切换信号可验证。</p>
+      <p><strong>预期渲染结果:</strong> true时:<code>conditional &lt;span&gt;comp&lt;/span&gt;</code> | false时:<code>&lt;span&gt;comp&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-if-comp-1></app-s-if-comp-1>
+      </div>
+    </div>
+
+    <!-- 示例41: &#64;if条件 + 标签 + 被排除组件 -->
+    <div class="example-block">
+      <h3>示例41: &#64;if 条件 + 标签 + 被排除组件</h3>
+      <p><strong>说明:</strong> &#64;if 条件、普通标签、被排除组件三者组合。</p>
+      <p><strong>预期渲染结果:</strong> true时:<code>conditional &lt;span&gt;middle&lt;/span&gt; comp</code> | false时:<code>&lt;span&gt;middle&lt;/span&gt; comp</code></p>
+      <div class="demo-output">
+        <app-s-if-tag-comp></app-s-if-tag-comp>
+      </div>
+    </div>
+
+    <!-- 示例42: 被排除组件 + &#64;if条件 + 标签 -->
+    <div class="example-block">
+      <h3>示例42: 被排除组件 + &#64;if 条件 + 标签</h3>
+      <p><strong>说明:</strong> 被排除组件、&#64;if 条件、普通标签三者组合。</p>
+      <p><strong>预期渲染结果:</strong> true时:<code>comp conditional &lt;span&gt;after&lt;/span&gt;</code> | false时:<code>comp &lt;span&gt;after&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-comp-if-tag></app-s-comp-if-tag>
+      </div>
+    </div>
+
+    <!-- 示例43-46: &#64;for/&#64;switch相关的排列 -->
+    <!-- 示例43: &#64;for循环 + 被排除组件 -->
+    <div class="example-block">
+      <h3>示例43: &#64;for 循环 + 被排除组件</h3>
+      <p><strong>说明:</strong> &#64;for 循环在前,后面跟着一个被排除的组件。</p>
+      <p><strong>预期渲染结果:</strong> <code>123 comp</code></p>
+      <div class="demo-output">
+        <app-s-for-comp-1></app-s-for-comp-1>
+      </div>
+    </div>
+
+    <!-- 示例44: 被排除组件 + &#64;for循环 -->
+    <div class="example-block">
+      <h3>示例44: 被排除组件 + &#64;for 循环</h3>
+      <p><strong>说明:</strong> 被排除的组件在前,后面跟着 &#64;for 循环。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;comp&lt;/span&gt; 123</code></p>
+      <div class="demo-output">
+        <app-s-comp-for></app-s-comp-for>
+      </div>
+    </div>
+
+    <!-- 示例45: &#64;switch + 被排除组件 -->
+    <div class="example-block">
+      <h3>示例45: &#64;switch + 被排除组件</h3>
+      <p><strong>说明:</strong> &#64;switch 条件在前,后面跟着一个被排除的组件。</p>
+      <p><strong>预期渲染结果:</strong> <code>&#64;case(1): one comp</code></p>
+      <div class="demo-output">
+        <app-s-switch-comp-1></app-s-switch-comp-1>
+      </div>
+    </div>
+
+    <!-- 示例46: 被排除组件 + &#64;switch -->
+    <div class="example-block">
+      <h3>示例46: 被排除组件 + &#64;switch</h3>
+      <p><strong>说明:</strong> 被排除的组件在前,后面跟着 &#64;switch 条件。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;comp&lt;/span&gt; &#64;case(1): one</code></p>
+      <div class="demo-output">
+        <app-s-comp-switch></app-s-comp-switch>
+      </div>
+    </div>
+
+    <!-- 示例47-48: 复杂三元素组合 -->
+    <!-- 示例47: 被排除组件 + &#64;for循环 + 标签 -->
+    <div class="example-block">
+      <h3>示例47: 被排除组件 + &#64;for 循环 + 标签</h3>
+      <p><strong>说明:</strong> 被排除组件、&#64;for 循环、普通标签三者组合。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;comp&lt;/span&gt; abc &lt;span&gt;after&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-comp-for-tag></app-s-comp-for-tag>
+      </div>
+    </div>
+
+    <!-- 示例48: 标签 + &#64;for循环 + 被排除组件 -->
+    <div class="example-block">
+      <h3>示例48: 标签 + &#64;for 循环 + 被排除组件</h3>
+      <p><strong>说明:</strong> 普通标签、&#64;for 循环、被排除组件三者组合。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;before&lt;/span&gt; abc comp</code></p>
+      <div class="demo-output">
+        <app-s-tag-for-comp></app-s-tag-for-comp>
+      </div>
+    </div>
+
+    <!-- 示例49-50: 嵌套场景 -->
+    <!-- 示例49: 被排除组件嵌套在 ng-template 中 -->
+    <div class="example-block">
+      <h3>示例49: 被排除组件嵌套在 ng-template 中并通过 *ngTemplateOutlet 输出</h3>
+      <p><strong>说明:</strong> 被排除的组件放在 ng-template 内部,通过 *ngTemplateOutlet 动态插入。验证 ProxyNode 与模板系统的兼容性。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;comp&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-comp-in-template></app-s-comp-in-template>
+      </div>
+    </div>
+
+    <!-- 示例50: 被排除组件嵌套在 ngComponentOutlet 中 -->
+    <div class="example-block">
+      <h3>示例50: 被排除组件作为动态组件的内容</h3>
+      <p><strong>说明:</strong> 通过 *ngComponentOutlet 动态创建一个包含被排除组件的容器组件,验证嵌套关系。</p>
+      <p><strong>预期渲染结果:</strong> <code>container &lt;span&gt;excluded&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-comp-in-dynamic></app-s-comp-in-dynamic>
+      </div>
+    </div>
+
+    <!-- 示例51-52: 复杂混合场景 -->
+    <!-- 示例51: 所有类型混合 -->
+    <div class="example-block">
+      <h3>示例51: 所有类型混合 - 完整演示</h3>
+      <p><strong>说明:</strong> 将普通标签、被排除组件、模板动态、动态组件、&#64;if、&#64;for、&#64;switch 全部组合在一起,模拟真实复杂场景。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;start&lt;/span&gt; excluded template dynamic conditional abc one &lt;span&gt;end&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-all-mixed></app-s-all-mixed>
+      </div>
+    </div>
+
+    <!-- 示例52: 反向顺序混合 -->
+    <div class="example-block">
+      <h3>示例52: 所有类型混合 - 反向顺序</h3>
+      <p><strong>说明:</strong> 将所有类型以相反的顺序排列,验证插入位置的正确性不受顺序影响。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;end&lt;/span&gt; dynamic template excluded &lt;span&gt;start&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-all-mixed-reverse></app-s-all-mixed-reverse>
+      </div>
+    </div>
+
+    <!-- 示例53-55: 动态增删测试 -->
+    <!-- 示例53: 被排除组件删除测试 -->
+    <div class="example-block">
+      <h3>示例53: 被排除组件的动态添加/删除</h3>
+      <p><strong>说明:</strong> 通过按钮切换被排除组件的显示,验证 ProxyNode 在节点被移除时是否正确清理 DOM 引用。</p>
+      <p><strong>预期渲染结果:</strong> true时:<code>&lt;span&gt;comp&lt;/span&gt;</code> | false时:<code>(空)</code></p>
+      <div class="demo-output">
+        <app-s-comp-toggle></app-s-comp-toggle>
+      </div>
+    </div>
+
+    <!-- 示例54: 多个被排除组件的动态添加/删除 -->
+    <div class="example-block">
+      <h3>示例54: 多个被排除组件的动态增删</h3>
+      <p><strong>说明:</strong> 同时管理多个被排除组件的添加和删除,验证 ProxyNode 列表操作的正确性。</p>
+      <p><strong>预期渲染结果:</strong> 点击按钮可动态增减被排除组件实例。</p>
+      <div class="demo-output">
+        <app-s-multi-comp-toggle></app-s-multi-comp-toggle>
+      </div>
+    </div>
+
+    <!-- 示例55: 被排除组件在 &#64;for 中增删 -->
+    <div class="example-block">
+      <h3>示例55: &#64;for 循环中被排除组件的动态增删</h3>
+      <p><strong>说明:</strong> 在 &#64;for 循环中动态添加/删除被排除组件实例,验证循环更新时 ProxyNode 的正确性。</p>
+      <p><strong>预期渲染结果:</strong> 点击按钮可增减列表中的被排除组件项。</p>
+      <div class="demo-output">
+        <app-s-for-comp-toggle></app-s-for-comp-toggle>
+      </div>
+    </div>
+
+    <!-- 示例56-60: 边界和特殊场景 -->
+    <!-- 示例56: 被排除组件插入位置测试 -->
+    <div class="example-block">
+      <h3>示例56: 被排除组件在不同插入位置的验证</h3>
+      <p><strong>说明:</strong> 将同一个被排除组件分别插入到不同位置(开头、中间、结尾),验证 insertBefore/appendChild 逻辑的正确性。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;first&lt;/span&gt;&lt;span&gt;comp1&lt;/span&gt;&lt;span&gt;middle&lt;/span&gt;&lt;span&gt;comp2&lt;/span&gt;&lt;span&gt;last&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-insert-position></app-s-insert-position>
+      </div>
+    </div>
+
+    <!-- 示例57: 被排除组件与 ng-container -->
+    <div class="example-block">
+      <h3>示例57: 被排除组件与 ng-container 配合使用</h3>
+      <p><strong>说明:</strong> 被排除的组件放在 ng-container 内部,ng-container 不会在 DOM 中产生额外元素。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;comp&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-comp-in-container></app-s-comp-in-container>
+      </div>
+    </div>
+
+    <!-- 示例58: 被排除组件与注释 -->
+    <div class="example-block">
+      <h3>示例58: 被排除组件与 HTML 注释共存</h3>
+      <p><strong>说明:</strong> 被排除的组件与 HTML 注释混合放置,验证注释节点不影响 ProxyNode 的操作。</p>
+      <p><strong>预期渲染结果:</strong> <code>&lt;span&gt;comp&lt;/span&gt;</code></p>
+      <div class="demo-output">
+        <app-s-comp-with-comment></app-s-comp-with-comment>
+      </div>
+    </div>
+
+    <!-- 示例59: 被排除组件包含文本节点 -->
+    <div class="example-block">
+      <h3>示例59: 被排除组件包含纯文本节点</h3>
+      <p><strong>说明:</strong> 被排除的组件模板中只包含纯文本(无标签),验证文本节点的插入是否正确。</p>
+      <p><strong>预期渲染结果:</strong> <code>plain text content</code></p>
+      <div class="demo-output">
+        <app-s-text-only-comp></app-s-text-only-comp>
+      </div>
+    </div>
+
+    <!-- 示例60: 被排除组件包含特殊字符 -->
+    <div class="example-block">
+      <h3>示例60: 被排除组件包含特殊字符和 HTML</h3>
+      <p><strong>说明:</strong> 被排除的组件模板中包含特殊字符(如 &lt;, >, &) 以及 HTML 实体,验证转义是否正确。</p>
+      <p><strong>预期渲染结果:</strong> <code>1 &lt; 2 &amp;&amp; 3 &gt; 4</code></p>
+      <div class="demo-output">
+        <app-s-special-chars-comp></app-s-special-chars-comp>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ==================== 交互控制面板 ==================== -->
+  <section class="demo-section">
+    <h2>四、交互控制面板</h2>
+    <div class="example-block">
+      <h3>动态测试面板</h3>
+      <p><strong>说明:</strong> 通过以下按钮可以动态控制被排除组件的状态,实时观察 DOM 变化。</p>
+      <div class="control-panel">
+        <button (click)="toggleExclude()">Toggle Exclude Tag</button>
+        <button (click)="addComp()">Add Component</button>
+        <button (click)="removeComp()">Remove Last Component</button>
+        <button (click)="resetComps()">Reset All</button>
+        <p *ngIf="isExcluded" style="color: green;">✓ Tag is excluded (no wrapper)</p>
+        <p *ngIf="!isExcluded" style="color: orange;">○ Tag is NOT excluded (has wrapper)</p>
+        <p>Component count: {{ compCount }}</p>
+      </div>
+      <div class="demo-output interactive">
+        @for (c of dynamicComps(); track c) {
+          <app-s-excluded-comp></app-s-excluded-comp>
+        }
+        @if (dynamicComps.length === 0) {
+          <em>No components to display. Click "Add Component" to add one.</em>
+        }
+      </div>
+    </div>
+  </section>
+
+</div>

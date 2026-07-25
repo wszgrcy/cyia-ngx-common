@@ -1,9 +1,10 @@
-import { DOCUMENT, enableProdMode, NgModuleRef, provideZoneChangeDetection } from '@angular/core';
+import { DOCUMENT, enableProdMode, NgModuleRef, provideZoneChangeDetection, RendererFactory2 } from '@angular/core';
 
 import { environment } from './environments/environment';
 import { bootstrapApplication, EVENT_MANAGER_PLUGINS } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
 import { EVENT_MODIFIER_OPTIONS, EventModifierOptions, EventModifiersPlugin } from '@cyia/ngx-common/event';
+import { DomRendererFactory2 } from '@cyia/ngx-common/service';
 
 if (environment.production) {
   enableProdMode();
@@ -45,5 +46,7 @@ bootstrapApplication(AppComponent, {
         componentOutput: true,
       } as EventModifierOptions,
     },
+    DomRendererFactory2,
+    { provide: RendererFactory2, useExisting: DomRendererFactory2 },
   ],
 });

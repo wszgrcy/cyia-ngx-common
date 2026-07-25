@@ -1,29 +1,16 @@
 <div class="tab-container">
   <div class="tab-bar">
-    <button
-      class="tab-btn"
-      [class.active]="activeTab === 'event'"
-      (click)="activeTab = 'event'"
-    >
-      Event
-    </button>
-    <button
-      class="tab-btn"
-      [class.active]="activeTab === 'selectorless'"
-      (click)="activeTab = 'selectorless'"
-    >
-      Selectorless
-    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'event'" (click)="activeTab = 'event'">Event</button>
+    <button class="tab-btn" [class.active]="activeTab === 'selectorless'" (click)="activeTab = 'selectorless'">Selectorless</button>
+    <button class="tab-btn" [class.active]="activeTab === 'selectorless-renderer'" (click)="activeTab = 'selectorless-renderer'">selectorless-renderer</button>
   </div>
   <div class="tab-content">
-    @if (activeTab === 'event') {
-      @defer {
-        <event></event>
-      }
-    } @else if (activeTab === 'selectorless') {
-      @defer {
-        <selectorless></selectorless>
-      }
-    }
+    @if (activeTab === 'event') { @defer {
+    <event></event>
+    } } @else if (activeTab === 'selectorless') { @defer {
+    <selectorless></selectorless>
+    } } @else if (activeTab === 'selectorless-renderer') { @defer {
+    <selectorless-renderer></selectorless-renderer>
+    } }
   </div>
 </div>

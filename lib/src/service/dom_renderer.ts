@@ -437,6 +437,9 @@ class DefaultDomRenderer2 implements Renderer2 {
   }
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
+    if (!el.setAttribute) {
+      return
+    }
     if (namespace) {
       name = namespace + ':' + name;
       const namespaceUri = NAMESPACE_URIS[namespace];
