@@ -11,6 +11,7 @@ interface LogEntry {
   templateUrl: './event.component.html',
   standalone: true,
   imports: [AComponent],
+  styleUrl:'./event.component.scss'
 })
 export class EventComponent {
   // ① stop + once：子级按钮触发一次后移除监听，之后点击都由父级捕获
