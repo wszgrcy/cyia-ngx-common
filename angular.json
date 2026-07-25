@@ -46,7 +46,7 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "outputPath": {
               "base": "dist/examples"
@@ -104,7 +104,7 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "buildTarget": "examples:build"
           },
@@ -118,16 +118,16 @@
           }
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "@angular/build:extract-i18n",
           "options": {
             "buildTarget": "examples:build"
           }
         },
 
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular/build:tslint",
           "options": {
-            "tsConfig": ["examples/tsconfig.app.json", "examples/tsconfig.spec.json", "examples/e2e/tsconfig.json"],
+            "tsConfig": ["examples/tsconfig.app.json", "examples/tsconfig.spec.json"],
             "exclude": ["**/node_modules/**"]
           }
         }

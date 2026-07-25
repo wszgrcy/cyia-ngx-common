@@ -13,7 +13,8 @@
     "paths": {
       "@cyia/ngx-common": ["./lib/src"],
       "@cyia/ngx-common/*": ["./lib/src/*"]
-    }
+    },
+    "rootDir": "."
   },
   "include": [],
   "files": [],
@@ -23,6 +24,9 @@
     },
     {
       "path": "./lib/tsconfig.spec.json"
+    },
+    {
+      "path": "./examples/tsconfig.app.json"
     }
   ]
 }

@@ -10,7 +10,6 @@ if (environment.production) {
 }
 bootstrapApplication(AppComponent, {
   providers: [
-    provideZoneChangeDetection(),
     EventModifiersPlugin,
     {
       provide: EVENT_MANAGER_PLUGINS,
