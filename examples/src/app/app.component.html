@@ -1,2 +1,29 @@
-<event></event>
-<selectorless></selectorless>
+<div class="tab-container">
+  <div class="tab-bar">
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'event'"
+      (click)="activeTab = 'event'"
+    >
+      Event
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'selectorless'"
+      (click)="activeTab = 'selectorless'"
+    >
+      Selectorless
+    </button>
+  </div>
+  <div class="tab-content">
+    @if (activeTab === 'event') {
+      @defer {
+        <event></event>
+      }
+    } @else if (activeTab === 'selectorless') {
+      @defer {
+        <selectorless></selectorless>
+      }
+    }
+  </div>
+</div>

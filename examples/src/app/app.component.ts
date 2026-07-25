@@ -8,5 +8,7 @@ import { SelectorlessExampleComponent } from './selectorless/component';
   styleUrls: ['./app.component.scss'],
   imports: [EventComponent, SelectorlessExampleComponent],
 })
-export class AppComponent {}
+export class AppComponent {
+  activeTab = 'event';
+}
 

@@ -1,9 +1,125 @@
-<p>请打开Console查看</p>
-<div (click)="clicked('divClicked')">
-  <button (click.stop.once)="clicked('btnClicked')">点击</button>
+<div class="event-demo">
+  <h1>事件修饰符 &amp; 自定义事件 Demo</h1>
+
+  <!-- ========== 1. stop + once ========== -->
+  <section class="demo-section">
+    <header class="section-header">
+      <h2>① stop + once</h2>
+      <span class="badge">(click.stop.once)</span>
+    </header>
+    <div class="description">
+      <p><code>.stop</code> — 调用 <code>stopPropagation()</code>，阻止事件向父元素冒泡。</p>
+      <p><code>.once</code> — 监听器只触发一次后自动移除，之后点击不再响应此绑定。</p>
+      <p class="hint">👉 第1次点击按钮：子级触发（.stop 阻止冒泡，父级不响应）→ .once 移除监听。<br/>
+         后续再点击按钮：子级不再响应 → 事件冒泡到父级 div。</p>
+    </div>
+    <div class="demo-area">
+      <div class="parent-box" (click)="clicked('click', '🟡 父级 div — 收到冒泡（第2次点击后才会出现）')">
+        <span class="label">父级 div</span>
+        <button (click.stop.once)="clicked('click', '🟢 子级 button — 第1次触发（仅此一次）')">🔘 点击我</button>
+      </div>
+    </div>
+    <div class="log-panel" [class.empty]="clickLog().length === 0">
+      <div class="log-header">
+        <span>📋 click.stop.once 触发记录</span>
+      </div>
+      @for (log of clickLog(); track $index) {
+        <div class="log-item">
+          <span class="log-time">{{ log.time }}</span>
+          <span class="log-msg">{{ log.message }}</span>
+        </div>
+      } @empty {
+        <div class="log-empty">暂无记录</div>
+      }
+    </div>
+  </section>
+
+  <!-- ========== 2. 自定义事件 & 修饰符 ========== -->
+  <section class="demo-section">
+    <header class="section-header">
+      <h2>② 自定义事件 &amp; 修饰符</h2>
+      <span class="badge">(output2.prefix.once)</span>
+    </header>
+    <div class="description">
+      <p><code>(output2.prefix.once)</code> — 绑定 app-a 的 <code>output2</code> 输出，带 prefix + once 修饰符。</p>
+      <p><code>(output2)</code> — 普通绑定，无修饰符，每次 emit 都会触发。</p>
+      <p class="hint">👉 app-a 会在初始化后自动发射两次事件（"测试"、"测试2"），观察两种绑定的区别：带 once 的只接收第一次。</p>
+    </div>
+    <div class="demo-area">
+      <app-a (output2.prefix.once)="output($any($event).toString())" (output2)="output($any($event).toString())"></app-a>
+    </div>
+    <div class="log-panel" [class.empty]="outputLog().length === 0">
+      <div class="log-header">
+        <span>📋 output2 触发记录</span>
+      </div>
+      @for (log of outputLog(); track $index) {
+        <div class="log-item">
+          <span class="log-time">{{ log.time }}</span>
+          <span class="log-msg">{{ log.message }}</span>
+        </div>
+      } @empty {
+        <div class="log-empty">暂无记录</div>
+      }
+    </div>
+  </section>
+
+  <!-- ========== 3. 延迟触发 ========== -->
+  <section class="demo-section">
+    <header class="section-header">
+      <h2>③ 延迟触发</h2>
+      <span class="badge">(click.delay)</span>
+    </header>
+    <div class="description">
+      <p><code>.delay</code> — 点击后延迟一段时间再执行回调。</p>
+      <p class="hint">👉 点击下方按钮，观察延迟触发的效果。</p>
+    </div>
+    <div class="demo-area">
+      <button class="action-btn" (click.delay)="clicked('delay', '⏱️ 延迟触发成功')">⏱️ 延迟触发</button>
+    </div>
+    <div class="log-panel" [class.empty]="delayLog().length === 0">
+      <div class="log-header">
+        <span>📋 click.delay 触发记录</span>
+      </div>
+      @for (log of delayLog(); track $index) {
+        <div class="log-item">
+          <span class="log-time">{{ log.time }}</span>
+          <span class="log-msg">{{ log.message }}</span>
+        </div>
+      } @empty {
+        <div class="log-empty">暂无记录</div>
+      }
+    </div>
+  </section>
+
+  <!-- ========== 4. enable / disable ========== -->
+  <section class="demo-section">
+    <header class="section-header">
+      <h2>④ enable / disable</h2>
+      <span class="badge">(click.enable) / (click.disable)</span>
+    </header>
+    <div class="description">
+      <p><code>.enable</code> — 启用事件绑定，点击正常触发回调。</p>
+      <p><code>.disable</code> — 禁用事件绑定，点击不会触发回调。</p>
+      <p class="hint">👉 🟢 "允许"按钮：事件已启用，点击会记录；🔴 "禁止"按钮：事件已禁用，点击无任何反应。</p>
+    </div>
+    <div class="demo-area">
+      <button class="action-btn enable" (click.enable)="clicked('enableDisable', '🟢 允许 — 点击生效')">🟢 允许</button>
+      <button class="action-btn disable" (click.disable)="clicked('enableDisable', '🔴 禁止 — 点击不生效（不会记录）')">🔴 禁止</button>
+    </div>
+    <div class="log-panel" [class.empty]="enableDisableLog().length === 0">
+      <div class="log-header">
+        <span>📋 click.enable/disable 触发记录</span>
+      </div>
+      @for (log of enableDisableLog(); track $index) {
+        <div class="log-item">
+          <span class="log-time">{{ log.time }}</span>
+          <span class="log-msg">{{ log.message }}</span>
+        </div>
+      } @empty {
+        <div class="log-empty">暂无记录</div>
+      }
+    </div>
+  </section>
+
+  <!-- ========== 全局清空 ========== -->
 </div>
-<app-a (output2.prefix.once)="output($event)" (output2)="output($event)"></app-a>
-<!-- <app-a (output2.once)="output($any($event))"></app-a> -->
-<button (click.delay)="clicked('延迟触发')">延迟触发</button>
-<button (click.enable)="clicked('允许')">允许</button>
-<button (click.disable)="clicked('禁止')">禁止</button>
