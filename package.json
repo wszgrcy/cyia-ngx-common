@@ -12,7 +12,7 @@
     "lib:lint": "ng lint lib",
     "lint": "ng lint",
     "build:lib": "ng build lib",
-    "postbuild:lib": "cpx README.md ./dist/cyia-ngx-common",
+    "postbuild:lib": "cpx README.md ./dist/cyia-ngx-common && cpx README.zh-hans.md ./dist/cyia-ngx-common",
     "update": "ng update @angular/cdk@22 @angular/material@22 @angular/cli@22 --force --allow-dirty",
     "version": "ng version",
     "release-publish": "npm run build:lib && npm publish ./dist/cyia-ngx-common",
